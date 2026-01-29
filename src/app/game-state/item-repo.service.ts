@@ -55,8 +55,8 @@ export class ItemRepoService {
       type: 'furniture',
       slot: 'bed',
       value: 10,
-      description:
-        'A tattered blanket. Not much, but it could keep you warm at night. Increases daily stamina recovery by 1.',
+      description: 'A tattered blanket. Not much, but it could keep you warm at night.',
+      effects: '+1 stamina',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.status.stamina.value++;
@@ -68,7 +68,8 @@ export class ItemRepoService {
       type: 'furniture',
       slot: 'bed',
       value: 1000,
-      description: 'A thin woven mat to sleep on. Increases daily stamina recovery by 1 and restores a bit of health.',
+      description: 'A thin woven mat to sleep on.',
+      effects: '+1 stamina, +0.1 health',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.status.stamina.value += 1;
@@ -82,8 +83,8 @@ export class ItemRepoService {
       type: 'furniture',
       slot: 'bed',
       value: 10000,
-      description:
-        'A fine bed with a cover. Curtains keep the mosquitoes off you during the night. Increases daily stamina recovery by 2 and restores a bit of health.',
+      description: 'A fine bed with a cover. Curtains keep the mosquitoes off you during the night.',
+      effects: '+2 stamina, +0.2 health',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.status.stamina.value += 2;
@@ -97,8 +98,8 @@ export class ItemRepoService {
       type: 'furniture',
       slot: 'bed',
       value: 100000,
-      description:
-        'A bed built over a small clay oven. Keeps you toasty on even the coldest nights. Increases daily stamina recovery by 5 and improves health recovery.',
+      description: 'A bed built over a small clay oven. Keeps you toasty on even the coldest nights.',
+      effects: '+5 stamina, +1 health',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.status.stamina.value += 5;
@@ -114,6 +115,7 @@ export class ItemRepoService {
       value: 10000,
       description:
         "A solid board with nails poking upwards. You won't sleep as well, but it is certain to toughen you up.",
+      effects: '-1 stamina, +0.1 toughness',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.status.stamina.value -= 1;
@@ -127,6 +129,7 @@ export class ItemRepoService {
       slot: 'bathtub',
       value: 10,
       description: 'A bucket of water that lets you splash water on your face. Increases charisma.',
+      effects: '+0.01 charisma',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.increaseAttribute('charisma', 0.01);
@@ -139,6 +142,7 @@ export class ItemRepoService {
       slot: 'bathtub',
       value: 1000,
       description: 'A wash basin with a rag to clean yourself. Increases charisma.',
+      effects: '+0.05 charisma',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.increaseAttribute('charisma', 0.05);
@@ -151,6 +155,7 @@ export class ItemRepoService {
       slot: 'bathtub',
       value: 10000,
       description: 'A tall and narrow tub where you can squat and bathe. Increases charisma and health recovery.',
+      effects: '+0.1 charisma, +1 health',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.increaseAttribute('charisma', 0.1);
@@ -165,6 +170,7 @@ export class ItemRepoService {
       slot: 'bathtub',
       value: 1000000,
       description: 'A luxurious tub where you can get sparkling clean. Increases charisma and health recovery.',
+      effects: '+0.2 charisma, +1 health',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.increaseAttribute('charisma', 0.2);
@@ -179,6 +185,7 @@ export class ItemRepoService {
       slot: 'bathtub',
       value: 1e8,
       description: 'A luxurious tub with its own heating stove. Good for your health and beauty.',
+      effects: '+0.2 charisma, +5 stamina, +1 health, +1 max health',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.increaseAttribute('charisma', 0.2);
@@ -195,6 +202,7 @@ export class ItemRepoService {
       slot: 'kitchen',
       value: 10,
       description: 'A simple pot over a fire to boil your food. Improves all physical attributes.',
+      effects: '+0.01 strength, +0.01 speed, +0.01 toughness',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.increaseAttribute('strength', 0.01);
@@ -210,6 +218,7 @@ export class ItemRepoService {
       value: 1000,
       description:
         'A simple spit to go along with your cookpot, letting you add more variety to your diet. Improves all physical attributes.',
+      effects: '+0.02 strength, +0.02 speed, +0.02 toughness',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.increaseAttribute('strength', 0.02);
@@ -224,6 +233,7 @@ export class ItemRepoService {
       slot: 'kitchen',
       value: 1000000,
       description: 'A large metal wok to stir-fry a tasty dinner. Improves all physical attributes.',
+      effects: '+0.05 strength, +0.05 speed, +0.05 toughness',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.increaseAttribute('strength', 0.05);
@@ -238,11 +248,25 @@ export class ItemRepoService {
       slot: 'kitchen',
       value: 1e9,
       description: 'An elaborate kitchen that allows you to cook anything. Improves all physical attributes.',
+      effects: '+0.1 strength, +0.1 speed, +0.1 toughness',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.increaseAttribute('strength', 0.1);
         this.characterService.characterState.increaseAttribute('speed', 0.1);
         this.characterService.characterState.increaseAttribute('toughness', 0.1);
+      },
+    },
+    potteryWheel: {
+      id: 'potteryWheel',
+      name: 'pottery wheel',
+      type: 'furniture',
+      slot: 'workbench',
+      value: 1000000,
+      description: 'A spinning wheel for shaping clay and understanding the earth.',
+      effects: '+0.01 earth lore',
+      useConsumes: false,
+      use: () => {
+        this.characterService.characterState.increaseAttribute('earthLore', 0.01);
       },
     },
     anvil: {
@@ -252,6 +276,7 @@ export class ItemRepoService {
       slot: 'workbench',
       value: 1000000,
       description: 'An anvil to work on blacksmithing.',
+      effects: '+0.01 metal lore',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.increaseAttribute('metalLore', 0.01);
@@ -264,21 +289,10 @@ export class ItemRepoService {
       slot: 'workbench',
       value: 1000000,
       description: 'An pleasant garden growing herbs.',
+      effects: '+0.01 wood lore',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.increaseAttribute('woodLore', 0.01);
-      },
-    },
-    dogKennel: {
-      id: 'dogKennel',
-      name: 'dog kennel',
-      type: 'furniture',
-      slot: 'workbench',
-      value: 1000000,
-      description: 'A kennel for training hunting dogs.',
-      useConsumes: false,
-      use: () => {
-        this.characterService.characterState.increaseAttribute('animalHandling', 0.01);
       },
     },
     cauldron: {
@@ -288,9 +302,49 @@ export class ItemRepoService {
       slot: 'workbench',
       value: 1000000,
       description: 'A cauldron for practicing alchemy.',
+      effects: '+0.01 water lore',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.increaseAttribute('waterLore', 0.01);
+      },
+    },
+    kiln: {
+      id: 'kiln',
+      name: 'kiln',
+      type: 'furniture',
+      slot: 'workbench',
+      value: 1000000,
+      description: 'A high-temperature kiln for firing ceramics and studying the nature of fire.',
+      effects: '+0.01 fire lore',
+      useConsumes: false,
+      use: () => {
+        this.characterService.characterState.increaseAttribute('fireLore', 0.01);
+      },
+    },
+    dogKennel: {
+      id: 'dogKennel',
+      name: 'dog kennel',
+      type: 'furniture',
+      slot: 'workbench',
+      value: 1000000,
+      description: 'A kennel for training hunting dogs.',
+      effects: '+0.01 animal handling',
+      useConsumes: false,
+      use: () => {
+        this.characterService.characterState.increaseAttribute('animalHandling', 0.01);
+      },
+    },
+    mirror: {
+      id: 'mirror',
+      name: 'mirror',
+      type: 'furniture',
+      slot: 'workbench',
+      value: 1000000,
+      description: 'A polished bronze mirror to practice your expressions and refine your presence.',
+      effects: '+0.15 charisma',
+      useConsumes: false,
+      use: () => {
+        this.characterService.characterState.increaseAttribute('charisma', 0.15);
       },
     },
     bookshelf: {
@@ -300,6 +354,7 @@ export class ItemRepoService {
       slot: 'workbench',
       value: 1000000,
       description: 'An bookshelf to read and expand your mind.',
+      effects: '+0.1 intelligence',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.increaseAttribute('intelligence', 0.1);
@@ -313,6 +368,7 @@ export class ItemRepoService {
       value: 1e7,
       description:
         "A quiet shrine for contemplative prayer. You won't be able to use this unless you have some innate spirituality.",
+      effects: '[Requires spirituality > 0] +0.01 spirituality/day',
       useConsumes: false,
       use: () => {
         if (this.characterService.characterState.attributes.spirituality.value > 0) {
@@ -2826,6 +2882,15 @@ export class ItemRepoService {
   getFurnitureById(id: string): Furniture | null {
     if (this.furniture[id]) {
       return this.furniture[id];
+    }
+    return null;
+  }
+
+  getFurnitureByName(name: string): Furniture | null {
+    for (const key in this.furniture) {
+      if (this.furniture[key].name === name) {
+        return this.furniture[key];
+      }
     }
     return null;
   }

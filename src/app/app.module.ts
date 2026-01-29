@@ -26,6 +26,7 @@ import { CommonModule, TitleCasePipe } from '@angular/common';
 import { ManualStoreModalComponent } from './manual-store-modal/manual-store-modal.component';
 import { BattlePanelComponent } from './battle-panel/battle-panel.component';
 import { FurnitureStoreModalComponent } from './furniture-store-modal/furniture-store-modal.component';
+import { WorkbenchStoreModalComponent } from './workbench-store-modal/workbench-store-modal.component';
 import { AscensionStoreModalComponent } from './ascension-store-modal/ascension-store-modal.component';
 import { OptionsModalComponent } from './options-modal/options-modal.component';
 import { FarmPanelComponent } from './farm-panel/farm-panel.component';
@@ -43,6 +44,7 @@ import { SaveModalComponent } from './save-modal/save-modal.component';
 import { OfflineModalComponent } from './offline-modal/offline-modal.component';
 import { LifeSummaryComponent } from './life-summary/life-summary.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { KtdGridModule } from '@katoid/angular-grid-layout';
 
 const materialModules = [MatDialogModule, MatIconModule, MatTabsModule, MatTooltipModule];
 
@@ -66,6 +68,7 @@ const materialModules = [MatDialogModule, MatIconModule, MatTabsModule, MatToolt
     ManualStoreModalComponent,
     BattlePanelComponent,
     FurnitureStoreModalComponent,
+    WorkbenchStoreModalComponent,
     AscensionStoreModalComponent,
     OptionsModalComponent,
     FarmPanelComponent,
@@ -90,6 +93,7 @@ const materialModules = [MatDialogModule, MatIconModule, MatTabsModule, MatToolt
     FormsModule,
     CommonModule,
     DragDropModule,
+    KtdGridModule,
     ...materialModules,
   ],
   exports: [...materialModules],

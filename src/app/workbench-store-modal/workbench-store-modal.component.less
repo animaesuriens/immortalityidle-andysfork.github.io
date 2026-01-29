@@ -1,0 +1,43 @@
+@import (reference) "../../styles.less";
+
+.furnitureModal {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  max-height: 600px;
+}
+
+.itemSlot {
+  width: 75px;
+  height: 75px;
+  background-color: var(--storeButtonColor);
+  line-height: 12px;
+}
+
+.ownedItem {
+  background-color: #4a6b4a !important;
+  border: 1px solid #4a6b4a !important;
+}
+
+.inUseItem {
+  background-color: #2d4a2d !important;
+  border: 1px solid #2d4a2d !important;
+}
+
+.inventoryGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-bottom: 1em;
+  text-align: center;
+  justify-content: center;
+}
+
+hr {
+  margin-top: 2px;
+}
+
+button {
+  width: 90%;
+  display: inline-block;
+  margin-top: 4px;
+}

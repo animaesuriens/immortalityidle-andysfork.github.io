@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { LogService, LogTopic } from './log.service';
 import { CharacterService } from '../game-state/character.service';
 import { Furniture, InventoryService, Item, instanceOfFurniture } from '../game-state/inventory.service';
-import { HomeService, HomeType, Home } from '../game-state/home.service';
+import { HomeService, HomeType, Home, FurniturePosition } from '../game-state/home.service';
 import { ItemRepoService } from '../game-state/item-repo.service';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -20,6 +20,7 @@ export class StoreService {
   bloodLineHomeRequirement: Home = this.homeService.homesList[HomeType.Palace];
   storeOpened = false;
   furniturePrices: { [key: string]: number } = {};
+  workbenchSlots: string[] = ['workbench', 'workbench2', 'workbench3', 'workbench4', 'workbench5', 'workbench6', 'workbench7', 'workbench8', 'workbench9'];
 
   constructor(
     private logService: LogService,
@@ -39,7 +40,11 @@ export class StoreService {
     this.furniture = [];
     for (const key in this.itemRepoService.furniture) {
       const furniture = this.itemRepoService.furniture[key];
-      if (this.homeService.home.furnitureSlots.includes(furniture.slot)) {
+      // Check if this furniture's slot is available, treating workbench specially
+      const slotAvailable = furniture.slot === 'workbench'
+        ? this.getAvailableWorkbenchSlots().length > 0
+        : this.homeService.home.furnitureSlots.includes(furniture.slot);
+      if (slotAvailable) {
         this.furniture.push(furniture);
         if (this.homeService.ownedFurniture.includes(furniture.name)) {
           this.furniturePrices[furniture.name] = 0;
@@ -49,6 +54,12 @@ export class StoreService {
       }
     }
     this.selectedItem = null;
+  }
+
+  getAvailableWorkbenchSlots(): FurniturePosition[] {
+    return this.workbenchSlots.filter(slot =>
+      this.homeService.home.furnitureSlots.includes(slot as FurniturePosition)
+    ) as FurniturePosition[];
   }
 
   unlockManual(manual: Item) {
@@ -83,29 +94,70 @@ export class StoreService {
   getFurnitureForSlot(slot: string | null = null) {
     if (slot === null) return this.furniture;
 
+    // For workbench slots, return all workbench furniture
+    if (this.workbenchSlots.includes(slot)) {
+      return this.furniture.filter(item => item.slot === 'workbench');
+    }
     return this.furniture.filter(item => item.slot === slot);
   }
 
-  buyFurniture(item: Item | null = null) {
+  isWorkbenchSlot(slot: string): boolean {
+    return this.workbenchSlots.includes(slot);
+  }
+
+  isWorkbenchOwnedForSlot(itemName: string, slot: string): boolean {
+    const slotOwned = this.homeService.ownedWorkbenchFurniture[slot] || [];
+    return slotOwned.includes(itemName);
+  }
+
+  getWorkbenchPrice(itemName: string, slot: string): number {
+    if (this.isWorkbenchOwnedForSlot(itemName, slot)) {
+      return 0;
+    }
+    const furniture = this.itemRepoService.getFurnitureByName(itemName);
+    return furniture?.value || 0;
+  }
+
+  buyFurniture(item: Item | null = null, targetSlot: FurniturePosition | null = null) {
     if (item === null) item = this.selectedItem;
 
     if (item) {
       if (!instanceOfFurniture(item)) {
         return;
       }
-      const slot = item.slot;
-      if (
-        item.value < this.characterService.characterState.money ||
-        this.homeService.ownedFurniture.includes(item.name)
-      ) {
-        if (!this.homeService.ownedFurniture.includes(item.name)) {
-          // only pay for it once per lifetime
-          this.characterService.characterState.updateMoney(0 - item.value);
-          this.homeService.ownedFurniture.push(item.name);
-          this.furniturePrices[item.name] = 0;
+      // Use targetSlot if provided, otherwise use item's slot
+      const slot: FurniturePosition = targetSlot || item.slot;
+
+      // Handle workbench slots with per-slot ownership
+      if (this.isWorkbenchSlot(slot)) {
+        const isOwned = this.isWorkbenchOwnedForSlot(item.name, slot);
+        if (item.value <= this.characterService.characterState.money || isOwned) {
+          if (!isOwned) {
+            // Pay for this slot's copy
+            this.characterService.characterState.updateMoney(0 - item.value);
+            if (!this.homeService.ownedWorkbenchFurniture[slot]) {
+              this.homeService.ownedWorkbenchFurniture[slot] = [];
+            }
+            this.homeService.ownedWorkbenchFurniture[slot].push(item.name);
+          }
+          this.homeService.furniture[slot] = item;
+          this.homeService.autoBuyFurniture[slot] = item;
         }
-        this.homeService.furniture[slot] = item;
-        this.homeService.autoBuyFurniture[slot] = item;
+      } else {
+        // Handle regular furniture (bed, bathtub, kitchen) with global ownership
+        if (
+          item.value <= this.characterService.characterState.money ||
+          this.homeService.ownedFurniture.includes(item.name)
+        ) {
+          if (!this.homeService.ownedFurniture.includes(item.name)) {
+            // only pay for it once per lifetime
+            this.characterService.characterState.updateMoney(0 - item.value);
+            this.homeService.ownedFurniture.push(item.name);
+            this.furniturePrices[item.name] = 0;
+          }
+          this.homeService.furniture[slot] = item;
+          this.homeService.autoBuyFurniture[slot] = item;
+        }
       }
     }
   }

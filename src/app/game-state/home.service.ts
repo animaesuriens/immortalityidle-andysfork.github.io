@@ -75,6 +75,7 @@ export interface HomeProperties {
   houseBuildingProgress: number;
   upgrading: boolean;
   ownedFurniture: string[];
+  ownedWorkbenchFurniture: { [slot: string]: string[] };
   highestLand: number;
   highestLandPrice: number;
   mostFields: number;
@@ -86,7 +87,7 @@ export interface HomeProperties {
   homeUnlocked: boolean;
 }
 
-export type FurniturePosition = 'bed' | 'bathtub' | 'kitchen' | 'workbench';
+export type FurniturePosition = 'bed' | 'bathtub' | 'kitchen' | 'workbench' | 'workbench2' | 'workbench3' | 'workbench4' | 'workbench5' | 'workbench6' | 'workbench7' | 'workbench8' | 'workbench9';
 export type FurnitureSlots = { [key in FurniturePosition]: Furniture | null };
 
 @Injectable({
@@ -104,6 +105,14 @@ export class HomeService {
     bathtub: null,
     kitchen: null,
     workbench: null,
+    workbench2: null,
+    workbench3: null,
+    workbench4: null,
+    workbench5: null,
+    workbench6: null,
+    workbench7: null,
+    workbench8: null,
+    workbench9: null,
   };
   autoFieldUnlocked = false;
   autoFieldLimit = 0;
@@ -119,9 +128,18 @@ export class HomeService {
     bathtub: null,
     kitchen: null,
     workbench: null,
+    workbench2: null,
+    workbench3: null,
+    workbench4: null,
+    workbench5: null,
+    workbench6: null,
+    workbench7: null,
+    workbench8: null,
+    workbench9: null,
   };
-  furniturePositionsArray: FurniturePosition[] = ['bed', 'bathtub', 'kitchen', 'workbench'];
+  furniturePositionsArray: FurniturePosition[] = ['bed', 'bathtub', 'kitchen', 'workbench', 'workbench2', 'workbench3', 'workbench4', 'workbench5', 'workbench6', 'workbench7', 'workbench8', 'workbench9'];
   ownedFurniture: string[] = [];
+  ownedWorkbenchFurniture: { [slot: string]: string[] } = {};
   grandfatherTent = false;
   houseBuildingProgress = 1;
   upgrading = false;
@@ -339,7 +357,7 @@ export class HomeService {
         this.characterService.characterState.status.stamina.value += 25;
         this.characterService.characterState.checkOverage();
       },
-      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
+      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench', 'workbench2'],
       daysToBuild: 365,
       healthRegen: 4,
       staminaRegen: 25,
@@ -361,7 +379,7 @@ export class HomeService {
         this.characterService.characterState.status.stamina.value += 30;
         this.characterService.characterState.checkOverage();
       },
-      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
+      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench', 'workbench2', 'workbench3'],
       daysToBuild: 3650,
       healthRegen: 5,
       staminaRegen: 30,
@@ -383,7 +401,7 @@ export class HomeService {
         this.characterService.characterState.status.stamina.value += 35;
         this.characterService.characterState.checkOverage();
       },
-      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
+      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench', 'workbench2', 'workbench3', 'workbench4'],
       daysToBuild: 36500,
       healthRegen: 10,
       staminaRegen: 35,
@@ -405,7 +423,7 @@ export class HomeService {
         this.characterService.characterState.status.stamina.value += 40;
         this.characterService.characterState.checkOverage();
       },
-      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
+      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench', 'workbench2', 'workbench3', 'workbench4', 'workbench5'],
       daysToBuild: 365000,
       healthRegen: 15,
       staminaRegen: 40,
@@ -427,7 +445,7 @@ export class HomeService {
         this.characterService.characterState.status.stamina.value += 50;
         this.characterService.characterState.checkOverage();
       },
-      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
+      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench', 'workbench2', 'workbench3', 'workbench4', 'workbench5', 'workbench6'],
       daysToBuild: 3650000,
       healthRegen: 20,
       staminaRegen: 50,
@@ -449,7 +467,7 @@ export class HomeService {
         this.characterService.characterState.status.stamina.value += 100;
         this.characterService.characterState.checkOverage();
       },
-      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
+      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench', 'workbench2', 'workbench3', 'workbench4', 'workbench5', 'workbench6', 'workbench7'],
       daysToBuild: 365e5,
       healthRegen: 30,
       staminaRegen: 100,
@@ -471,7 +489,7 @@ export class HomeService {
         this.characterService.characterState.status.stamina.value += 200;
         this.characterService.characterState.checkOverage();
       },
-      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
+      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench', 'workbench2', 'workbench3', 'workbench4', 'workbench5', 'workbench6', 'workbench7', 'workbench8'],
       daysToBuild: 365e6,
       healthRegen: 50,
       staminaRegen: 200,
@@ -494,7 +512,7 @@ export class HomeService {
         this.characterService.characterState.status.stamina.value += 300;
         this.characterService.characterState.checkOverage();
       },
-      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
+      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench', 'workbench2', 'workbench3', 'workbench4', 'workbench5', 'workbench6', 'workbench7', 'workbench8', 'workbench9'],
       daysToBuild: 365e7,
       healthRegen: 80,
       staminaRegen: 300,
@@ -517,7 +535,7 @@ export class HomeService {
         this.characterService.characterState.status.stamina.value += 500;
         this.characterService.characterState.checkOverage();
       },
-      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
+      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench', 'workbench2', 'workbench3', 'workbench4', 'workbench5', 'workbench6', 'workbench7', 'workbench8', 'workbench9'],
       daysToBuild: 365e8,
       healthRegen: 100,
       staminaRegen: 500,
@@ -540,7 +558,7 @@ export class HomeService {
         this.characterService.characterState.status.stamina.value += 1000;
         this.characterService.characterState.checkOverage();
       },
-      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
+      furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench', 'workbench2', 'workbench3', 'workbench4', 'workbench5', 'workbench6', 'workbench7', 'workbench8', 'workbench9'],
       daysToBuild: 365e9,
       healthRegen: 150,
       staminaRegen: 1000,
@@ -691,6 +709,7 @@ export class HomeService {
       houseBuildingProgress: this.houseBuildingProgress,
       upgrading: this.upgrading,
       ownedFurniture: this.ownedFurniture,
+      ownedWorkbenchFurniture: this.ownedWorkbenchFurniture,
       highestLand: this.highestLand,
       highestLandPrice: this.highestLandPrice,
       mostFields: this.mostFields,
@@ -715,7 +734,15 @@ export class HomeService {
     this.autoBuyHomeUnlocked = properties.autoBuyHomeUnlocked || false;
     this.autoBuyHomeLimit = properties.autoBuyHomeLimit || 3;
     this.autoBuyFurnitureUnlocked = properties.autoBuyFurnitureUnlocked || false;
-    this.autoBuyFurniture = properties.autoBuyFurniture || false;
+    // Hydrate autoBuyFurniture with actual Furniture instances
+    if (properties.autoBuyFurniture) {
+      for (const slot of this.furniturePositionsArray) {
+        const savedFurniture = (properties.autoBuyFurniture as FurnitureSlots)[slot];
+        if (savedFurniture) {
+          this.autoBuyFurniture[slot] = this.itemRepoService.getFurnitureById(savedFurniture.id);
+        }
+      }
+    }
     this.autoFieldUnlocked = properties.autoFieldUnlocked || false;
     this.autoFieldLimit = properties.autoFieldLimit || 0;
     this.useAutoBuyReserve = properties.useAutoBuyReserve || false;
@@ -730,6 +757,7 @@ export class HomeService {
       }
     }
     this.ownedFurniture = properties.ownedFurniture || [];
+    this.ownedWorkbenchFurniture = properties.ownedWorkbenchFurniture || {};
     this.highestLand = properties.highestLand || 0;
     this.highestLandPrice = properties.highestLandPrice || 100;
     this.mostFields = properties.mostFields || 0;
@@ -788,7 +816,16 @@ export class HomeService {
       this.furniture.bathtub = null;
       this.furniture.kitchen = null;
       this.furniture.workbench = null;
+      this.furniture.workbench2 = null;
+      this.furniture.workbench3 = null;
+      this.furniture.workbench4 = null;
+      this.furniture.workbench5 = null;
+      this.furniture.workbench6 = null;
+      this.furniture.workbench7 = null;
+      this.furniture.workbench8 = null;
+      this.furniture.workbench9 = null;
       this.ownedFurniture = [];
+      this.ownedWorkbenchFurniture = {};
     }
     if (this.characterService.characterState.bloodlineRank < 7) {
       this.upgrading = false;
@@ -971,13 +1008,37 @@ export class HomeService {
     return Math.floor((-C - 5 + Math.sqrt(Math.pow(C, 2) + 10 * C + 20 * x + 25)) / 10); // I know this looks nuts but I tested it on its own ^_^;;
   }
 
-  buyFurniture(itemId: string) {
+  buyFurniture(itemId: string, targetSlot?: FurniturePosition) {
     const item = this.itemRepoService.getFurnitureById(itemId);
     if (item) {
-      if (this.characterService.characterState.money >= item.value) {
-        this.characterService.characterState.updateMoney(0 - item.value);
-        this.ownedFurniture.push(item.name);
-        this.furniture[item.slot] = item;
+      const slot = targetSlot || item.slot;
+      const isWorkbenchSlot = slot.startsWith('workbench');
+
+      if (isWorkbenchSlot) {
+        // Handle workbench with per-slot ownership
+        const slotOwned = this.ownedWorkbenchFurniture[slot] || [];
+        const isOwned = slotOwned.includes(item.name);
+
+        if (this.characterService.characterState.money >= item.value || isOwned) {
+          if (!isOwned) {
+            this.characterService.characterState.updateMoney(0 - item.value);
+            if (!this.ownedWorkbenchFurniture[slot]) {
+              this.ownedWorkbenchFurniture[slot] = [];
+            }
+            this.ownedWorkbenchFurniture[slot].push(item.name);
+          }
+          this.furniture[slot] = item;
+        }
+      } else {
+        // Handle regular furniture with global ownership
+        const isOwned = this.ownedFurniture.includes(item.name);
+        if (this.characterService.characterState.money >= item.value || isOwned) {
+          if (!isOwned) {
+            this.characterService.characterState.updateMoney(0 - item.value);
+            this.ownedFurniture.push(item.name);
+          }
+          this.furniture[slot] = item;
+        }
       }
     }
   }

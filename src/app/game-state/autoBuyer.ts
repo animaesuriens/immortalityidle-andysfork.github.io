@@ -172,7 +172,7 @@ export class FurnitureAutoBuyer extends AutoBuyer {
         if (thingToBuy && this.homeService.furniture[slot]?.id !== thingToBuy.id) {
           // check if we have the money for the furniture plus the next couple weeks' rent and food by popular demand.
           if (this.characterService.characterState.money > thingToBuy.value + reserveAmount) {
-            this.homeService.buyFurniture(thingToBuy.id);
+            this.homeService.buyFurniture(thingToBuy.id, slot);
           }
         }
       }

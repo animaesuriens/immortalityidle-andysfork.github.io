@@ -10,8 +10,8 @@
           @for (item of storeService.getFurnitureForSlot('bed'); track item) {
             <div>
               <div class="itemSlot" tabindex="0"
-                [ngClass]="{ownedItem: homeService.furniture[item.slot] === item}"
-                matTooltip="{{item.description}}">
+                [ngClass]="{inUseItem: homeService.furniture[item.slot] === item, ownedItem: homeService.ownedFurniture.includes(item.name) && homeService.furniture[item.slot] !== item}"
+                [matTooltip]="item.description + '\n(' + item.effects + ')'">
                 <div><mat-icon>{{item.slot}}</mat-icon></div>
                 <div>{{item.name | titlecase}}</div>
                 @if ((storeService.furniturePrices[item.name] || 0 > 0)) {
@@ -34,8 +34,8 @@
           @for (item of storeService.getFurnitureForSlot('bathtub'); track item) {
             <div>
               <div class="itemSlot" tabindex="0"
-                [ngClass]="{ownedItem: homeService.furniture[item.slot] === item}"
-                matTooltip="{{item.description}}">
+                [ngClass]="{inUseItem: homeService.furniture[item.slot] === item, ownedItem: homeService.ownedFurniture.includes(item.name) && homeService.furniture[item.slot] !== item}"
+                [matTooltip]="item.description + '\n(' + item.effects + ')'">
                 <div><mat-icon>{{item.slot}}</mat-icon></div>
                 <div>{{item.name | titlecase}}</div>
                 @if ((storeService.furniturePrices[item.name] || 0 > 0)) {
@@ -58,32 +58,8 @@
           @for (item of storeService.getFurnitureForSlot('kitchen'); track item) {
             <div>
               <div class="itemSlot" tabindex="0"
-                [ngClass]="{ownedItem: homeService.furniture[item.slot] === item}"
-                matTooltip="{{item.description}}">
-                <div><mat-icon>{{item.slot}}</mat-icon></div>
-                <div>{{item.name | titlecase}}</div>
-                @if ((storeService.furniturePrices[item.name] || 0 > 0)) {
-                  <div>$ {{storeService.furniturePrices[item.name] | number: '1.0-0'}}</div>
-                }
-              </div>
-              <button (click)="storeService.buyFurniture(item)">
-                {{(storeService.furniturePrices[item.name] || 0 > 0) ? "Buy" : "Use"}}
-              </button>
-            </div>
-          }
-        </div>
-      </div>
-    }
-    @if (storeService.getFurnitureForSlot('workbench').length > 0) {
-      <div>
-        <span>Workbench</span>
-        <hr/>
-        <div class="inventoryGrid">
-          @for (item of storeService.getFurnitureForSlot('workbench'); track item) {
-            <div>
-              <div class="itemSlot" tabindex="0"
-                [ngClass]="{ownedItem: homeService.furniture[item.slot] === item}"
-                matTooltip="{{item.description}}">
+                [ngClass]="{inUseItem: homeService.furniture[item.slot] === item, ownedItem: homeService.ownedFurniture.includes(item.name) && homeService.furniture[item.slot] !== item}"
+                [matTooltip]="item.description + '\n(' + item.effects + ')'">
                 <div><mat-icon>{{item.slot}}</mat-icon></div>
                 <div>{{item.name | titlecase}}</div>
                 @if ((storeService.furniturePrices[item.name] || 0 > 0)) {

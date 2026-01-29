@@ -1,0 +1,23 @@
+<div class="darkMode furnitureModal">
+  <span>{{getSlotDisplayName()}} Shop</span>
+  <hr/>
+  <br>
+  <div class="inventoryGrid">
+    @for (item of storeService.getFurnitureForSlot(slot); track item) {
+      <div>
+        <div class="itemSlot" tabindex="0"
+          [ngClass]="{inUseItem: $any(homeService.furniture)[slot] === item, ownedItem: storeService.isWorkbenchOwnedForSlot(item.name, slot) && $any(homeService.furniture)[slot] !== item}"
+          [matTooltip]="item.description + '\n(' + item.effects + ')'">
+          <div><mat-icon>hardware</mat-icon></div>
+          <div>{{item.name | titlecase}}</div>
+          @if (storeService.getWorkbenchPrice(item.name, slot) > 0) {
+            <div>$ {{storeService.getWorkbenchPrice(item.name, slot) | number: '1.0-0'}}</div>
+          }
+        </div>
+        <button (click)="storeService.buyFurniture(item, slot)">
+          {{storeService.getWorkbenchPrice(item.name, slot) > 0 ? "Buy" : "Use"}}
+        </button>
+      </div>
+    }
+  </div>
+</div>
