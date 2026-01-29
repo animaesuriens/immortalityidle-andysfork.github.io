@@ -74,6 +74,7 @@ export interface Pill extends Item {
 
 export interface Furniture extends Item {
   slot: FurniturePosition;
+  effects?: string;
 }
 
 export interface ItemStack {

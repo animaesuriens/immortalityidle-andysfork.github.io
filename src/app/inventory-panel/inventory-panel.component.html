@@ -154,7 +154,7 @@
               (dblclick)="slotDoubleClicked(itemStack, $event)" (contextmenu)="slotRightClicked(itemStack, $event)"
               [ngClass]="{'selectedItem': (itemStack && itemStack === inventoryService.selectedItem),
               'brokenItem': (itemStack && itemStack !== undefined && !inventoryService.hasDurability(itemStack) )}"
-              matTooltip="{{(itemStack?.item) ? (itemStack?.item?.name | titlecase) + '. ' + (itemStack?.item?.description) : ''}}" matTooltipPosition='left'>
+              [matTooltip]="itemStack?.item | itemTooltip" matTooltipPosition='left'>
               <div class="itemName textOverflow">
                 @if (itemStack?.item?.imageFile){
                   <img src="assets/images/items/{{itemStack?.item?.imageFile}}.png" class="itemImage" 

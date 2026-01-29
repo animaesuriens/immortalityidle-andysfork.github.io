@@ -1,4 +1,5 @@
 import { Component, OnInit, Pipe, PipeTransform } from '@angular/core';
+import { TitleCasePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { GameStateService, PanelIndex } from './game-state/game-state.service';
 import { MainLoopService } from './game-state/main-loop.service';
@@ -18,10 +19,11 @@ import { StatisticsPanelComponent } from './statistics-panel/statistics-panel.co
 import { HellService } from './game-state/hell.service';
 import { StatisticsService } from './game-state/statistics.service';
 import { CdkDragEnd, CdkDragStart, Point } from '@angular/cdk/drag-drop';
+import { KtdGridLayout } from '@katoid/angular-grid-layout';
 import { ViewportScroller } from '@angular/common';
 import { FollowersService } from './game-state/followers.service';
 import { HomeService } from './game-state/home.service';
-import { InventoryService } from './game-state/inventory.service';
+import { InventoryService, Item, Equipment } from './game-state/inventory.service';
 
 @Pipe({ name: 'floor' })
 export class FloorPipe implements PipeTransform {
@@ -88,6 +90,61 @@ export class BigNumberPipe implements PipeTransform {
   }
 }
 
+@Pipe({ name: 'itemTooltip' })
+export class ItemTooltipPipe implements PipeTransform {
+  private titleCasePipe = new TitleCasePipe();
+
+  constructor(private bigNumberPipe: BigNumberPipe) {}
+
+  transform(item: Item | null | undefined): string {
+    if (!item) {
+      return '';
+    }
+
+    const equipment = item as Equipment;
+    const isWeapon = !!equipment.weaponStats;
+    const isArmor = !!equipment.armorStats;
+
+    if (isWeapon || isArmor) {
+      return this.formatEquipmentTooltip(equipment, isWeapon);
+    }
+
+    return this.titleCasePipe.transform(item.name) + '. ' + item.description;
+  }
+
+  private formatEquipmentTooltip(equipment: Equipment, isWeapon: boolean): string {
+    const name = this.titleCasePipe.transform(equipment.name);
+    const isArmor = !isWeapon;
+    const stats = isWeapon ? equipment.weaponStats! : equipment.armorStats!;
+
+    // Build flavor text
+    let effectString = '';
+    if (stats.effect) {
+      effectString = ' and imbued with the power of ' + stats.effect;
+    }
+    const flavorText = `A unique ${isWeapon ? 'weapon' : 'piece of armor'} made of ${stats.material}${effectString}.`;
+
+    // Build stats list
+    const statLines: string[] = [];
+    if (isWeapon && equipment.weaponStats) {
+      statLines.push(`• Base Damage: ${this.bigNumberPipe.transform(equipment.weaponStats.baseDamage)}`);
+    }
+    if (isArmor && equipment.armorStats) {
+      statLines.push(`• Defense: ${this.bigNumberPipe.transform(equipment.armorStats.defense)}`);
+    }
+    statLines.push(`• Durability: ${this.bigNumberPipe.transform(stats.durability)}`);
+    statLines.push(`• Value: ${this.bigNumberPipe.transform(equipment.value)}`);
+
+    // Merge instructions
+    const mergeInstructions = `Drag and drop onto similar ${isWeapon ? 'weapons' : 'armor'} to merge them into something better.`;
+
+    // Durability disclaimer
+    const durabilityDisclaimer = "The durability and value of equipment degrades with use. Be careful when merging powerful items that have seen a lot of wear, the product may be even lower quality than the original if the item's value is low.";
+
+    return `${name}\n\n${flavorText}\n\n${statLines.join('\n')}\n\n${mergeInstructions}\n\n${durabilityDisclaimer}`;
+  }
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -99,6 +156,22 @@ export class AppComponent implements OnInit {
   panelIndex: typeof PanelIndex = PanelIndex;
   resizingPanel = -1;
   previousPoint: Point = { x: 0, y: 0 };
+
+  // Grid snap size in pixels
+  readonly GRID_SIZE = 20;
+
+  // Snap a value to the nearest grid point
+  snapToGrid(value: number): number {
+    return Math.round(value / this.GRID_SIZE) * this.GRID_SIZE;
+  }
+
+  // Constrain drag position to grid during drag
+  dragConstrainPosition = (point: Point): Point => {
+    return {
+      x: this.snapToGrid(point.x),
+      y: this.snapToGrid(point.y)
+    };
+  };
 
   title = 'immortalityidle';
   applicationVersion = environment.appVersion;
@@ -182,8 +255,9 @@ export class AppComponent implements OnInit {
   }
 
   dragEnd(event: CdkDragEnd, panelIndex: number) {
-    this.gameStateService.panelPositions[panelIndex].x = event.source.getFreeDragPosition().x;
-    this.gameStateService.panelPositions[panelIndex].y = event.source.getFreeDragPosition().y;
+    // Snap position to grid
+    this.gameStateService.panelPositions[panelIndex].x = this.snapToGrid(event.source.getFreeDragPosition().x);
+    this.gameStateService.panelPositions[panelIndex].y = this.snapToGrid(event.source.getFreeDragPosition().y);
     // always save when the player moves the windows around
     this.gameStateService.savetoLocalStorage();
     this.doingPanelDrag = false;
@@ -222,9 +296,9 @@ export class AppComponent implements OnInit {
     }
     if (this.resizingPanel !== -1) {
       const newWidth = this.gameStateService.panelSizes[this.resizingPanel].x + event.movementX;
-      this.gameStateService.panelSizes[this.resizingPanel].x = newWidth;
+      this.gameStateService.panelSizes[this.resizingPanel].x = this.snapToGrid(newWidth);
       const newHeight = this.gameStateService.panelSizes[this.resizingPanel].y + event.movementY;
-      this.gameStateService.panelSizes[this.resizingPanel].y = newHeight;
+      this.gameStateService.panelSizes[this.resizingPanel].y = this.snapToGrid(newHeight);
       return;
     }
     if (event.target instanceof Element && event.target.classList.contains('panelResizeHandle')) {
@@ -272,9 +346,9 @@ export class AppComponent implements OnInit {
       const movementX = event.touches[0].pageX - this.previousPoint.x;
       const movementY = event.touches[0].pageY - this.previousPoint.y;
       const newWidth = this.gameStateService.panelSizes[this.resizingPanel].x + movementX;
-      this.gameStateService.panelSizes[this.resizingPanel].x = newWidth;
+      this.gameStateService.panelSizes[this.resizingPanel].x = this.snapToGrid(newWidth);
       const newHeight = this.gameStateService.panelSizes[this.resizingPanel].y + movementY;
-      this.gameStateService.panelSizes[this.resizingPanel].y = newHeight;
+      this.gameStateService.panelSizes[this.resizingPanel].y = this.snapToGrid(newHeight);
       this.previousPoint.x = event.touches[0].pageX;
       this.previousPoint.y = event.touches[0].pageY;
       event.preventDefault();
@@ -357,5 +431,30 @@ export class AppComponent implements OnInit {
 
   lockPanelsToggle() {
     this.gameStateService.lockPanels = !this.gameStateService.lockPanels;
+  }
+
+  onLayoutUpdated(layout: KtdGridLayout) {
+    this.gameStateService.onLayoutUpdated(layout);
+  }
+
+  getFilteredLayout(): KtdGridLayout {
+    return this.gameStateService.layout.filter(item => {
+      switch (item.id) {
+        case 'timePanel':
+          return this.mainLoopService.timeUnlocked;
+        case 'followersPanel':
+          return this.followersService.followersUnlocked;
+        case 'petsPanel':
+          return this.followersService.petsEnabled;
+        case 'portalPanel':
+          return this.hellService.inHell;
+        case 'equipmentPanel':
+          return this.inventoryService.equipmentUnlocked;
+        case 'homePanel':
+          return this.homeService.homeUnlocked;
+        default:
+          return true;
+      }
+    });
   }
 }

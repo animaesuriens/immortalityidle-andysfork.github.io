@@ -17,6 +17,7 @@ import { HellProperties, HellService } from './hell.service';
 import { OfflineModalComponent } from '../offline-modal/offline-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Point } from '@angular/cdk/drag-drop';
+import { KtdGridLayout } from '@katoid/angular-grid-layout';
 
 const LOCAL_STORAGE_GAME_STATE_KEY = 'immortalityIdleGameState';
 
@@ -41,6 +42,15 @@ interface GameState {
   panelZIndex: number[];
   panelSizes: Point[];
   lockPanels: boolean;
+  layout: KtdGridLayout;
+}
+
+export interface Panel {
+  id: string;
+  name: string;
+  icon: string;
+  panelHelp: string;
+  unlocked: boolean;
 }
 
 declare global {
@@ -85,6 +95,38 @@ export class GameStateService {
   lockPanels = false;
   dragging = false;
 
+  // KTD Grid Layout
+  layout: KtdGridLayout = [];
+  defaultLayout: KtdGridLayout = [
+    { id: 'timePanel', x: 0, y: 0, w: 20, h: 15 },
+    { id: 'attributesPanel', x: 0, y: 15, w: 20, h: 20 },
+    { id: 'healthPanel', x: 0, y: 35, w: 20, h: 10 },
+    { id: 'activityPanel', x: 20, y: 0, w: 18, h: 35 },
+    { id: 'inventoryPanel', x: 38, y: 0, w: 10, h: 45 },
+    { id: 'battlePanel', x: 48, y: 0, w: 25, h: 15 },
+    { id: 'equipmentPanel', x: 48, y: 15, w: 20, h: 15 },
+    { id: 'homePanel', x: 48, y: 30, w: 20, h: 10 },
+    { id: 'followersPanel', x: 68, y: 0, w: 20, h: 20 },
+    { id: 'portalPanel', x: 68, y: 20, w: 20, h: 40 },
+    { id: 'petsPanel', x: 88, y: 0, w: 12, h: 20 },
+    { id: 'logPanel', x: 0, y: 45, w: 60, h: 20 },
+  ];
+
+  panels: Panel[] = [
+    { id: 'timePanel', name: 'Time', icon: 'timer', panelHelp: 'Control the flow of time.', unlocked: false },
+    { id: 'attributesPanel', name: 'Attributes', icon: 'bar_chart', panelHelp: 'Your attributes define your growing immortal characteristics.', unlocked: true },
+    { id: 'healthPanel', name: 'Status', icon: 'favorite', panelHelp: 'Maintaining your health is an important part of becoming immortal.', unlocked: true },
+    { id: 'activityPanel', name: 'Activities', icon: 'self_improvement', panelHelp: 'Click an activity to spend a day doing it.', unlocked: true },
+    { id: 'battlePanel', name: 'Battles', icon: 'fort', panelHelp: 'Battling enemies is an essential part of your quest for immortality.', unlocked: false },
+    { id: 'equipmentPanel', name: 'Equipment', icon: 'colorize', panelHelp: 'Arm yourself with weapons and protective gear.', unlocked: false },
+    { id: 'homePanel', name: 'Home', icon: 'home', panelHelp: 'Your home provides benefits as you upgrade it.', unlocked: false },
+    { id: 'inventoryPanel', name: 'Inventory', icon: 'inventory_2', panelHelp: 'Items you have collected.', unlocked: true },
+    { id: 'logPanel', name: 'Log', icon: 'article', panelHelp: 'A log of your activities.', unlocked: true },
+    { id: 'followersPanel', name: 'Followers', icon: 'groups', panelHelp: 'Your followers can aid you in many ways.', unlocked: false },
+    { id: 'portalPanel', name: 'Portal', icon: 'door_front', panelHelp: 'Travel between realms.', unlocked: false },
+    { id: 'petsPanel', name: 'Pets', icon: 'pets', panelHelp: 'Your loyal companions.', unlocked: false },
+  ];
+
   constructor(
     private characterService: CharacterService,
     private homeService: HomeService,
@@ -103,36 +145,38 @@ export class GameStateService {
     private hellService: HellService
   ) {
     window.GameStateService = this;
-    mainLoopService.longTickSubject.subscribe(() => {
-      const currentTime = new Date().getTime();
-      if (currentTime - this.lastSaved >= this.saveInterval * 1000) {
-        this.savetoLocalStorage();
-      }
-    });
+    // TODO: Re-enable auto-save after UI improvements are finalized
+    // mainLoopService.longTickSubject.subscribe(() => {
+    //   const currentTime = new Date().getTime();
+    //   if (currentTime - this.lastSaved >= this.saveInterval * 1000) {
+    //     this.savetoLocalStorage();
+    //   }
+    // });
+    // All positions and sizes aligned to 20px grid
     this.defaultPanelPositions = [];
 
     this.defaultPanelPositions[PanelIndex.Attributes] = { x: 0, y: 260 };
     this.defaultPanelPositions[PanelIndex.Health] = { x: 0, y: 40 };
     this.defaultPanelPositions[PanelIndex.Log] = { x: 0, y: 900 };
-    this.defaultPanelPositions[PanelIndex.Activity] = { x: 450, y: 40 };
-    this.defaultPanelPositions[PanelIndex.Home] = { x: 1050, y: 360 };
-    this.defaultPanelPositions[PanelIndex.Time] = { x: 1050, y: 40 };
+    this.defaultPanelPositions[PanelIndex.Activity] = { x: 440, y: 40 };
+    this.defaultPanelPositions[PanelIndex.Home] = { x: 1060, y: 360 };
+    this.defaultPanelPositions[PanelIndex.Time] = { x: 1060, y: 40 };
     this.defaultPanelPositions[PanelIndex.Battle] = { x: 0, y: 680 };
-    this.defaultPanelPositions[PanelIndex.Inventory] = { x: 830, y: 40 };
-    this.defaultPanelPositions[PanelIndex.Equipment] = { x: 1050, y: 580 };
-    this.defaultPanelPositions[PanelIndex.Followers] = { x: 1470, y: 40 };
-    this.defaultPanelPositions[PanelIndex.Portal] = { x: 1470, y: 460 };
-    this.defaultPanelPositions[PanelIndex.Pets] = { x: 1890, y: 40 };
+    this.defaultPanelPositions[PanelIndex.Inventory] = { x: 820, y: 40 };
+    this.defaultPanelPositions[PanelIndex.Equipment] = { x: 1060, y: 580 };
+    this.defaultPanelPositions[PanelIndex.Followers] = { x: 1480, y: 40 };
+    this.defaultPanelPositions[PanelIndex.Portal] = { x: 1480, y: 460 };
+    this.defaultPanelPositions[PanelIndex.Pets] = { x: 1900, y: 40 };
 
     this.defaultPanelSizes = [];
 
-    this.defaultPanelSizes[PanelIndex.Attributes] = { x: 430, y: 400 };
-    this.defaultPanelSizes[PanelIndex.Health] = { x: 430, y: 200 };
-    this.defaultPanelSizes[PanelIndex.Log] = { x: 1230, y: 400 };
+    this.defaultPanelSizes[PanelIndex.Attributes] = { x: 420, y: 400 };
+    this.defaultPanelSizes[PanelIndex.Health] = { x: 420, y: 200 };
+    this.defaultPanelSizes[PanelIndex.Log] = { x: 1220, y: 400 };
     this.defaultPanelSizes[PanelIndex.Activity] = { x: 360, y: 620 };
     this.defaultPanelSizes[PanelIndex.Home] = { x: 400, y: 200 };
     this.defaultPanelSizes[PanelIndex.Time] = { x: 400, y: 300 };
-    this.defaultPanelSizes[PanelIndex.Battle] = { x: 810, y: 200 };
+    this.defaultPanelSizes[PanelIndex.Battle] = { x: 800, y: 200 };
     this.defaultPanelSizes[PanelIndex.Inventory] = { x: 200, y: 840 };
     this.defaultPanelSizes[PanelIndex.Equipment] = { x: 400, y: 300 };
     this.defaultPanelSizes[PanelIndex.Followers] = { x: 400, y: 400 };
@@ -151,6 +195,21 @@ export class GameStateService {
     }
 
     this.panelZIndex = this.defaultPanelZIndex;
+    this.layout = structuredClone(this.defaultLayout);
+  }
+
+  getPanel(id: string): Panel {
+    for (const panel of this.panels) {
+      if (panel.id === id) {
+        return panel;
+      }
+    }
+    return { id: 'undefinedPanel', name: '', icon: '', panelHelp: '', unlocked: false };
+  }
+
+  onLayoutUpdated(layout: KtdGridLayout) {
+    this.layout = layout;
+    this.savetoLocalStorage();
   }
 
   populateMissingPanelInfo() {
@@ -173,6 +232,7 @@ export class GameStateService {
   resetPanels() {
     this.panelPositions = structuredClone(this.defaultPanelPositions);
     this.panelSizes = structuredClone(this.defaultPanelSizes);
+    this.layout = structuredClone(this.defaultLayout);
   }
 
   changeAutoSaveInterval(interval: number): void {
@@ -296,6 +356,7 @@ export class GameStateService {
     this.panelZIndex = gameState.panelZIndex || structuredClone(this.defaultPanelZIndex);
     this.panelSizes = gameState.panelSizes || structuredClone(this.defaultPanelSizes);
     this.lockPanels = gameState.lockPanels || false;
+    this.layout = gameState.layout || structuredClone(this.defaultLayout);
     this.updateImportFlagKey();
     this.populateMissingPanelInfo();
   }
@@ -332,6 +393,7 @@ export class GameStateService {
       panelZIndex: this.panelZIndex,
       panelSizes: this.panelSizes,
       lockPanels: this.lockPanels,
+      layout: this.layout,
     };
     let gameStateString = JSON.stringify(gameState);
     gameStateString = 'iig' + btoa(encodeURIComponent(gameStateString));

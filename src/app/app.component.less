@@ -6,6 +6,8 @@
     flex-grow: 1;
     min-height: 0;
     height: 100%;
+    width: 100%;
+    overflow: auto;
 }
 
 .top-line {
@@ -13,6 +15,8 @@
     margin-top: 10px;
     margin-left: 10px;
     margin-right: 10px;
+    position: relative;
+    z-index: 1000;
 }
 
 .gameTitle {
@@ -31,34 +35,37 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
+    width: 100%;
+    height: 100%;
 }
 
-.bodyContainer {
-    width: 3000px;
-    height: 2000px;
-    min-width: 3000px;
-    min-height: 2000px;
-    max-width: 3000px;
-    max-height: 2000px;
-    flex: auto;
-    overflow: hidden;
+.grid-container {
+    padding: 4px;
+    box-sizing: border-box;
+    width: 100%;
+    flex: 1;
 }
 
+ktd-grid {
+    background-color: var(--bodyBackground);
+    width: 100%;
+}
 
-.panelContainer {
-    min-height: 0;
+// Customize the placeholder shown when dragging
+::ng-deep .ktd-grid-item-placeholder {
+    background-color: rgba(255, 167, 38, 0.3);
+    border: 2px dashed #ffa726;
 }
 
 .panel {
     background-color: var(--panelBackground);
-    margin: 4px;
-    border: 3px solid var(--panelBorder);
-    border-radius: 4px;
     display: flex;
     flex-direction: column;
-    position: absolute;
-    top: 0px;
-    left: 0px;
+    width: 100%;
+    height: 100%;
+    border: 2px solid var(--panelBorder);
+    border-radius: 3px;
+    box-sizing: border-box;
     overflow: hidden;
 }
 
@@ -69,30 +76,30 @@
     font-size: 14px;
     font-weight: 400;
     margin: 0px;
+    padding: 2px 4px;
+    display: flex;
+    align-items: center;
 }
 
 .panelHelp {
-    float: right;
+    margin-left: auto;
 }
 
-.panelResizeHandle {
-    position: absolute;
-    right: 0px;
-    bottom: 0px;
-    cursor: se-resize;
-    width: 0; 
-    height: 0; 
-    border-left: 10px solid transparent;
-    border-bottom: 10px solid var(--panelBorder);
+.panelComponent {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 
-.dragHandle {
-    position: relative;
-    top: 10px;
-    right: 10px;
-    color: var(--bodyText);
-    width: 16px;
-    height: 16px;
+.grid-item-content {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    overflow: hidden;
 }
 
 mat-icon {
@@ -115,4 +122,12 @@ mat-icon {
 
 .highlighted {
     background-color: var(--buttonHighlightBg);
+}
+
+.grabCursor {
+    cursor: grab;
+}
+
+.grabCursor:active {
+    cursor: grabbing;
 }

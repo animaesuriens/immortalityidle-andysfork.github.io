@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent, CamelToTitlePipe, FloorPipe, BigNumberPipe } from './app.component';
+import { AppComponent, CamelToTitlePipe, FloorPipe, BigNumberPipe, ItemTooltipPipe } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TimePanelComponent } from './time-panel/time-panel.component';
 import { AttributesPanelComponent } from './attributes-panel/attributes-panel.component';
@@ -65,6 +65,7 @@ const materialModules = [MatDialogModule, MatIconModule, MatTabsModule, MatToolt
     FloorPipe,
     CamelToTitlePipe,
     BigNumberPipe,
+    ItemTooltipPipe,
     ManualStoreModalComponent,
     BattlePanelComponent,
     FurnitureStoreModalComponent,
@@ -100,6 +101,7 @@ const materialModules = [MatDialogModule, MatIconModule, MatTabsModule, MatToolt
   providers: [
     TitleCasePipe,
     BigNumberPipe,
+    ItemTooltipPipe,
     MatSnackBar,
     { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: { disableTooltipInteractivity: true, showDelay: 500 } },
   ],

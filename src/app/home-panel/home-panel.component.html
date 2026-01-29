@@ -23,6 +23,9 @@
           <div class="homeInfo"><span>It costs {{homeService.home.costPerDay | bigNumber}} {{homeService.home.costPerDay === 1 ? "tael" : "taels"}} per day to maintain your home.</span></div>
         }
         <div class="homeInfo"><span>You own {{homeService.land | bigNumber}} open {{homeService.land === 1 ? "plot" : "plots"}} of land and {{homeService.fields.length + homeService.extraFields | bigNumber}} fields.</span></div>
+        @if (homeService.fields.length + homeService.extraFields > 0) {
+          <div class="homeInfo"><span>Your fields produced an average of {{homeService.averageYield | bigNumber}} food per day over the last year.</span></div>
+        }
           @if (getBasicFurnitureSlots().length > 0 && (!hellService.inHell || homeService.hellHome)) {
             <div class="furnitureSlots">
               @for (slot of getBasicFurnitureSlots(); track slot) {

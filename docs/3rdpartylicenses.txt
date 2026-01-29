@@ -66,6 +66,9 @@ MIT
 @angular/router
 MIT
 
+@katoid/angular-grid-layout
+MIT
+
 rxjs
 Apache-2.0
                                Apache License
