@@ -7,23 +7,25 @@
       add
     </mat-icon>
     <mat-icon  (click)="plowClicked($event)" class="iconButton rightFloat" aria-label="Plow Field" aria-hidden="false"
-      matTooltip="Plow a field. Converts a plot of land to a field. You'll need to work at farming it to make it produce much food. Once the harvest is over, you will get the food you've grown and the land will be available again. Shift-click to plow 10 fields, Ctrl-click to plow all your land.">
+      [matTooltip]="homeService.plowTooltip">
       waves
     </mat-icon>
     <mat-icon (click)="clearClicked($event)" class="iconButton rightFloat" aria-label="Clear Field" aria-hidden="false"
-      matTooltip="Clear a field. Converts a the field back into an open plot of land. Shift-click to clear 10 fields, Ctrl-click to clear all your fields.">
+      [matTooltip]="homeService.clearTooltip">
       delete_sweep
+    </mat-icon>
+    <mat-icon (click)="resetFieldsClicked($event)" class="iconButton rightFloat" aria-label="Reset Fields" aria-hidden="false"
+      matTooltip="Reset all fields. Clears all fields and replants the same number with fresh crops.">
+      restart_alt
     </mat-icon>
   </div>
   <div class="farmGrid">
-    @for (field of homeService.fields; track field) {
-      <div>
-        <div class="itemSlot" tabindex="0"
-          matTooltip="You will harvest {{field.yield}} in {{field.daysToHarvest}} days">
-          <div>{{field.cropName | titlecase}}</div>
-          <div>{{field.yield}}</div>
-          <div>{{(field.originalDaysToHarvest - field.daysToHarvest) / field.originalDaysToHarvest | percent}}</div>
-        </div>
+    @for (batch of getFieldBatches(); track batch.cropName + batch.yield + batch.daysToHarvest) {
+      <div class="batchCard">
+        <div class="batchRow"><span class="batchLabel">Number of Fields:</span> <span class="batchValue">{{batch.count | bigNumber}}</span></div>
+        <div class="batchRow"><span class="batchLabel">Crop:</span> <span class="batchValue">{{batch.cropName | titlecase}}</span></div>
+        <div class="batchRow"><span class="batchLabel">Harvest Quantity:</span> <span class="batchValue">{{batch.yield | bigNumber}}</span></div>
+        <div class="batchRow"><span class="batchLabel">Days Till Harvest:</span> <span class="batchValue">{{batch.daysToHarvest | bigNumber}}</span></div>
       </div>
     }
   </div>

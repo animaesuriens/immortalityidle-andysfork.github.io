@@ -53,12 +53,22 @@ export interface Field {
   originalDaysToHarvest: number;
 }
 
+export interface FieldBatch {
+  count: number;
+  cropName: string;
+  yield: number;
+  maxYield: number;
+  daysToHarvest: number;
+  originalDaysToHarvest: number;
+}
+
 export interface HomeProperties {
   land: number;
   homeValue: HomeType;
   furniture: FurnitureSlots;
   fields: Field[];
-  extraFields: number;
+  extraFields: number; // Deprecated: kept for backward compatibility with old saves
+  fieldBatches: FieldBatch[];
   averageYield: number;
   landPrice: number;
   autoBuyLandUnlocked: boolean;
@@ -121,8 +131,13 @@ export class HomeService {
   land: number;
   landPrice: number;
   fields: Field[] = [];
-  extraFields = 0;
+  fieldBatches: FieldBatch[] = [];
   averageYield = 0; // running average of how much food is produced
+
+  // Computed property for total extra fields (from batches)
+  get extraFields(): number {
+    return this.fieldBatches.reduce((sum, batch) => sum + batch.count, 0);
+  }
   furniture: FurnitureSlots = {
     bed: null,
     bathtub: null,
@@ -148,6 +163,10 @@ export class HomeService {
   hellHome = false;
   homeUnlocked = false;
   smoothFarming = false;
+
+  // Shared tooltip strings for plow and clear buttons
+  plowTooltip = "Plow a field. Converts a plot of land to a field. You'll need to work at farming it to make it produce more food. Once the harvest is over, you will get the food you've grown and the land will be available again.\n\n\u2022 Shift-click to plow 10 fields.\n\u2022 Ctrl+Shift-click to plow 100 fields.\n\u2022 Ctrl-click to plow all your land.";
+  clearTooltip = "Clear a field. Converts the field back into an open plot of land.\n\n\u2022 Shift-click to clear 10 fields.\n\u2022 Ctrl+Shift-click to clear 100 fields.\n\u2022 Ctrl-click to clear all your fields.";
 
   homesList: Home[] = [
     {
@@ -694,6 +713,7 @@ export class HomeService {
       landPrice: this.landPrice,
       fields: this.fields,
       extraFields: this.extraFields,
+      fieldBatches: this.fieldBatches,
       averageYield: this.averageYield,
       autoBuyLandUnlocked: this.autoBuyLandUnlocked,
       autoBuyLandLimit: this.autoBuyLandLimit,
@@ -726,7 +746,23 @@ export class HomeService {
     this.land = properties.land;
     this.landPrice = properties.landPrice;
     this.fields = properties.fields;
-    this.extraFields = properties.extraFields || 0;
+    // Load fieldBatches, or migrate from old extraFields if needed
+    if (properties.fieldBatches && properties.fieldBatches.length > 0) {
+      this.fieldBatches = properties.fieldBatches;
+    } else if (properties.extraFields && properties.extraFields > 0) {
+      // Migration: convert old extraFields count to a batch
+      const crop = this.getCrop();
+      this.fieldBatches = [{
+        count: properties.extraFields,
+        cropName: crop.cropName,
+        yield: crop.yield,
+        maxYield: crop.maxYield,
+        daysToHarvest: crop.daysToHarvest,
+        originalDaysToHarvest: crop.originalDaysToHarvest,
+      }];
+    } else {
+      this.fieldBatches = [];
+    }
     this.averageYield = properties.averageYield || 0;
     this.setCurrentHome(this.homesList[properties.homeValue]);
     this.autoBuyLandUnlocked = properties.autoBuyLandUnlocked || false;
@@ -836,7 +872,7 @@ export class HomeService {
     this.land = 0;
     this.landPrice = 100;
     this.fields = [];
-    this.extraFields = 0;
+    this.fieldBatches = [];
     this.averageYield = 0;
   }
 
@@ -882,7 +918,9 @@ export class HomeService {
     }
     while (quantity > 0 && this.land >= quantity) {
       if (this.fields.length >= 300) {
-        this.extraFields += quantity;
+        // Add to batches instead of simple count
+        const crop = this.getCrop();
+        this.addToBatch(quantity, crop);
         this.land -= quantity;
         return;
       } else {
@@ -893,6 +931,30 @@ export class HomeService {
     }
   }
 
+  private addToBatch(count: number, crop: Field) {
+    // Try to find an existing batch with the same properties
+    const existingBatch = this.fieldBatches.find(
+      b => b.cropName === crop.cropName &&
+           b.yield === crop.yield &&
+           b.maxYield === crop.maxYield &&
+           b.daysToHarvest === crop.daysToHarvest &&
+           b.originalDaysToHarvest === crop.originalDaysToHarvest
+    );
+
+    if (existingBatch) {
+      existingBatch.count += count;
+    } else {
+      this.fieldBatches.push({
+        count,
+        cropName: crop.cropName,
+        yield: crop.yield,
+        maxYield: crop.maxYield,
+        daysToHarvest: crop.daysToHarvest,
+        originalDaysToHarvest: crop.originalDaysToHarvest,
+      });
+    }
+  }
+
   /**
    *
    * @param quantity -1 for all
@@ -900,20 +962,26 @@ export class HomeService {
   clearField(quantity = 1) {
     if (quantity < 0) {
       this.land += this.extraFields;
-      this.extraFields = 0;
+      this.fieldBatches = [];
       this.land += this.fields.length;
       this.fields.splice(0);
       return;
     }
-    if (this.extraFields > 0 && quantity <= this.extraFields) {
-      this.extraFields -= quantity;
-      this.land += quantity;
-      return;
-    } else {
-      quantity -= this.extraFields;
-      this.extraFields = 0;
+    // First remove from batches (LIFO order)
+    while (quantity > 0 && this.fieldBatches.length > 0) {
+      const lastBatch = this.fieldBatches[this.fieldBatches.length - 1];
+      if (lastBatch.count <= quantity) {
+        quantity -= lastBatch.count;
+        this.land += lastBatch.count;
+        this.fieldBatches.pop();
+      } else {
+        lastBatch.count -= quantity;
+        this.land += quantity;
+        quantity = 0;
+      }
     }
-    if (this.fields.length > 0) {
+    // Then remove from fields array if needed
+    if (quantity > 0 && this.fields.length > 0) {
       if (quantity > this.fields.length) {
         quantity = this.fields.length;
       }
@@ -933,21 +1001,19 @@ export class HomeService {
     }
   }
 
-  // only ever really work the first 300 fields that we show.
-  // After that prorate yields by the amount of fields over 300.
+  // Process aging for individual fields and batches
   ageFields() {
+    let totalDailyYield = 0;
+    let harvested = false;
+
+    // Process individual fields (first 300)
     let startIndex = this.fields.length - 1;
     if (startIndex > 299) {
       startIndex = 299;
     }
-    let totalDailyYield = 0;
-    let harvested = false;
     for (let i = startIndex; i >= 0; i--) {
       if (this.fields[i].daysToHarvest <= 0) {
         let fieldYield = this.fields[i].yield;
-        if (this.fields.length + this.extraFields > 300) {
-          fieldYield = Math.floor((fieldYield * (this.fields.length + this.extraFields)) / 300);
-        }
         totalDailyYield += fieldYield;
         if (this.hellService?.inHell && fieldYield > 0) {
           fieldYield = Math.max(fieldYield / 1000, 1);
@@ -959,16 +1025,61 @@ export class HomeService {
         this.fields[i].daysToHarvest--;
       }
     }
+
+    // Process field batches
+    for (let i = this.fieldBatches.length - 1; i >= 0; i--) {
+      const batch = this.fieldBatches[i];
+      if (batch.daysToHarvest <= 0) {
+        // Harvest this batch
+        let batchYield = batch.yield * batch.count;
+        totalDailyYield += batchYield;
+        if (this.hellService?.inHell && batchYield > 0) {
+          batchYield = Math.max(batchYield / 1000, 1);
+        }
+        this.inventoryService.addItem(this.itemRepoService.items[batch.cropName], batchYield);
+        harvested = true;
+        // Reset batch to new crop
+        const newCrop = this.getCrop();
+        batch.cropName = newCrop.cropName;
+        batch.yield = newCrop.yield;
+        batch.maxYield = newCrop.maxYield;
+        batch.daysToHarvest = newCrop.daysToHarvest;
+        batch.originalDaysToHarvest = newCrop.originalDaysToHarvest;
+      } else {
+        batch.daysToHarvest--;
+      }
+    }
+
+    // Consolidate batches with same properties
+    this.consolidateBatches();
+
     if (totalDailyYield > 0 || this.smoothFarming) {
       this.consecutiveHarvests++;
     } else {
       this.consecutiveHarvests = 0;
     }
     this.averageYield = (this.averageYield * 364 + totalDailyYield) / 365;
-    if (this.smoothFarming && !harvested && this.fields.length > 0 && this.averageYield > 0.5) {
+    if (this.smoothFarming && !harvested && (this.fields.length > 0 || this.fieldBatches.length > 0) && this.averageYield > 0.5) {
       // smooth farming bonus crops on a day when no crops are harvested
-      this.inventoryService.addItem(this.itemRepoService.items[this.fields[0].cropName], Math.round(this.averageYield));
+      const cropName = this.fields.length > 0 ? this.fields[0].cropName : this.fieldBatches[0]?.cropName;
+      if (cropName) {
+        this.inventoryService.addItem(this.itemRepoService.items[cropName], Math.round(this.averageYield));
+      }
     }
+  }
+
+  private consolidateBatches() {
+    const consolidated = new Map<string, FieldBatch>();
+    for (const batch of this.fieldBatches) {
+      const key = `${batch.cropName}|${batch.yield}|${batch.maxYield}|${batch.daysToHarvest}|${batch.originalDaysToHarvest}`;
+      const existing = consolidated.get(key);
+      if (existing) {
+        existing.count += batch.count;
+      } else {
+        consolidated.set(key, { ...batch });
+      }
+    }
+    this.fieldBatches = Array.from(consolidated.values());
   }
 
   /**
