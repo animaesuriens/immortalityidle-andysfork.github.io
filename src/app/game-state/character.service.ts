@@ -243,13 +243,18 @@ export class CharacterService {
   }
 
   yearify(value: number) {
-    if (value < 365) {
-      return '< 1 year';
-    } else if (value < 730) {
-      return '1 year';
-    } else {
-      return this.bigNumberPipe.transform(Math.floor(value / 365)) + ' years';
+    if (value < 1) {
+      return '0 days';
+    } else if (value < 365) {
+      return Math.floor(value) + ' days';
     }
+    const years = Math.floor(value / 365);
+    const days = Math.floor(value % 365);
+    const yearsStr = this.bigNumberPipe.transform(years) + (years === 1 ? ' year' : ' years');
+    if (days === 0) {
+      return yearsStr;
+    }
+    return yearsStr + ' and ' + days + (days === 1 ? ' day' : ' days');
   }
 
   resetAptitudes() {

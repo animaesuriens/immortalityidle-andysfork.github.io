@@ -21,7 +21,7 @@ export class HealthPanelComponent {
   constructor(
     public characterService: CharacterService,
     public gameStateService: GameStateService,
-    private mainLoopService: MainLoopService
+    public mainLoopService: MainLoopService
   ) {
     this.Math = Math;
     mainLoopService.longTickSubject.subscribe(() => {

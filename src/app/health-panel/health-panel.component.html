@@ -12,8 +12,7 @@
     <tr>
       <td class="headerCell">
         You are {{characterService.characterState.age / 365 | floor }} years@if (characterService.characterState.age < 10000 * 365) {
-        <span>,
-        {{characterService.characterState.age % 365 | number: '1.0-0'}} days</span>
+        <span> and {{characterService.characterState.age % 365 | number: '1.0-0'}} days</span>
         } old.
       </td>
       @if (characterService.characterState.immortal) {
@@ -26,11 +25,15 @@
           You expect to live up to {{characterService.characterState.lifespan / 365 | floor}} years and {{characterService.characterState.lifespan % 365 | number: '1.0-0'}} days old.
         </td>
       }
-      <!-- Hidden: lifespan info now shown in panel
-      <td>
-        <mat-icon matTooltip="{{characterService.lifespanTooltip}}">timer</mat-icon>
+      <td style="padding-left: 16px;">
+        <mat-icon matTooltip="Your base lifespan is {{characterService.characterState.baseLifespan / 365 | floor | number}} years and {{characterService.characterState.baseLifespan % 365 | number: '1.0-0'}} days.
+
+It starts at 30 years and increases by 1 day for every 10 years lived across all lives, up to a maximum of 70 years.
+
+Years Lived: {{mainLoopService.totalTicks / 365 | floor | number}} years and {{mainLoopService.totalTicks % 365 | number: '1.0-0'}} days.
+
+Current Bonus: {{(characterService.characterState.baseLifespan - 30 * 365) / 365 | floor | number}} years and {{(characterService.characterState.baseLifespan - 30 * 365) % 365 | number: '1.0-0'}} days.">timer</mat-icon>
       </td>
--->
     </tr>
   </table>
 </h3>
