@@ -1,7 +1,10 @@
 @import (reference) "../../styles.less";
 
-.progress-bar {
-  vertical-align: -0.3em;
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }
 
 .health > .progress-bar > span {
@@ -20,6 +23,13 @@
   background-color: var(--manaColor);
 }
 
+h3 {
+  padding-left: 8px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
 .headerCell {
   width: 210px;
 }
@@ -36,12 +46,48 @@ td {
   overflow: hidden;
 }
 
+.lifespanInfo {
+  font-size: 12px;
+  padding-bottom: 12px;
+  color: var(--bodyText);
+  white-space: pre-line;
+  line-height: 1.2;
+}
+
 .healthPanelContents {
   display: flex;
   flex-direction: row;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+}
+
+.statusBarsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 8px;
+}
+
+.statusRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+
+  .statusLabel:not(:first-child) {
+    margin-left: 12px;
+  }
+}
+
+.statusLabel {
+  font-size: 12px;
+  min-width: 55px;
+}
+
+.health, .stamina, .nourishment, .mana {
+  display: flex;
+  align-items: center;
 }
 
 .flash {

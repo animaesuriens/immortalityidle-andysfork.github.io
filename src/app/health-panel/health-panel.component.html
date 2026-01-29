@@ -23,20 +23,23 @@
       }
       @else {
         <td class="headerCell">
-          You expect to live {{characterService.characterState.lifespan / 365 | number: '1.0-1'}} years.
+          You expect to live up to {{characterService.characterState.lifespan / 365 | floor}} years and {{characterService.characterState.lifespan % 365 | number: '1.0-0'}} days old.
         </td>
       }
+      <!-- Hidden: lifespan info now shown in panel
       <td>
         <mat-icon matTooltip="{{characterService.lifespanTooltip}}">timer</mat-icon>
       </td>
+-->
     </tr>
   </table>
 </h3>
 <div class="healthPanelContents">
-  <table>
-    <tr>
-      <td matTooltip="{{characterService.characterState.status.health.description}}" >Health</td>
-      <td class="health">
+  <div class="statusBarsGrid">
+    <div class="lifespanInfo">{{characterService.lifespanTooltip}}</div>
+    <div class="statusRow">
+      <span class="statusLabel" matTooltip="{{characterService.characterState.status.health.description}}">Health</span>
+      <div class="health">
         <div class="progress-bar" [ngClass]="flashHealth ? 'flash' : ''"
           [attr.value]="Math.floor(characterService.characterState.immortal && characterService.characterState.status.health.value < 0 ? 0 : characterService.characterState.status.health.value) | bigNumber"
           [attr.max]="Math.floor(characterService.characterState.status.health.max) | bigNumber">
@@ -46,9 +49,9 @@
               Math.floor(characterService.characterState.status.health.max)">
           </span>
         </div>
-      </td>
-      <td matTooltip="{{characterService.characterState.status.stamina.description}}" >Stamina</td>
-      <td class="stamina">
+      </div>
+      <span class="statusLabel" matTooltip="{{characterService.characterState.status.stamina.description}}">Stamina</span>
+      <div class="stamina">
         <div class="progress-bar" [ngClass]="flashStamina ? 'flash' : ''"
           [attr.value]="Math.floor(characterService.characterState.status.stamina.value) | bigNumber"
           [attr.max]="Math.floor(characterService.characterState.status.stamina.max) | bigNumber">
@@ -58,11 +61,11 @@
               Math.floor(characterService.characterState.status.stamina.max)">
           </span>
         </div>
-      </td>
-    </tr>
-    <tr>
-      <td matTooltip="{{characterService.characterState.status.nourishment.description}}" >Nutrition</td>
-      <td class="nourishment">
+      </div>
+    </div>
+    <div class="statusRow">
+      <span class="statusLabel" matTooltip="{{characterService.characterState.status.nourishment.description}}">Nutrition</span>
+      <div class="nourishment">
         <div class="progress-bar" [ngClass]="flashNutrition ? 'flash' : ''"
           [attr.value]="Math.floor(characterService.characterState.status.nourishment.value) | bigNumber"
           [attr.max]="Math.floor(characterService.characterState.status.nourishment.max) | bigNumber">
@@ -72,9 +75,9 @@
               Math.floor(characterService.characterState.status.nourishment.max)">
           </span>
         </div>
-      </td>
-      <td matTooltip="{{characterService.characterState.status.mana.description}}" >Mana</td>
-      <td class="mana">
+      </div>
+      <span class="statusLabel" matTooltip="{{characterService.characterState.status.mana.description}}">Mana</span>
+      <div class="mana">
         <div class="progress-bar" [ngClass]="flashMana ? 'flash' : ''"
           [attr.value]="Math.floor(characterService.characterState.status.mana.value) | bigNumber"
           [attr.max]="Math.floor(characterService.characterState.status.mana.max) | bigNumber">
@@ -84,9 +87,9 @@
             Math.floor(characterService.characterState.status.mana.max)">
           </span>
         </div>
-      </td>
-    </tr>
-  </table>
+      </div>
+    </div>
+  </div>
   @if (this.characterService.characterState.yinYangUnlocked) {
     <div class="yinYang"
     matTooltip="Yang: {{characterService.characterState.yang | bigNumber}}

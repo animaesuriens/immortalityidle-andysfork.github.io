@@ -209,27 +209,35 @@ export class CharacterService {
       this.lifespanTooltip = 'You have done nothing to extend your lifespan.';
       return;
     }
-    let tooltip = 'Your base lifespan of ' + this.yearify(this.characterState.baseLifespan) + ' is extended by';
+    let tooltip = 'Your base lifespan of ' + this.yearify(this.characterState.baseLifespan) + ' is extended by:';
     if (this.characterState.immortal) {
       tooltip =
         'You are immortal. If you had remained mortal, your base lifespan of ' +
         this.yearify(this.characterState.baseLifespan) +
-        ' would be extended by';
+        ' would be extended by:';
     }
+    const factors: string[] = [];
     if (this.characterState.foodLifespan > 0) {
-      tooltip += '\nHealthy Food: ' + this.yearify(this.characterState.foodLifespan);
+      factors.push('Healthy Food: ' + this.yearify(this.characterState.foodLifespan));
     }
     if (this.characterState.alchemyLifespan > 0) {
-      tooltip += '\nAlchemy: ' + this.yearify(this.characterState.alchemyLifespan);
+      factors.push('Alchemy: ' + this.yearify(this.characterState.alchemyLifespan));
     }
     if (this.characterState.statLifespan > 0) {
-      tooltip += '\nBasic Attributes: ' + this.yearify(this.characterState.statLifespan);
+      factors.push('Basic Attributes: ' + this.yearify(this.characterState.statLifespan));
     }
     if (this.characterState.spiritualityLifespan > 0) {
-      tooltip += '\nSpirituality: ' + this.yearify(this.characterState.spiritualityLifespan);
+      factors.push('Spirituality: ' + this.yearify(this.characterState.spiritualityLifespan));
     }
     if (this.characterState.magicLifespan > 0) {
-      tooltip += '\nMagic: ' + this.yearify(this.characterState.magicLifespan);
+      factors.push('Magic: ' + this.yearify(this.characterState.magicLifespan));
+    }
+    for (let i = 0; i < factors.length; i++) {
+      if (i % 3 === 0) {
+        tooltip += '\n' + factors[i];
+      } else {
+        tooltip += ' | ' + factors[i];
+      }
     }
     this.lifespanTooltip = tooltip;
   }
