@@ -16,9 +16,13 @@
   @if ((!hellService.inHell || homeService.hellHome || homeService.hellFood)) {
     <div class="homeContainer">
       <div class="overflow">
+        @if (homeService.home.healthRegen > 0 || homeService.home.staminaRegen > 0 || homeService.home.manaRegen > 0) {
+          <div class="homeInfo"><span>Restores {{homeService.home.healthRegen}} health, {{homeService.home.staminaRegen}} stamina{{homeService.home.manaRegen > 0 ? ', ' + homeService.home.manaRegen + ' mana' : ''}} per day</span></div>
+        }
         @if (!hellService.inHell && !characterService.characterState.god) {
           <div class="homeInfo"><span>It costs {{homeService.home.costPerDay | bigNumber}} {{homeService.home.costPerDay === 1 ? "tael" : "taels"}} per day to maintain your home</span></div>
-          }      <div class="homeInfo"><span>You own {{homeService.land | bigNumber}} open {{homeService.land === 1 ? "plot" : "plots"}} of land and {{homeService.fields.length + homeService.extraFields | bigNumber}} fields</span></div>
+        }
+        <div class="homeInfo"><span>You own {{homeService.land | bigNumber}} open {{homeService.land === 1 ? "plot" : "plots"}} of land and {{homeService.fields.length + homeService.extraFields | bigNumber}} fields</span></div>
           @if (homeService.home.furnitureSlots.length > 0 && (!hellService.inHell || homeService.hellHome)) {
             <div class="furnitureSlots">
               @for (slot of homeService.home.furnitureSlots; track slot) {

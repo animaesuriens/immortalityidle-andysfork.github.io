@@ -8,6 +8,7 @@
   </mat-icon>  
 </div>
 
+<div class="equipmentScrollWrapper">
 <div class="equipmentContainer" cdkDropList cdkDropListSortingDisabled>
     <div style="grid-area: head;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'head'}" [ngClass]="getEffectClass('head')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
@@ -113,5 +114,6 @@
         {{character.equipment.feet?.name | titlecase}}
       </div>
   </div>
+</div>
 </div>
 <div class="panelResizeHandle"></div>

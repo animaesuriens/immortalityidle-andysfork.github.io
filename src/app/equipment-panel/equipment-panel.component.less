@@ -1,5 +1,11 @@
 @import (reference) "../../styles.less";
 
+.equipmentScrollWrapper {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
 .equipmentContainer {
   margin: 2px auto 2px auto;
   display: grid;
@@ -8,8 +14,9 @@
     'right body left'
     'stats legs .'
     'stats feet .';
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: auto auto auto;
   gap: 2px;
+  width: fit-content;
 }
 
 .itemSlot {

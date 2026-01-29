@@ -20,6 +20,9 @@ export interface Home {
   consequence: () => void;
   furnitureSlots: FurniturePosition[];
   daysToBuild: number;
+  healthRegen: number;
+  staminaRegen: number;
+  manaRegen: number;
 }
 
 export enum HomeType {
@@ -162,6 +165,9 @@ export class HomeService {
       },
       furnitureSlots: [],
       daysToBuild: 1,
+      healthRegen: 0,
+      staminaRegen: 0,
+      manaRegen: 0,
     },
     {
       name: 'Tent of Your Own',
@@ -200,6 +206,9 @@ export class HomeService {
       },
       furnitureSlots: [],
       daysToBuild: 1,
+      healthRegen: 0.5,
+      staminaRegen: 1,
+      manaRegen: 0,
     },
     {
       name: 'Dirty Shack',
@@ -219,6 +228,9 @@ export class HomeService {
       },
       furnitureSlots: ['bed'],
       daysToBuild: 1,
+      healthRegen: 0.5,
+      staminaRegen: 3,
+      manaRegen: 0,
     },
     {
       name: 'Simple Hut',
@@ -237,6 +249,9 @@ export class HomeService {
       },
       furnitureSlots: ['bed', 'bathtub'],
       daysToBuild: 10,
+      healthRegen: 0.7,
+      staminaRegen: 5,
+      manaRegen: 0,
     },
     {
       name: 'Pleasant Cottage',
@@ -257,6 +272,9 @@ export class HomeService {
       },
       furnitureSlots: ['bed', 'bathtub', 'kitchen'],
       daysToBuild: 30,
+      healthRegen: 1,
+      staminaRegen: 10,
+      manaRegen: 0.1,
     },
     {
       name: 'Large House',
@@ -277,6 +295,9 @@ export class HomeService {
       },
       furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
       daysToBuild: 90,
+      healthRegen: 2,
+      staminaRegen: 15,
+      manaRegen: 0.2,
     },
     {
       name: 'Courtyard House',
@@ -297,6 +318,9 @@ export class HomeService {
       },
       furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
       daysToBuild: 180,
+      healthRegen: 3,
+      staminaRegen: 20,
+      manaRegen: 0.3,
     },
     {
       name: 'Manor',
@@ -317,6 +341,9 @@ export class HomeService {
       },
       furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
       daysToBuild: 365,
+      healthRegen: 4,
+      staminaRegen: 25,
+      manaRegen: 0.4,
     },
     {
       name: 'Mansion',
@@ -336,6 +363,9 @@ export class HomeService {
       },
       furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
       daysToBuild: 3650,
+      healthRegen: 5,
+      staminaRegen: 30,
+      manaRegen: 0.5,
     },
     {
       name: 'Palace',
@@ -355,6 +385,9 @@ export class HomeService {
       },
       furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
       daysToBuild: 36500,
+      healthRegen: 10,
+      staminaRegen: 35,
+      manaRegen: 1,
     },
     {
       name: 'Castle',
@@ -374,6 +407,9 @@ export class HomeService {
       },
       furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
       daysToBuild: 365000,
+      healthRegen: 15,
+      staminaRegen: 40,
+      manaRegen: 2,
     },
     {
       name: 'Fortress',
@@ -393,6 +429,9 @@ export class HomeService {
       },
       furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
       daysToBuild: 3650000,
+      healthRegen: 20,
+      staminaRegen: 50,
+      manaRegen: 3,
     },
     {
       name: 'Mountain',
@@ -412,6 +451,9 @@ export class HomeService {
       },
       furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
       daysToBuild: 365e5,
+      healthRegen: 30,
+      staminaRegen: 100,
+      manaRegen: 4,
     },
     {
       name: 'Forbidden City',
@@ -431,6 +473,9 @@ export class HomeService {
       },
       furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
       daysToBuild: 365e6,
+      healthRegen: 50,
+      staminaRegen: 200,
+      manaRegen: 5,
     },
     {
       name: 'Capital',
@@ -451,6 +496,9 @@ export class HomeService {
       },
       furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
       daysToBuild: 365e7,
+      healthRegen: 80,
+      staminaRegen: 300,
+      manaRegen: 10,
     },
     {
       name: 'Seat of the Empire',
@@ -471,6 +519,9 @@ export class HomeService {
       },
       furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
       daysToBuild: 365e8,
+      healthRegen: 100,
+      staminaRegen: 500,
+      manaRegen: 20,
     },
     {
       name: 'Godthrone',
@@ -491,6 +542,9 @@ export class HomeService {
       },
       furnitureSlots: ['bed', 'bathtub', 'kitchen', 'workbench'],
       daysToBuild: 365e9,
+      healthRegen: 150,
+      staminaRegen: 1000,
+      manaRegen: 30,
     },
   ];
 
