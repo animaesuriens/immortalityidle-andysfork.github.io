@@ -691,9 +691,9 @@ export class InventoryService {
       id: 'potion',
       type: 'potion',
       value: grade,
-      description: 'A potion that increases ' + key,
+      description: 'A potion that increases ' + key + '.',
       useLabel: 'Drink',
-      useDescription: 'Drink to increase your ' + key + '.',
+      useDescription: '+' + grade + ' ' + key + '.',
       useConsumes: true,
       attribute: key,
       increase: grade,
@@ -703,7 +703,7 @@ export class InventoryService {
   generatePill(grade: number): void {
     let effect = 'Longevity'; // add more later
     let description = 'A pill that increases your lifespan.';
-    let useDescription = 'Use to increase your lifespan.';
+    let useDescription = '+' + grade + ' days alchemy lifespan (max 100 years).';
     let value = grade * 10;
     let name = effect + ' Pill ' + ' +' + grade;
     let imageFileName = 'pill';
@@ -713,7 +713,7 @@ export class InventoryService {
       this.consume('pillPouch');
       effect = 'Empowerment';
       description = 'A pill that permanently empowers the increase of your attributes based on your aptitudes.';
-      useDescription = 'Use to permanently empower the increase of your attributes based on your aptitudes.';
+      useDescription = 'Multiplies attribute gains.';
       value = 1;
       name = 'Empowerment Pill';
       imageFileName = 'empowermentPill';

@@ -23,7 +23,7 @@ import { KtdGridLayout } from '@katoid/angular-grid-layout';
 import { ViewportScroller } from '@angular/common';
 import { FollowersService } from './game-state/followers.service';
 import { HomeService } from './game-state/home.service';
-import { InventoryService, Item, Equipment } from './game-state/inventory.service';
+import { InventoryService, Item, Equipment, Furniture, Pill } from './game-state/inventory.service';
 
 @Pipe({ name: 'floor' })
 export class FloorPipe implements PipeTransform {
@@ -94,7 +94,7 @@ export class BigNumberPipe implements PipeTransform {
 export class ItemTooltipPipe implements PipeTransform {
   private titleCasePipe = new TitleCasePipe();
 
-  constructor(private bigNumberPipe: BigNumberPipe) {}
+  constructor(private bigNumberPipe: BigNumberPipe, private characterService: CharacterService) {}
 
   transform(item: Item | null | undefined): string {
     if (!item) {
@@ -109,7 +109,113 @@ export class ItemTooltipPipe implements PipeTransform {
       return this.formatEquipmentTooltip(equipment, isWeapon);
     }
 
-    return this.titleCasePipe.transform(item.name) + '. ' + item.description;
+    return this.formatItemTooltip(item);
+  }
+
+  private formatItemTooltip(item: Item): string {
+    const name = this.titleCasePipe.transform(item.name);
+    const lines: string[] = [name, '', item.description];
+
+    // Add stats section
+    const statLines: string[] = [];
+
+    // Type
+    if (item.type) {
+      // Add spaces before capitals in camelCase, then title case
+      const formattedType = item.type.replace(/([a-z])([A-Z])/g, '$1 $2');
+      statLines.push(`• Type: ${this.titleCasePipe.transform(formattedType)}`);
+    }
+
+    // Value
+    if (item.value !== undefined && isFinite(item.value)) {
+      statLines.push(`• Value: ${this.bigNumberPipe.transform(item.value)} taels`);
+    }
+
+    // Furniture stats
+    const furniture = item as Furniture;
+    if (furniture.slot && item.type === 'furniture') {
+      statLines.push(`• Slot: ${this.titleCasePipe.transform(furniture.slot)}`);
+      if (furniture.effects) {
+        statLines.push(`• Bonus: ${furniture.effects}`);
+      }
+    }
+
+    if (statLines.length > 0) {
+      lines.push('', ...statLines);
+    }
+
+    // Effects section (for usable items)
+    const pill = item as Pill;
+    if (pill.effect === 'Empowerment') {
+      // Generate Empowerment Pill effects dynamically
+      lines.push('', 'Effects:');
+      lines.push('• Multiplies attribute gains.');
+      const pillCount = (this.characterService.characterState.empowermentFactor - 1) * 100;
+      const multiplier = this.characterService.characterState.getEmpowermentMult();
+      lines.push('', this.characterService.characterState.getEmpowermentExplanation(pillCount, multiplier));
+    } else if (pill.effect === 'Longevity') {
+      // Generate Longevity Pill effects dynamically
+      lines.push('', 'Effects:');
+      const years = Math.floor(pill.power / 365);
+      const days = pill.power % 365;
+      let timeStr = '';
+      if (years > 0) {
+        timeStr += `${years} year${years !== 1 ? 's' : ''}`;
+      }
+      if (days > 0) {
+        if (years > 0) timeStr += ' ';
+        timeStr += `${days} day${days !== 1 ? 's' : ''}`;
+      }
+      if (!timeStr) timeStr = '0 days';
+      lines.push(`• +${timeStr} alchemy lifespan (max 100 years).`);
+
+      // Calculate effective value accounting for cap
+      const maxLifespan = 36500;
+      const currentLifespan = this.characterService.characterState.alchemyLifespan;
+      const effectiveGain = Math.max(0, Math.min(pill.power, maxLifespan - currentLifespan));
+      const effectiveYears = Math.floor(effectiveGain / 365);
+      const effectiveDays = effectiveGain % 365;
+      let effectiveStr = '';
+      if (effectiveYears > 0) {
+        effectiveStr += `${effectiveYears} year${effectiveYears !== 1 ? 's' : ''}`;
+      }
+      if (effectiveDays > 0) {
+        if (effectiveYears > 0) effectiveStr += ' ';
+        effectiveStr += `${effectiveDays} day${effectiveDays !== 1 ? 's' : ''}`;
+      }
+      if (!effectiveStr) effectiveStr = '0 days';
+      lines.push('', `The effective value of taking this pill will be +${effectiveStr}.`);
+    } else if (item.useDescription) {
+      lines.push('', 'Effects:');
+      const effects = this.parseEffects(item.useDescription);
+      effects.forEach(effect => {
+        lines.push(`• ${effect}`);
+      });
+    }
+
+    return lines.join('\n');
+  }
+
+  private parseEffects(useDescription: string): string[] {
+    const effects: string[] = [];
+
+    // Split by period to separate guaranteed effects from chance effects
+    const parts = useDescription.split(/\.\s*/).filter(p => p.trim());
+
+    for (const part of parts) {
+      // Check if this is a chance-based effect (contains "% chance:")
+      if (part.includes('% chance:')) {
+        effects.push(part + '.');
+      } else {
+        // Split comma-separated effects into individual bullets
+        const subEffects = part.split(/,\s*/).filter(e => e.trim());
+        subEffects.forEach(e => {
+          effects.push(e.trim() + (e.trim().endsWith('.') ? '' : '.'));
+        });
+      }
+    }
+
+    return effects;
   }
 
   private formatEquipmentTooltip(equipment: Equipment, isWeapon: boolean): string {

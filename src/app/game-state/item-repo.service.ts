@@ -387,7 +387,7 @@ export class ItemRepoService {
       value: 1,
       description: 'A basic staple of life. One pouch will sustain you for a day.',
       useLabel: 'Eat',
-      useDescription: 'Fills your belly.',
+      useDescription: '+1 nourishment.',
       useConsumes: true,
       use: (quantity = 1) => {
         this.characterService.characterState.status.nourishment.value += quantity;
@@ -402,7 +402,7 @@ export class ItemRepoService {
       value: 5,
       description: 'A simple, healthy vegetable.',
       useLabel: 'Eat',
-      useDescription: 'Fills your belly and helps you be healthy.',
+      useDescription: '+1 nourishment. 1% chance: +1 max health, +1 health.',
       useConsumes: true,
       use: (quantity = 1) => {
         this.characterService.characterState.status.nourishment.value += quantity;
@@ -421,7 +421,7 @@ export class ItemRepoService {
       value: 10,
       description: 'A handful of healthy vegetables.',
       useLabel: 'Eat',
-      useDescription: 'Fills your belly and helps you be healthy and hardy.',
+      useDescription: '+1 nourishment. 2% chance: +1 max health, +1 health, +1 day food lifespan (max 5 years).',
       useConsumes: true,
       use: (quantity = 1) => {
         const lifespanChance = 0.02;
@@ -437,7 +437,7 @@ export class ItemRepoService {
       value: 15,
       description: 'Little green trees. A very healthy vegetable.',
       useLabel: 'Eat',
-      useDescription: 'Fills your belly and helps you be healthy and hardy.',
+      useDescription: '+1 nourishment. 5% chance: +1 max health, +1 health, +1 day food lifespan (max 10 years).',
       useConsumes: true,
       use: (quantity = 1) => {
         const lifespanChance = 0.05;
@@ -453,7 +453,7 @@ export class ItemRepoService {
       value: 20,
       description: 'A tasty gourd with health-giving properties.',
       useLabel: 'Eat',
-      useDescription: 'Fills your belly and helps you be healthy and hardy.',
+      useDescription: '+1 nourishment. 8% chance: +1 max health, +1 health, +1 day food lifespan (max 15 years).',
       useConsumes: true,
       use: (quantity = 1) => {
         const lifespanChance = 0.08;
@@ -469,7 +469,7 @@ export class ItemRepoService {
       value: 25,
       description: 'A healthy root vegetable.',
       useLabel: 'Eat',
-      useDescription: 'Fills your belly and helps you be healthy and hardy.',
+      useDescription: '+1 nourishment. 10% chance: +1 max health, +1 health, +1 day food lifespan (max 20 years).',
       useConsumes: true,
       use: (quantity = 1) => {
         const lifespanChance = 0.1;
@@ -485,7 +485,7 @@ export class ItemRepoService {
       value: 30,
       description: 'A tasty fruit.',
       useLabel: 'Eat',
-      useDescription: 'Fills your belly and helps you be healthy and hardy.',
+      useDescription: '+1 nourishment. 12% chance: +1 max health, +1 health, +1 day food lifespan (max 25 years).',
       useConsumes: true,
       use: (quantity = 1) => {
         const lifespanChance = 0.12;
@@ -501,7 +501,7 @@ export class ItemRepoService {
       value: 35,
       description: 'A yummy fruit.',
       useLabel: 'Eat',
-      useDescription: 'Fills your belly and helps you be healthy and hardy.',
+      useDescription: '+1 nourishment. 15% chance: +1 max health, +1 health, +1 day food lifespan (max 30 years).',
       useConsumes: true,
       use: (quantity = 1) => {
         const lifespanChance = 0.15;
@@ -517,7 +517,7 @@ export class ItemRepoService {
       value: 40,
       description: 'An excellent fruit.',
       useLabel: 'Eat',
-      useDescription: 'Fills your belly and helps you be healthy and hardy.',
+      useDescription: '+1 nourishment. 18% chance: +1 max health, +1 health, +1 day food lifespan (max 35 years).',
       useConsumes: true,
       use: (quantity = 1) => {
         const lifespanChance = 0.18;
@@ -533,7 +533,7 @@ export class ItemRepoService {
       value: 45,
       description: 'A delicious fruit.',
       useLabel: 'Eat',
-      useDescription: 'Fills your belly and helps you be healthy and hardy.',
+      useDescription: '+1 nourishment. 20% chance: +1 max health, +1 health, +1 day food lifespan (max 40 years).',
       useConsumes: true,
       use: (quantity = 1) => {
         const lifespanChance = 0.2;
@@ -549,7 +549,7 @@ export class ItemRepoService {
       value: 50,
       description: 'A highly prized and delicious fruit.',
       useLabel: 'Eat',
-      useDescription: 'Fills your belly and can even lead to a long life.',
+      useDescription: '+1 nourishment. 22% chance: +1 max health, +2 health, +1 day food lifespan (max 72 years).',
       useConsumes: true,
       use: (quantity = 1) => {
         const lifespanChance = 0.22;
@@ -566,7 +566,7 @@ export class ItemRepoService {
       value: 100,
       description: 'A divinely prized and delicious fruit.',
       useLabel: 'Eat',
-      useDescription: 'Sates your immortal hunger.',
+      useDescription: '+1 max nourishment, +1 nourishment, +2 max health, +20 health, +2 stamina, +2 max stamina, +1 mana, +1 day food lifespan (max 720 years).',
       useConsumes: true,
       use: (quantity = 1) => {
         this.characterService.characterState.status.nourishment.max += quantity;
@@ -592,7 +592,7 @@ export class ItemRepoService {
       value: 50,
       description: 'Some delicious meat.',
       useLabel: 'Eat',
-      useDescription: 'Fills your belly. Can also improve your health and stamina.',
+      useDescription: '+2 nourishment, +1 max health, +10 health, +1 max stamina.',
       useConsumes: true,
       use: (quantity = 1) => {
         this.characterService.characterState.status.nourishment.value += quantity * 2;
@@ -610,7 +610,7 @@ export class ItemRepoService {
       value: 1000,
       description: 'Your hunters have performed a ritual burned offering of meat to send you this spiritual feast.',
       useLabel: 'Eat',
-      useDescription: 'Fills your belly. Can also improve your health and stamina.',
+      useDescription: '+2 nourishment, +1 max health, +20 health, +1 max stamina.',
       useConsumes: true,
       use: (quantity = 1) => {
         this.characterService.characterState.status.nourishment.value += quantity * 2;
@@ -628,7 +628,7 @@ export class ItemRepoService {
       value: 50,
       description: 'A common fish.',
       useLabel: 'Eat',
-      useDescription: 'Fills your belly. Might also improve your health and stamina.',
+      useDescription: '+1 nourishment. 10% chance: +1 max health, +1 max stamina.',
       useConsumes: true,
       use: (quantity = 1) => {
         this.characterService.characterState.status.nourishment.value += quantity;

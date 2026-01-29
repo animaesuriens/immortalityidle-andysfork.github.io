@@ -598,6 +598,13 @@ export class Character {
     return returnValue;
   }
 
+  getEmpowermentExplanation(pillCount?: number, multiplier?: number): string {
+    if (pillCount !== undefined && multiplier !== undefined) {
+      return `You have consumed ${Math.round(pillCount)} Empowerment Pills which multiplies all your attribute gains by ${multiplier.toFixed(3)}. You will always keep this bonus, even after ascending.`;
+    }
+    return 'Consuming Empowerment Pills multiplies all your attribute gains. You will always keep this bonus, even after ascending.';
+  }
+
   //TODO: double check the math here and maybe cache the results on aptitude change instead of recalculating regularly
   getAptitudeMultipier(aptitude: number, noEmpowerment = false): number {
     if (aptitude < 0) {
