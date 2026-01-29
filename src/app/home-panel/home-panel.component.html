@@ -31,7 +31,7 @@
                     <div class="itemSlot" matTooltip="You don't own a {{getSlotDisplayName(slot)}}, but your home could hold one." (click)="storeClicked()"></div>
                   }
                   @if ($any(homeService.furniture)[slot]) {
-                    <div class="itemSlot textOverflow" [matTooltip]="$any(homeService.furniture)[slot]?.description + '\n(' + $any(homeService.furniture)[slot]?.effects + ')'" (click)="storeClicked()">{{$any(homeService.furniture)[slot]?.name | titlecase}}</div>
+                    <div class="itemSlot textOverflow" [matTooltip]="$any(homeService.furniture)[slot]?.description + '\n\n' + $any(homeService.furniture)[slot]?.effects" (click)="storeClicked()">{{$any(homeService.furniture)[slot]?.name | titlecase}}</div>
                   }
                 </div>
               }
@@ -45,7 +45,7 @@
                     <div class="itemSlot" matTooltip="You don't own a {{getSlotDisplayName(slot)}}, but your home could hold one." (click)="workbenchStoreClicked(slot)"></div>
                   }
                   @if ($any(homeService.furniture)[slot]) {
-                    <div class="itemSlot textOverflow" [matTooltip]="$any(homeService.furniture)[slot]?.description + '\n(' + $any(homeService.furniture)[slot]?.effects + ')'" (click)="workbenchStoreClicked(slot)">{{$any(homeService.furniture)[slot]?.name | titlecase}}</div>
+                    <div class="itemSlot textOverflow" [matTooltip]="$any(homeService.furniture)[slot]?.description + '\n\n' + $any(homeService.furniture)[slot]?.effects" (click)="workbenchStoreClicked(slot)">{{$any(homeService.furniture)[slot]?.name | titlecase}}</div>
                   }
                 </div>
               }
@@ -68,7 +68,7 @@
         <div class="buttons">
           @if (!hellService.inHell || homeService.hellHome) {
             <div class="button-group">
-              <mat-icon  (click)="buyClicked($event)" [matTooltip]="'Buy a plot of land for ' + (homeService.landPrice | bigNumber) + ' taels.\nShift-click to buy 10 plots.\nCtrl-click to buy half the land you can afford.'" class="iconButton" aria-label="Buy Land" aria-hidden="false">
+              <mat-icon  (click)="buyClicked($event)" [matTooltip]="'• Click to buy a plot of land for ' + (homeService.landPrice | bigNumber) + ' taels.\n• Shift-click to buy 10 plots for ' + getLandPrice(10) + ' taels.\n• Ctrl+Shift-click to buy 100 plots for ' + getLandPrice(100) + ' taels.\n• Ctrl-click to buy ' + getHalfAffordableLand() + ' plots (half the land you can afford).'" class="iconButton" aria-label="Buy Land" aria-hidden="false">
                 add
               </mat-icon>
               @if ((homeService.home.name !== homeService.nextHome.name)) {
@@ -90,8 +90,12 @@
             <div class="button-group">
               <mat-icon matTooltip="View your farm." class="iconButton" (click)="farmClicked()" aria-label="View Farm" aria-hidden="false">grass</mat-icon>
               <mat-icon  (click)="plowClicked($event)" class="iconButton" aria-label="Plow Field" aria-hidden="false"
-                [matTooltip]="'Plow a field. Converts a plot of land to a field. You\'ll need to work at farming it to make it produce much food. Once the harvest is over, you will get the food you\'ve grown and the land will be available again.\nShift-click to plow 10 fields.\nCtrl-click to plow all your land.'">
+                [matTooltip]="'Plow a field. Converts a plot of land to a field. You\'ll need to work at farming it to make it produce more food. Once the harvest is over, you will get the food you\'ve grown and the land will be available again.\n\n• Shift-click to plow 10 fields.\n• Ctrl+Shift-click to plow 100 fields.\n• Ctrl-click to plow all your land.'">
                 waves
+              </mat-icon>
+              <mat-icon (click)="clearClicked($event)" class="iconButton" aria-label="Clear Field" aria-hidden="false"
+                [matTooltip]="'Clear a field. Converts the field back into an open plot of land.\n\n• Shift-click to clear 10 fields.\n• Ctrl+Shift-click to clear 100 fields.\n• Ctrl-click to clear all your fields.'">
+                delete_sweep
               </mat-icon>
             </div>
           }

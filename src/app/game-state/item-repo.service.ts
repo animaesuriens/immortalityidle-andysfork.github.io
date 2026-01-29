@@ -197,7 +197,7 @@ export class ItemRepoService {
     },
     cookPot: {
       id: 'cookPot',
-      name: 'cook pot',
+      name: 'cooking pot',
       type: 'furniture',
       slot: 'kitchen',
       value: 10,
@@ -243,7 +243,7 @@ export class ItemRepoService {
     },
     chefKitchen: {
       id: 'chefKitchen',
-      name: 'chef kitchen',
+      name: "chef's kitchen",
       type: 'furniture',
       slot: 'kitchen',
       value: 1e9,

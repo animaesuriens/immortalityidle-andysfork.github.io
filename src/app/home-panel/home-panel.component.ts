@@ -44,6 +44,16 @@ export class HomePanelComponent {
     );
   }
 
+  getLandPrice(count: number): string {
+    const price = this.homeService.landPrice * count + 10 * ((count * (count - 1)) / 2);
+    return this.bignumber.transform(price);
+  }
+
+  getHalfAffordableLand(): string {
+    const max = this.homeService.calculateAffordableLand(this.characterService.characterState.money);
+    return this.bignumber.transform(Math.floor(max / 2));
+  }
+
   storeClicked(): void {
     this.storeService.setStoreInventory();
     this.dialog.open(FurnitureStoreModalComponent, {
@@ -65,7 +75,9 @@ export class HomePanelComponent {
   buyClicked(event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
-    if (event.shiftKey || event.altKey) {
+    if ((event.ctrlKey || event.metaKey) && event.shiftKey) {
+      this.homeService.buyLand(100);
+    } else if (event.shiftKey || event.altKey) {
       this.homeService.buyLand(10);
     } else if (event.ctrlKey || event.metaKey) {
       this.homeService.buyLand(-1);
@@ -77,12 +89,28 @@ export class HomePanelComponent {
   plowClicked(event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
-    if (event.shiftKey || event.altKey) {
+    if ((event.ctrlKey || event.metaKey) && event.shiftKey) {
+      this.homeService.addField(100);
+    } else if (event.shiftKey || event.altKey) {
       this.homeService.addField(10);
     } else if (event.ctrlKey || event.metaKey) {
       this.homeService.addField(-1);
     } else {
       this.homeService.addField();
+    }
+  }
+
+  clearClicked(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if ((event.ctrlKey || event.metaKey) && event.shiftKey) {
+      this.homeService.clearField(100);
+    } else if (event.shiftKey || event.altKey) {
+      this.homeService.clearField(10);
+    } else if (event.ctrlKey || event.metaKey) {
+      this.homeService.clearField(-1);
+    } else {
+      this.homeService.clearField();
     }
   }
 
