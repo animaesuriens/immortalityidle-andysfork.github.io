@@ -7,6 +7,7 @@ import { HellService } from '../game-state/hell.service';
 import { MainLoopService } from '../game-state/main-loop.service';
 import { GameStateService } from '../game-state/game-state.service';
 import { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
+import { ItemRepoService } from '../game-state/item-repo.service';
 
 @Component({
   selector: 'app-inventory-panel',
@@ -36,7 +37,8 @@ export class InventoryPanelComponent {
     public characterService: CharacterService,
     public hellService: HellService,
     public mainLoopService: MainLoopService,
-    public gameStateService: GameStateService
+    public gameStateService: GameStateService,
+    public itemRepoService: ItemRepoService
   ) {
     this.equipmentSlots = Object.keys(this.characterService.characterState.equipment);
     this.moneyUpdates = [];
@@ -310,5 +312,62 @@ export class InventoryPanelComponent {
       }
     }
     return { 'border-color': 'white', border: 'solid 1px' };
+  }
+
+  getQualityTier(itemStack: ItemStack | null): { prefix: string; tier: number; colorIndex: number | null } | null {
+    if (!itemStack?.item) {
+      return null;
+    }
+    const item = itemStack.item;
+    // Spirit gems: grade is value / 10, no color
+    if (item.type.includes('Gem')) {
+      return { prefix: 'G', tier: item.value / 10, colorIndex: null };
+    }
+    // Herbs, ores, hides, bars, logs: tier from imageColor index
+    const tieredTypes = ['ingredient', 'ore', 'hide', 'metal', 'wood'];
+    if (tieredTypes.includes(item.type) && item.imageColor) {
+      const colorIndex = this.itemRepoService.colorByRank.indexOf(item.imageColor);
+      if (colorIndex >= 0) {
+        return { prefix: 'T', tier: colorIndex + 1, colorIndex };
+      }
+    }
+    // Equipment: log scale from 1 to 1e10, mapped to 18 tiers
+    if (item.type === 'equipment' && item.value > 0) {
+      const maxColors = this.itemRepoService.colorByRank.length;
+      // log10(1) = 0, log10(1e10) = 10, spread across 18 tiers
+      const logValue = Math.log10(Math.max(1, item.value));
+      const tier = Math.min(maxColors, Math.max(1, Math.ceil(logValue * maxColors / 10)));
+      const colorIndex = tier - 1;
+      return { prefix: 'T', tier, colorIndex };
+    }
+    return null;
+  }
+
+  getTierStyle(itemStack: ItemStack | null): { [klass: string]: string } | null {
+    const tierInfo = this.getQualityTier(itemStack);
+    if (!tierInfo || tierInfo.colorIndex === null) {
+      return null;
+    }
+    const bgColor = this.itemRepoService.colorByRank[tierInfo.colorIndex];
+    const textColor = this.getContrastColor(bgColor);
+    return {
+      'background-color': bgColor,
+      'color': textColor
+    };
+  }
+
+  private getContrastColor(color: string): string {
+    const darkColors: { [key: string]: boolean } = {
+      darkgray: true,
+      gray: true,
+      darkgreen: true,
+      darkblue: true,
+      blue: true,
+      darkviolet: true,
+      purple: true,
+      darkorange: true,
+      red: true
+    };
+    return darkColors[color] ? 'white' : 'black';
   }
 }

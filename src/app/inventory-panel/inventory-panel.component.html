@@ -168,6 +168,9 @@
               @if ((itemStack?.quantity || 0) > 1) {
                 <div class="itemQuantity">x{{itemStack?.quantity}}</div>
               }
+              @if (getQualityTier(itemStack); as tierInfo) {
+                <div class="itemTier" [ngStyle]="getTierStyle(itemStack)">{{tierInfo.prefix}}{{tierInfo.tier}}</div>
+              }
             </div>
           </div>
         </div>
