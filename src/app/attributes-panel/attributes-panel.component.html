@@ -10,6 +10,7 @@
 <div class="attributesContainer">
   <div class="attributesTable">
     <div class="attributeColumn">
+      <div class="attributeHeaderCell"><span>Name</span></div>
       @for (attribute of character.attributes | keyvalue: originalOrder; track attribute) {
         @if ((attribute.value.value !== 0 || character.highestAttributes[attribute.key])) {
           <div class='attributeLine'
@@ -22,7 +23,44 @@
         }
       }
     </div>
+    <div class="attributeColumn">
+      <div class="attributeHeaderCell"><span>SV</span></div>
+      @for (attribute of character.attributes | keyvalue: originalOrder; track attribute) {
+        @if ((attribute.value.value !== 0 || character.highestAttributes[attribute.key])) {
+          <div class='attributeLine'>
+            <span>
+              {{attribute.value.lifeStartValue | bigNumber}}
+            </span>
+          </div>
+        }
+      }
+    </div>
+    <div class="attributeColumn">
+      <div class="attributeHeaderCell"><span>Aptitude</span></div>
+      @for (attribute of character.attributes | keyvalue: originalOrder; track attribute) {
+        @if ((attribute.value.value !== 0 || character.highestAttributes[attribute.key])) {
+          <div class='attributeLine'>
+            <span>
+              {{attribute.value.aptitude | bigNumber}}
+            </span>
+          </div>
+        }
+      }
+    </div>
+    <div class="attributeColumn">
+      <div class="attributeHeaderCell"><span>Gain Mult.</span></div>
+      @for (attribute of character.attributes | keyvalue: originalOrder; track attribute) {
+        @if ((attribute.value.value !== 0 || character.highestAttributes[attribute.key])) {
+          <div class='attributeLine'>
+            <span>
+              {{attribute.value.aptitudeMult | bigNumber}}
+            </span>
+          </div>
+        }
+      }
+    </div>
     <div class="attributeColumn growColumn">
+      <div class="attributeHeaderCell"><span>Value</span></div>
       @for (attribute of character.attributes | keyvalue: originalOrder; track attribute) {
         @if ((attribute.value.value !== 0 || character.highestAttributes[attribute.key])) {
           <div class='attributeLine'>

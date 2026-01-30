@@ -1,3 +1,10 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
 h3 {
   width: 100%;
 }
@@ -37,12 +44,23 @@ span {
 
 .attributesContainer {
   display: flex;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  overflow-x: visible;
+  overflow-x: hidden;
+}
+
+.attributeHeaderCell {
+  position: sticky;
+  top: 0;
+  background: var(--panelBackground);
+  height: 20px;
+  margin-top: 2px;
+  padding-bottom: 2px;
+  border-bottom: 1px var(--tableDividerColor) solid;
 }
 
 .attributesTable {
-  flex: 1;
   border-collapse: collapse;
   margin-left: 4px;
   margin-right: 4px;
@@ -50,8 +68,8 @@ span {
 }
 
 .attributeColumn {
-  margin-left: 2px;
-  margin-right: 2px;
+  margin-left: 6px;
+  margin-right: 6px;
 }
 
 .growColumn {
