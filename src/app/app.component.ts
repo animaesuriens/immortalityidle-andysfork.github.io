@@ -13,6 +13,7 @@ import { AchievementPanelComponent } from './achievement-panel/achievement-panel
 import { ImpossibleTaskService } from './game-state/impossibleTask.service';
 import { ImpossibleTaskPanelComponent } from './impossible-task-panel/impossible-task-panel.component';
 import { environment } from '../environments/environment';
+import { CURRENT_VERSION } from './versions';
 import { TutorialPanelComponent } from './tutorial-panel/tutorial-panel.component';
 import { ChangelogPanelComponent } from './changelog-panel/changelog-panel.component';
 import { StatisticsPanelComponent } from './statistics-panel/statistics-panel.component';
@@ -280,7 +281,7 @@ export class AppComponent implements OnInit {
   };
 
   title = 'immortalityidle';
-  applicationVersion = environment.appVersion;
+  applicationVersion = CURRENT_VERSION;
 
   activateSliders = false;
 
