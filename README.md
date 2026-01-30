@@ -1,9 +1,25 @@
-# Immortalityidle
+# Immortality Idle - Andy's Fork
 
-Immortality Idle is an idle game based on the tradition of Chinese cultivation stories. You play as a cultivator seeking immortality across multiple lifetimes, continually progressing with each reincarnation. Most of the game logic is contained in the services located in the game-state folder, the rest of the source folders contain the html, javascript, and styles that create the game's user interface.
+**This is a fork of [Immortality Idle](https://github.com/immortalityidle/immortalityidle.github.io), originally created by Christian B.**
 
-This game is open source, so use the code as much as you want. Please keep anything you derive from this code open as well.
+I am not the original author. This fork contains my personal UI improvements and quality-of-life changes.
 
-This project was generated with Angular version 13.3.3. Use "ng serve" to run locally, "npm run build" to create deployables.
+---
 
-Interested in contributing? Join the development channel of the discord at https://discord.com/channels/996414713766363146/997376399797137448
+## About the Original Game
+
+Immortality Idle is an idle game based on the tradition of Chinese cultivation stories. You play as a cultivator seeking immortality across multiple lifetimes, continually progressing with each reincarnation.
+
+## Development
+
+This project uses Angular. Use `ng serve` to run locally, `npm run build` to create deployables.
+
+## License
+
+This game is open source. Please keep anything you derive from this code open as well.
+
+## Links
+
+- [Original Game](https://immortalityidle.github.io/)
+- [Original Repository](https://github.com/immortalityidle/immortalityidle.github.io)
+- [Discord](https://discord.com/channels/996414713766363146/997376399797137448)

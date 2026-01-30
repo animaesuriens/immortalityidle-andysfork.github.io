@@ -81,7 +81,7 @@ export const VERSIONS: VersionEntry[] = [
   { version: '1.0.18', description: 'New follower types are now available.' },
   { version: '1.0.17', description: 'Crafting log entries can now be filtered out.' },
   { version: '1.0.16', description: 'Added tutorial help button.' },
-  { version: '0.0.0 - 1.0.15', description: 'Created and launched the game.' },
+  { version: '1.0.15', description: 'Christian B created and launched the game.' },
 ];
 
 export const CURRENT_VERSION = VERSIONS[0].version;
