@@ -346,6 +346,8 @@ export class GameStateService {
     this.autoBuyerService.setProperties(gameState.autoBuy);
     this.mainLoopService.setProperties(gameState.mainLoop);
     this.achievementService.setProperties(gameState.achievements);
+    // Derive counter values from unlocked achievements for old saves
+    this.inventoryService.deriveCountersFromAchievements(this.achievementService.unlockedAchievements);
     this.isDarkMode = gameState.darkMode || false;
     this.gameStartTimestamp = gameState.gameStartTimestamp || new Date().getTime();
     this.easyModeEver = gameState.easyModeEver || false;

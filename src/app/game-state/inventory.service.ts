@@ -145,6 +145,7 @@ export interface InventoryProperties {
   lifetimeGemsSold: number;
   lifetimeEquipmentAutoEquipped: number;
   highestMaxItems: number;
+  countersMigrated: boolean;
 }
 
 @Injectable({
@@ -157,6 +158,7 @@ export class InventoryService {
   stashedItemStacks: (ItemStack | null)[] = [];
   maxItems = 10;
   highestMaxItems = 10;
+  countersMigrated = false;
   maxStackSize = 100;
   noFood: boolean;
   selectedItem: ItemStack | null = null;
@@ -379,6 +381,7 @@ export class InventoryService {
       lifetimeGemsSold: this.lifetimeGemsSold,
       lifetimeEquipmentAutoEquipped: this.lifetimeEquipmentAutoEquipped,
       highestMaxItems: this.highestMaxItems,
+      countersMigrated: this.countersMigrated,
     };
   }
 
@@ -450,6 +453,49 @@ export class InventoryService {
     this.lifetimeGemsSold = properties.lifetimeGemsSold || 0;
     this.lifetimeEquipmentAutoEquipped = properties.lifetimeEquipmentAutoEquipped || 0;
     this.highestMaxItems = properties.highestMaxItems || 10;
+    this.countersMigrated = properties.countersMigrated || false;
+  }
+
+  /**
+   * Derives minimum counter values from unlocked achievements.
+   * Called after achievements are loaded to seed counters for old saves.
+   * Only runs once per save file.
+   */
+  deriveCountersFromAchievements(unlockedAchievements: string[]) {
+    if (this.countersMigrated) {
+      return; // Already migrated, skip
+    }
+    this.countersMigrated = true;
+
+    // "This Sparks Joy" requires 888 items used
+    if (unlockedAchievements.includes('This Sparks Joy') && this.lifetimeUsedItems < 888) {
+      this.lifetimeUsedItems = 888;
+    }
+    // "All Things In Moderation" requires 8888 items used and sold
+    if (unlockedAchievements.includes('All Things In Moderation')) {
+      if (this.lifetimeUsedItems < 8888) {
+        this.lifetimeUsedItems = 8888;
+      }
+      if (this.lifetimeSoldItems < 8888) {
+        this.lifetimeSoldItems = 8888;
+      }
+    }
+    // "Guzzler" requires 88 potions
+    if (unlockedAchievements.includes('Guzzler') && this.lifetimePotionsUsed < 88) {
+      this.lifetimePotionsUsed = 88;
+    }
+    // "Junkie" requires 131 pills
+    if (unlockedAchievements.includes('Junkie') && this.lifetimePillsUsed < 131) {
+      this.lifetimePillsUsed = 131;
+    }
+    // "Gem Snob" requires 888 gems sold
+    if (unlockedAchievements.includes('Gem Snob') && this.lifetimeGemsSold < 888) {
+      this.lifetimeGemsSold = 888;
+    }
+    // "My Favorite Things" requires 888 auto-equips
+    if (unlockedAchievements.includes('My Favorite Things') && this.lifetimeEquipmentAutoEquipped < 888) {
+      this.lifetimeEquipmentAutoEquipped = 888;
+    }
   }
 
   farmFoodList = [

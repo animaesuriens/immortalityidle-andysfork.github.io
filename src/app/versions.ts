@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.17.1', description: 'Fix: Derive lifetime counter values from unlocked achievements for old saves (one-time migration). Add pre-commit hook to enforce changelog updates.' },
   { version: '1.17.0', description: 'Equipment panel: quality indicators (colored borders) and slot locking. Statistics panel reorganized with sections. Lifetime counters now persist in saves. Sticky headers on modals. New achievement "My Favorite Things" unlocks slot locking manual.' },
   { version: '1.16.1', description: 'Fix: Changelog header stays fixed when scrolling. Renamed to "Changelog".' },
   { version: '1.16.0', description: 'Version data now in single source of truth - top bar and changelog always in sync.' },
