@@ -1,7 +1,14 @@
 <div class="darkMode">
-  <h3>Achievements ({{achievementService.unlockedAchievements.length}} / {{achievementService.achievements.length}}) - {{(achievementService.unlockedAchievements.length / achievementService.achievements.length * 100) | number:'1.0-0'}}%</h3>
+  <h3>Achievements ({{achievementService.unlockedAchievements.length}} / {{achievementService.achievements.length}}) - {{(achievementService.unlockedAchievements.length / achievementService.achievements.length * 100) | number:'1.0-0'}}%{{gameStateService.easyModeEver ? ' [Easy Mode]' : ''}}</h3>
   <hr/>
   <div class="achievementGrid">
+    @if (gameStateService.easyModeEver) {
+      <div class="easyModeBanner">
+        <div class="bannerEmoji">😎</div>
+        <h1>Easy Way Out</h1>
+        <p>Enabled Easy Mode</p>
+      </div>
+    }
     <div class="achievementSection">
       <h4>Locked ({{achievementService.achievements.length - achievementService.unlockedAchievements.length}})</h4>
       <div class="achievementList">
