@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { Character, EquipmentPosition } from '../game-state/character';
 import { CharacterService } from '../game-state/character.service';
-import { InventoryService, instanceOfEquipment, Item } from '../game-state/inventory.service';
+import { Equipment, InventoryService, instanceOfEquipment, Item } from '../game-state/inventory.service';
 import { GameStateService } from '../game-state/game-state.service';
 import { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
+import { ItemRepoService } from '../game-state/item-repo.service';
 
 @Component({
   selector: 'app-equipment-panel',
@@ -18,7 +19,8 @@ export class EquipmentPanelComponent {
   constructor(
     private characterService: CharacterService,
     public inventoryService: InventoryService,
-    public gameStateService: GameStateService
+    public gameStateService: GameStateService,
+    public itemRepoService: ItemRepoService
   ) {
     this.character = characterService.characterState;
   }
@@ -120,5 +122,45 @@ export class EquipmentPanelComponent {
       return 'effect' + effect;
     }
     return '';
+  }
+
+  getQualityTier(equipment: Equipment | null): { prefix: string; tier: number; colorIndex: number } | null {
+    if (!equipment || equipment.value <= 0) {
+      return null;
+    }
+    const maxColors = this.itemRepoService.colorByRank.length;
+    // log10(1) = 0, log10(1e10) = 10, spread across 18 tiers
+    const logValue = Math.log10(Math.max(1, equipment.value));
+    const tier = Math.min(maxColors, Math.max(1, Math.ceil(logValue * maxColors / 10)));
+    const colorIndex = tier - 1;
+    return { prefix: 'T', tier, colorIndex };
+  }
+
+  getTierStyle(equipment: Equipment | null): { [klass: string]: string } | null {
+    const tierInfo = this.getQualityTier(equipment);
+    if (!tierInfo) {
+      return null;
+    }
+    const bgColor = this.itemRepoService.colorByRank[tierInfo.colorIndex];
+    const textColor = this.getContrastColor(bgColor);
+    return {
+      'background-color': bgColor,
+      'color': textColor
+    };
+  }
+
+  private getContrastColor(color: string): string {
+    const darkColors: { [key: string]: boolean } = {
+      darkgray: true,
+      gray: true,
+      darkgreen: true,
+      darkblue: true,
+      blue: true,
+      darkviolet: true,
+      purple: true,
+      darkorange: true,
+      red: true
+    };
+    return darkColors[color] ? 'white' : 'black';
   }
 }

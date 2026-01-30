@@ -33,6 +33,9 @@ export interface ActivityProperties {
   pauseOnImpossibleFail: boolean;
   totalExhaustedDays: number;
   purifyGemsUnlocked: boolean;
+  oddJobDays: number;
+  beggingDays: number;
+  activityDeath: boolean;
 }
 
 @Injectable({
@@ -460,6 +463,9 @@ export class ActivityService {
       pauseOnImpossibleFail: this.pauseOnImpossibleFail,
       totalExhaustedDays: this.totalExhaustedDays,
       purifyGemsUnlocked: this.purifyGemsUnlocked,
+      oddJobDays: this.oddJobDays,
+      beggingDays: this.beggingDays,
+      activityDeath: this.activityDeath,
     };
   }
 
@@ -494,6 +500,9 @@ export class ActivityService {
       this.pauseOnImpossibleFail = properties.pauseOnImpossibleFail;
     }
     this.totalExhaustedDays = properties.totalExhaustedDays || 0;
+    this.oddJobDays = properties.oddJobDays || 0;
+    this.beggingDays = properties.beggingDays || 0;
+    this.activityDeath = properties.activityDeath || false;
     for (let i = 0; i < 5; i++) {
       // upgrade to anything that the loaded attributes allow
       this.upgradeActivities(true);
@@ -586,8 +595,7 @@ export class ActivityService {
     // downgrade all activities to base level
     this.openApprenticeships = 1;
     this.currentApprenticeship = undefined;
-    this.oddJobDays = 0;
-    this.beggingDays = 0;
+    // Note: oddJobDays and beggingDays are NOT reset here - they persist across lives
     for (const activity of this.activities) {
       activity.level = 0;
       activity.unlocked = false;

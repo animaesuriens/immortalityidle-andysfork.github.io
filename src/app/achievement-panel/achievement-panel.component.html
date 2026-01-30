@@ -1,7 +1,6 @@
-<div class="darkMode">
-  <h3>Achievements ({{achievementService.unlockedAchievements.length}} / {{achievementService.achievements.length}}) - {{(achievementService.unlockedAchievements.length / achievementService.achievements.length * 100) | number:'1.0-0'}}%{{gameStateService.easyModeEver ? ' [Easy Mode]' : ''}}</h3>
-  <hr/>
-  <div class="achievementGrid">
+<div class="darkMode achievementWrapper">
+  <div class="achievementHeader">
+    <h3>Achievements ({{achievementService.unlockedAchievements.length}} / {{achievementService.achievements.length}}) - {{(achievementService.unlockedAchievements.length / achievementService.achievements.length * 100) | number:'1.0-0'}}%{{gameStateService.easyModeEver ? ' [Easy Mode]' : ''}}</h3>
     @if (gameStateService.easyModeEver) {
       <div class="easyModeBanner">
         <div class="bannerEmoji">😎</div>
@@ -9,45 +8,50 @@
         <p>Enabled Easy Mode</p>
       </div>
     }
-    <div class="achievementSection">
-      <h4>Locked ({{achievementService.achievements.length - achievementService.unlockedAchievements.length}})</h4>
-      <div class="achievementList">
-        @for (achievement of achievementService.achievements; track $index) {
-          @if (!achievement.unlocked) {
-            <div class="itemSlot" matTooltip="
+    <hr/>
+  </div>
+  <div class="achievementGrid">
+    <div class="achievementContent">
+      <div class="achievementSection">
+        <h4>Locked ({{achievementService.achievements.length - achievementService.unlockedAchievements.length}})</h4>
+        <div class="achievementList">
+          @for (achievement of achievementService.achievements; track $index) {
+            @if (!achievement.unlocked) {
+              <div class="itemSlot" matTooltip="
 Tip: {{achievement.hint}}{{gameStateService.easyModeEver ? '
 
 Requires: ' + achievement.requirements + '
 Current Progress: ' + (achievement.progress ? achievement.progress() : 'N/A') : ''}}
-            ">
-              ?
-            </div>
+              ">
+                ?
+              </div>
+            }
           }
-        }
+        </div>
       </div>
-    </div>
-    <div class="achievementSection">
-      <h4>Unlocked ({{achievementService.unlockedAchievements.length}})</h4>
-      <div class="achievementList">
-        @for (achievement of achievementService.achievements; track $index) {
-          @if (achievement.unlocked) {
-            <div class="itemSlot" tabindex="0" matTooltip="
+      <div class="achievementSection">
+        <h4>Unlocked ({{achievementService.unlockedAchievements.length}})</h4>
+        <div class="achievementList">
+          @for (achievement of achievementService.achievements; track $index) {
+            @if (achievement.unlocked) {
+              <div class="itemSlot" tabindex="0" matTooltip="
 {{achievement.description}}
 
 Tip: {{achievement.hint}}{{gameStateService.easyModeEver ? '
 
 Requires: ' + achievement.requirements + '
-Current Progress: ' + (achievement.progress ? achievement.progress() : 'N/A') : ''}}
-            ">
-              @if (achievement.displayName) {
-                <div>{{achievement.displayName}}</div>
-              }
-              @if (!achievement.displayName) {
-                <div>{{achievement.name}}</div>
-              }
-            </div>
+Current Progress: Completed' : ''}}
+              ">
+                @if (achievement.displayName) {
+                  <div>{{achievement.displayName}}</div>
+                }
+                @if (!achievement.displayName) {
+                  <div>{{achievement.name}}</div>
+                }
+              </div>
+            }
           }
-        }
+        </div>
       </div>
     </div>
   </div>

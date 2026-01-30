@@ -136,6 +136,15 @@ export interface InventoryProperties {
   divinePeachesUnlocked: boolean;
   equipmentUnlocked: boolean;
   equipmentCreated: number;
+  slotLockingUnlocked: boolean;
+  lockedSlots: { [key: string]: boolean };
+  lifetimeUsedItems: number;
+  lifetimeSoldItems: number;
+  lifetimePotionsUsed: number;
+  lifetimePillsUsed: number;
+  lifetimeGemsSold: number;
+  lifetimeEquipmentAutoEquipped: number;
+  highestMaxItems: number;
 }
 
 @Injectable({
@@ -147,6 +156,7 @@ export class InventoryService {
   itemStacks: (ItemStack | null)[] = [];
   stashedItemStacks: (ItemStack | null)[] = [];
   maxItems = 10;
+  highestMaxItems = 10;
   maxStackSize = 100;
   noFood: boolean;
   selectedItem: ItemStack | null = null;
@@ -184,6 +194,7 @@ export class InventoryService {
   lifetimePotionsUsed = 0;
   lifetimePillsUsed = 0;
   lifetimeGemsSold = 0;
+  lifetimeEquipmentAutoEquipped = 0;
   motherGift = false;
   grandmotherGift = false;
   thrownAwayItems = 0;
@@ -197,6 +208,15 @@ export class InventoryService {
   divinePeachesUnlocked = false;
   equipmentUnlocked = false;
   equipmentCreated = 0;
+  slotLockingUnlocked = false;
+  lockedSlots: { [key: string]: boolean } = {
+    head: false,
+    body: false,
+    leftHand: false,
+    rightHand: false,
+    legs: false,
+    feet: false,
+  };
   durabilityDisclaimer =
     "\nThe durability and value of equipment degrades with use. Be careful when merging powerful items that have seen a lot of wear, the product may be even lower quality than the original if the item's value is low.";
 
@@ -350,6 +370,15 @@ export class InventoryService {
       divinePeachesUnlocked: this.divinePeachesUnlocked,
       equipmentUnlocked: this.equipmentUnlocked,
       equipmentCreated: this.equipmentCreated,
+      slotLockingUnlocked: this.slotLockingUnlocked,
+      lockedSlots: this.lockedSlots,
+      lifetimeUsedItems: this.lifetimeUsedItems,
+      lifetimeSoldItems: this.lifetimeSoldItems,
+      lifetimePotionsUsed: this.lifetimePotionsUsed,
+      lifetimePillsUsed: this.lifetimePillsUsed,
+      lifetimeGemsSold: this.lifetimeGemsSold,
+      lifetimeEquipmentAutoEquipped: this.lifetimeEquipmentAutoEquipped,
+      highestMaxItems: this.highestMaxItems,
     };
   }
 
@@ -405,6 +434,22 @@ export class InventoryService {
     }
     this.equipmentUnlocked = properties.equipmentUnlocked || false;
     this.equipmentCreated = properties.equipmentCreated || 0;
+    this.slotLockingUnlocked = properties.slotLockingUnlocked || false;
+    this.lockedSlots = properties.lockedSlots || {
+      head: false,
+      body: false,
+      leftHand: false,
+      rightHand: false,
+      legs: false,
+      feet: false,
+    };
+    this.lifetimeUsedItems = properties.lifetimeUsedItems || 0;
+    this.lifetimeSoldItems = properties.lifetimeSoldItems || 0;
+    this.lifetimePotionsUsed = properties.lifetimePotionsUsed || 0;
+    this.lifetimePillsUsed = properties.lifetimePillsUsed || 0;
+    this.lifetimeGemsSold = properties.lifetimeGemsSold || 0;
+    this.lifetimeEquipmentAutoEquipped = properties.lifetimeEquipmentAutoEquipped || 0;
+    this.highestMaxItems = properties.highestMaxItems || 10;
   }
 
   farmFoodList = [
@@ -429,6 +474,9 @@ export class InventoryService {
 
   changeMaxItems(newValue: number) {
     this.maxItems = newValue;
+    if (newValue > this.highestMaxItems) {
+      this.highestMaxItems = newValue;
+    }
     while (this.itemStacks.length < newValue) {
       this.itemStacks.push(null);
     }
@@ -997,11 +1045,7 @@ export class InventoryService {
 
   reset(): void {
     this.selectedItem = null;
-    this.lifetimeUsedItems = 0;
-    this.lifetimeSoldItems = 0;
-    this.lifetimePotionsUsed = 0;
-    this.lifetimePillsUsed = 0;
-    this.lifetimeGemsSold = 0;
+    // Note: lifetime counters are NOT reset here - they persist across lives
     this.itemStacks = [];
     this.stashedItemStacks = [];
     this.changeMaxItems(10);
@@ -1471,10 +1515,21 @@ export class InventoryService {
           }
           if (itemPower > equippedPower) {
             this.equip(itemIterator);
+            this.lifetimeEquipmentAutoEquipped++;
           }
         }
       }
     }
+  }
+
+  toggleSlotLock(slot: string): void {
+    if (this.slotLockingUnlocked) {
+      this.lockedSlots[slot] = !this.lockedSlots[slot];
+    }
+  }
+
+  isSlotLocked(slot: string): boolean {
+    return this.slotLockingUnlocked && this.lockedSlots[slot];
   }
 
   consume(consumeType: string, quantity = 1, cheapest = false): number {

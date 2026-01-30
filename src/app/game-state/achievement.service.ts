@@ -13,6 +13,7 @@ import { ActivityType } from './activity';
 import { ImpossibleTaskService } from './impossibleTask.service';
 import { FollowersService } from './followers.service';
 import { HellService } from './hell.service';
+import { BigNumberPipe } from '../app.component';
 
 export interface Achievement {
   name: string;
@@ -37,6 +38,7 @@ export interface AchievementProperties {
 export class AchievementService {
   gameStateService?: GameStateService;
   unlockedAchievements: string[] = [];
+  bigNumberPipe: BigNumberPipe;
 
   constructor(
     private mainLoopService: MainLoopService,
@@ -53,6 +55,7 @@ export class AchievementService {
     private impossibleTaskService: ImpossibleTaskService,
     private hellService: HellService
   ) {
+    this.bigNumberPipe = this.injector.get(BigNumberPipe);
     this.mainLoopService.longTickSubject.subscribe(() => {
       for (const achievement of this.achievements) {
         if (!this.unlockedAchievements.includes(achievement.name)) {
@@ -100,7 +103,7 @@ export class AchievementService {
     {
       name: 'Bookworm',
       description:
-        'You opened the manuals shop and unlocked the ' + this.itemRepoService.items['restartActivityManual'].name,
+        'You opened the manuals shop and unlocked the ' + this.itemRepoService.items['restartActivityManual'].name + '!',
       hint: 'There are lots of buttons in this game, maybe an aspiring immortal should press a few.',
       requirements: 'Open the manuals shop.',
       progress: () => this.storeService.storeOpened ? 'Complete' : 'Incomplete',
@@ -116,10 +119,10 @@ export class AchievementService {
       name: 'Played a Bit',
       description:
         'You worked toward immortality for ten years across your lifetimes and unlocked the ' +
-        this.itemRepoService.items['fastPlayManual'].name,
+        this.itemRepoService.items['fastPlayManual'].name + '!',
       hint: "Just keep playing. I'm sure this will come to an aspiring immortal eventually.",
       requirements: 'Play for 10 years total across all lives.',
-      progress: () => `${Math.min(this.mainLoopService.totalTicks, 3650)} / 3,650 days`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.mainLoopService.totalTicks, 3650))} / 3,650 days`,
       check: () => {
         return this.mainLoopService.totalTicks > 3650;
       },
@@ -132,10 +135,10 @@ export class AchievementService {
       name: 'Basically an Expert',
       description:
         'You worked toward immortality for one hundred years across your lifetimes and unlocked the ' +
-        this.itemRepoService.items['fasterPlayManual'].name,
+        this.itemRepoService.items['fasterPlayManual'].name + '!',
       hint: "Just keep playing. I'm sure this will come to an aspiring immortal eventually.",
       requirements: 'Play for 100 years total across all lives.',
-      progress: () => `${Math.min(this.mainLoopService.totalTicks, 36500)} / 36,500 days`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.mainLoopService.totalTicks, 36500))} / 36,500 days`,
       check: () => {
         return this.mainLoopService.totalTicks > 36500;
       },
@@ -170,10 +173,10 @@ export class AchievementService {
       name: 'Persistent Reincarnator',
       description:
         'You lived one thousand years across your lifetimes and unlocked the ' +
-        this.itemRepoService.items['fastestPlayManual'].name,
+        this.itemRepoService.items['fastestPlayManual'].name + '!',
       hint: 'The millennial.',
       requirements: 'Play for 1,000 years total across all lives.',
-      progress: () => `${Math.min(this.mainLoopService.totalTicks, 365000)} / 365,000 days`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.mainLoopService.totalTicks, 365000))} / 365,000 days`,
       check: () => {
         return this.mainLoopService.totalTicks > 365000;
       },
@@ -186,10 +189,10 @@ export class AchievementService {
       name: 'Veteran Cultivator',
       description:
         'You lived ten thousand years across your lifetimes and unlocked the ' +
-        this.itemRepoService.items['totalPlaytimeManual'].name,
+        this.itemRepoService.items['totalPlaytimeManual'].name + '!',
       hint: 'A long life. Myriad years.',
       requirements: 'Play for 10,000 years total across all lives.',
-      progress: () => `${Math.min(this.mainLoopService.totalTicks, 3650000)} / 3,650,000 days`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.mainLoopService.totalTicks, 3650000))} / 3,650,000 days`,
       check: () => {
         return this.mainLoopService.totalTicks > 3650000;
       },
@@ -279,7 +282,7 @@ export class AchievementService {
         "You got every last drop you could out of those pills and now you feel nothing from them. At least they didn't kill you or do lasting harm, right?",
       hint: 'D.A.R.E.',
       requirements: 'Reach maximum empowerment factor (1953.65).',
-      progress: () => `${Math.floor((this.characterService.characterState.empowermentFactor - 1) * 100)} / 95,265 pills`,
+      progress: () => `${this.bigNumberPipe.transform(Math.floor((this.characterService.characterState.empowermentFactor - 1) * 100))} / 95,265 pills`,
       check: () => {
         return this.characterService.characterState.empowermentFactor >= 1953.65;
       },
@@ -290,10 +293,10 @@ export class AchievementService {
     },
     {
       name: 'This Sparks Joy',
-      description: 'You used 888 items and unlocked the ' + this.itemRepoService.items['autoUseManual'].name,
+      description: 'You used 888 items and unlocked the ' + this.itemRepoService.items['autoUseManual'].name + '!',
       hint: 'Immortals should know the potential of the things they use.',
       requirements: 'Use 888 items.',
-      progress: () => `${Math.min(this.inventoryService.lifetimeUsedItems, 888)} / 888 items`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.inventoryService.lifetimeUsedItems, 888))} / 888 items`,
       check: () => {
         return this.inventoryService.lifetimeUsedItems >= 888;
       },
@@ -305,7 +308,7 @@ export class AchievementService {
     {
       name: 'This Does Not Spark Joy',
       description:
-        'You filled your entire inventory and unlocked the ' + this.itemRepoService.items['autoSellManual'].name,
+        'You filled your entire inventory and unlocked the ' + this.itemRepoService.items['autoSellManual'].name + '!',
       hint: 'So much stuff.',
       requirements: 'Fill your entire inventory.',
       progress: () => `${this.inventoryService.itemStacks.length - this.inventoryService.openInventorySlots()} / ${this.inventoryService.itemStacks.length} slots`,
@@ -320,10 +323,10 @@ export class AchievementService {
     {
       name: 'Waster',
       description:
-        'You throw away 10,000 items and unlocked the ' + this.itemRepoService.items['betterStorageManual'].name,
+        'You threw away 10,000 items and unlocked the ' + this.itemRepoService.items['betterStorageManual'].name + '!',
       hint: 'Too much stuff.',
       requirements: 'Throw away 10,000 items.',
-      progress: () => `${Math.min(this.inventoryService.thrownAwayItems, 10000)} / 10,000 items`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.inventoryService.thrownAwayItems, 10000))} / 10,000 items`,
       check: () => {
         return this.inventoryService.thrownAwayItems >= 10000;
       },
@@ -335,10 +338,10 @@ export class AchievementService {
     {
       name: 'Landfill',
       description:
-        'You throw away 100,000 items and unlocked the ' + this.itemRepoService.items['evenBetterStorageManual'].name,
+        'You threw away 100,000 items and unlocked the ' + this.itemRepoService.items['evenBetterStorageManual'].name + '!',
       hint: 'Way, way too much stuff.',
       requirements: 'Throw away 100,000 items with max stack size at least 1,000.',
-      progress: () => `${Math.min(this.inventoryService.thrownAwayItems, 100000)} / 100,000 items, stack size: ${this.inventoryService.maxStackSize} / 1,000`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.inventoryService.thrownAwayItems, 100000))} / 100,000 items, stack size: ${this.bigNumberPipe.transform(this.inventoryService.maxStackSize)} / 1,000`,
       check: () => {
         return this.inventoryService.maxStackSize >= 1000 && this.inventoryService.thrownAwayItems >= 100000;
       },
@@ -351,10 +354,10 @@ export class AchievementService {
       name: 'Hoarder',
       description:
         'You really love holding vast amounts of materials and unlocked the ' +
-        this.itemRepoService.items['bestStorageManual'].name,
+        this.itemRepoService.items['bestStorageManual'].name + '!',
       hint: "Just stop already, it's too much. Why would an aspiring immortal need this much?",
       requirements: 'Throw away 1,000,000 items with max stack size at least 10,000.',
-      progress: () => `${Math.min(this.inventoryService.thrownAwayItems, 1000000)} / 1,000,000 items, stack size: ${this.inventoryService.maxStackSize} / 10,000`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.inventoryService.thrownAwayItems, 1000000))} / 1,000,000 items, stack size: ${this.bigNumberPipe.transform(this.inventoryService.maxStackSize)} / 10,000`,
       check: () => {
         return this.inventoryService.maxStackSize >= 10000 && this.inventoryService.thrownAwayItems >= 1000000;
       },
@@ -367,9 +370,9 @@ export class AchievementService {
       name: 'All Things In Moderation',
       hint: 'Immortals know what to use and what to toss.',
       description:
-        'You sold and used 8888 items and unlocked the ' + this.itemRepoService.items['autoBalanceManual'].name,
+        'You sold and used 8,888 items and unlocked the ' + this.itemRepoService.items['autoBalanceManual'].name + '!',
       requirements: 'Use and sell at least 8,888 items each.',
-      progress: () => `Used: ${Math.min(this.inventoryService.lifetimeUsedItems, 8888)} / 8,888, Sold: ${Math.min(this.inventoryService.lifetimeSoldItems, 8888)} / 8,888`,
+      progress: () => `Used: ${this.bigNumberPipe.transform(Math.min(this.inventoryService.lifetimeUsedItems, 8888))} / 8,888, Sold: ${this.bigNumberPipe.transform(Math.min(this.inventoryService.lifetimeSoldItems, 8888))} / 8,888`,
       check: () => {
         return this.inventoryService.lifetimeUsedItems >= 8888 && this.inventoryService.lifetimeSoldItems >= 8888;
       },
@@ -381,10 +384,10 @@ export class AchievementService {
     {
       name: 'Land Rush',
       description:
-        'You owned 520 plots of land and unlocked the ' + this.itemRepoService.items['autoBuyLandManual'].name,
+        'You owned 520 plots of land and unlocked the ' + this.itemRepoService.items['autoBuyLandManual'].name + '!',
       hint: 'Immortals are known for their vast real estate holdings.',
       requirements: 'Own 520 plots of land.',
-      progress: () => `${Math.min(this.homeService.land, 520)} / 520 plots`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.homeService.land, 520))} / 520 plots`,
       check: () => {
         return this.homeService.land >= 520;
       },
@@ -396,7 +399,7 @@ export class AchievementService {
     {
       name: 'Real Housewives of Immortality',
       description:
-        'You acquired a very fine home and unlocked the ' + this.itemRepoService.items['autoBuyHomeManual'].name,
+        'You acquired a very fine home and unlocked the ' + this.itemRepoService.items['autoBuyHomeManual'].name + '!',
       hint: 'Immortals value a good home.',
       requirements: 'Own a Courtyard House or better.',
       progress: () => `Home level: ${this.homeService.homeValue} / ${HomeType.CourtyardHouse}`,
@@ -412,7 +415,7 @@ export class AchievementService {
       name: 'Off to Ikea',
       description:
         'You filled all your furniture slots and unlocked the ' +
-        this.itemRepoService.items['autoBuyFurnitureManual'].name,
+        this.itemRepoService.items['autoBuyFurnitureManual'].name + '!',
       hint: 'Immortals have discerning taste in furnishings.',
       requirements: 'Fill all furniture slots (bathtub, bed, kitchen, workbench).',
       progress: () => {
@@ -434,10 +437,10 @@ export class AchievementService {
     },
     {
       name: 'Time to Buy a Tractor',
-      description: 'You plowed 888 fields and unlocked the ' + this.itemRepoService.items['autoFieldManual'].name,
+      description: 'You plowed 888 fields and unlocked the ' + this.itemRepoService.items['autoFieldManual'].name + '!',
       hint: 'An aspiring immortal should have vast tracts of fertile land.',
       requirements: 'Plow 888 fields.',
-      progress: () => `${Math.min(this.homeService.fields.length + this.homeService.extraFields, 888)} / 888 fields`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.homeService.fields.length + this.homeService.extraFields, 888))} / 888 fields`,
       check: () => {
         return this.homeService.fields.length + this.homeService.extraFields >= 888;
       },
@@ -450,7 +453,7 @@ export class AchievementService {
       name: 'Industrial Revolution',
       description:
         "You've found all the basic autobuyers and unlocked the " +
-        this.itemRepoService.items['autoBuyerSettingsManual'].name,
+        this.itemRepoService.items['autoBuyerSettingsManual'].name + '!',
       hint: 'Become really, really lazy',
       requirements: 'Unlock all basic autobuyers (home, land, field, furniture).',
       progress: () => {
@@ -472,10 +475,10 @@ export class AchievementService {
     },
     {
       name: 'Guzzler',
-      description: 'You drank 88 potions and unlocked the ' + this.itemRepoService.items['autoPotionManual'].name,
+      description: 'You drank 88 potions and unlocked the ' + this.itemRepoService.items['autoPotionManual'].name + '!',
       hint: 'Glug, glug, glug.',
       requirements: 'Drink 88 potions.',
-      progress: () => `${Math.min(this.inventoryService.lifetimePotionsUsed, 88)} / 88 potions`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.inventoryService.lifetimePotionsUsed, 88))} / 88 potions`,
       check: () => {
         return this.inventoryService.lifetimePotionsUsed >= 88;
       },
@@ -486,10 +489,10 @@ export class AchievementService {
     },
     {
       name: 'Junkie',
-      description: 'You took 131 pills and unlocked the ' + this.itemRepoService.items['autoPillManual'].name,
+      description: 'You took 131 pills and unlocked the ' + this.itemRepoService.items['autoPillManual'].name + '!',
       hint: 'An aspiring immortal should take the red one. Take it over and over.',
       requirements: 'Take 131 pills.',
-      progress: () => `${Math.min(this.inventoryService.lifetimePillsUsed, 131)} / 131 pills`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.inventoryService.lifetimePillsUsed, 131))} / 131 pills`,
       check: () => {
         return this.inventoryService.lifetimePillsUsed >= 131;
       },
@@ -500,10 +503,10 @@ export class AchievementService {
     },
     {
       name: 'Monster Slayer',
-      description: 'You killed 131 monsters and unlocked the ' + this.itemRepoService.items['autoTroubleManual'].name,
+      description: 'You killed 131 monsters and unlocked the ' + this.itemRepoService.items['autoTroubleManual'].name + '!',
       hint: 'An aspiring immortal bravely faces down their foes.',
       requirements: 'Kill 131 monsters.',
-      progress: () => `${Math.min(this.battleService.troubleKills, 131)} / 131 kills`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.battleService.troubleKills, 131))} / 131 kills`,
       check: () => {
         return this.battleService.troubleKills >= 131;
       },
@@ -516,13 +519,13 @@ export class AchievementService {
       name: 'Weapons Master',
       description:
         'You wielded powerful weapons of both metal and wood and unlocked the ' +
-        this.itemRepoService.items['autoWeaponMergeManual'].name,
+        this.itemRepoService.items['autoWeaponMergeManual'].name + '!',
       hint: 'Left and right.',
       requirements: 'Equip weapons with 60+ base damage in both hands.',
       progress: () => {
         const left = this.characterService.characterState.equipment?.leftHand?.weaponStats?.baseDamage || 0;
         const right = this.characterService.characterState.equipment?.rightHand?.weaponStats?.baseDamage || 0;
-        return `Left: ${left} / 60, Right: ${right} / 60`;
+        return `Left: ${this.bigNumberPipe.transform(left)} / 60, Right: ${this.bigNumberPipe.transform(right)} / 60`;
       },
       check: () => {
         if (
@@ -544,7 +547,7 @@ export class AchievementService {
       name: 'Practically Invincible',
       description:
         'You equipped yourself with powerful armor and unlocked the ' +
-        this.itemRepoService.items['autoArmorMergeManual'].name,
+        this.itemRepoService.items['autoArmorMergeManual'].name + '!',
       hint: 'Suit up.',
       requirements: 'Equip armor with 60+ defense in all slots (head, body, legs, feet).',
       progress: () => {
@@ -552,7 +555,7 @@ export class AchievementService {
         const body = this.characterService.characterState.equipment?.body?.armorStats?.defense || 0;
         const legs = this.characterService.characterState.equipment?.legs?.armorStats?.defense || 0;
         const feet = this.characterService.characterState.equipment?.feet?.armorStats?.defense || 0;
-        return `Head: ${head}, Body: ${body}, Legs: ${legs}, Feet: ${feet} (need 60 each)`;
+        return `Head: ${this.bigNumberPipe.transform(head)}, Body: ${this.bigNumberPipe.transform(body)}, Legs: ${this.bigNumberPipe.transform(legs)}, Feet: ${this.bigNumberPipe.transform(feet)} (need 60 each)`;
       },
       check: () => {
         if (
@@ -576,10 +579,10 @@ export class AchievementService {
     },
     {
       name: 'Gemologist',
-      description: 'You acquired 88 gems and unlocked the ' + this.itemRepoService.items['useSpiritGemManual'].name,
+      description: 'You acquired 88 gems and unlocked the ' + this.itemRepoService.items['useSpiritGemManual'].name + '!',
       hint: 'Ooh, shiny.',
       requirements: 'Kill more than 88 monsters.',
-      progress: () => `${Math.min(this.battleService.troubleKills, 88)} / 88 kills`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.battleService.troubleKills, 88))} / 88 kills`,
       check: () => {
         return this.battleService.troubleKills > 88;
       },
@@ -592,10 +595,10 @@ export class AchievementService {
       name: 'Ingredient Snob',
       description:
         'You achieved a deep understanding of herbs and unlocked the ' +
-        this.itemRepoService.items['bestHerbsManual'].name,
+        this.itemRepoService.items['bestHerbsManual'].name + '!',
       hint: 'An aspiring immortal should take the red one. Take it over and over.',
       requirements: 'Reach 1,024 in Wood Lore and Water Lore.',
-      progress: () => `Wood Lore: ${Math.floor(this.characterService.characterState.attributes.woodLore.value)}, Water Lore: ${Math.floor(this.characterService.characterState.attributes.waterLore.value)} (need 1,024 each)`,
+      progress: () => `Wood Lore: ${this.bigNumberPipe.transform(Math.floor(this.characterService.characterState.attributes.woodLore.value))}, Water Lore: ${this.bigNumberPipe.transform(Math.floor(this.characterService.characterState.attributes.waterLore.value))} (need 1,024 each)`,
       check: () => {
         return (
           this.characterService.characterState.attributes.woodLore.value > 1024 &&
@@ -611,10 +614,10 @@ export class AchievementService {
       name: 'Wood Snob',
       description:
         'You achieved a deep understanding of wood and unlocked the ' +
-        this.itemRepoService.items['bestWoodManual'].name,
+        this.itemRepoService.items['bestWoodManual'].name + '!',
       hint: 'There are lots of activities an aspiring immortal can do on their way to immortality. Maybe you should try getting good at a few of them.',
       requirements: 'Reach 1,024 in Wood Lore and Intelligence.',
-      progress: () => `Wood Lore: ${Math.floor(this.characterService.characterState.attributes.woodLore.value)}, Intelligence: ${Math.floor(this.characterService.characterState.attributes.intelligence.value)} (need 1,024 each)`,
+      progress: () => `Wood Lore: ${this.bigNumberPipe.transform(Math.floor(this.characterService.characterState.attributes.woodLore.value))}, Intelligence: ${this.bigNumberPipe.transform(Math.floor(this.characterService.characterState.attributes.intelligence.value))} (need 1,024 each)`,
       check: () => {
         return (
           this.characterService.characterState.attributes.woodLore.value > 1024 &&
@@ -631,10 +634,10 @@ export class AchievementService {
       displayName: 'Smelting Snob',
       description:
         'You achieved a deep understanding of digging and smelting metal and unlocked the ' +
-        this.itemRepoService.items['bestOreManual'].name,
+        this.itemRepoService.items['bestOreManual'].name + '!',
       hint: 'There are lots of activities an aspiring immortal can do on their way to immortality. Maybe you should try getting good at a few of them.',
       requirements: 'Reach 1,024 in Metal Lore and Earth Lore.',
-      progress: () => `Metal Lore: ${Math.floor(this.characterService.characterState.attributes.metalLore.value)}, Earth Lore: ${Math.floor(this.characterService.characterState.attributes.earthLore.value)} (need 1,024 each)`,
+      progress: () => `Metal Lore: ${this.bigNumberPipe.transform(Math.floor(this.characterService.characterState.attributes.metalLore.value))}, Earth Lore: ${this.bigNumberPipe.transform(Math.floor(this.characterService.characterState.attributes.earthLore.value))} (need 1,024 each)`,
       check: () => {
         return (
           this.characterService.characterState.attributes.metalLore.value > 1024 &&
@@ -651,10 +654,10 @@ export class AchievementService {
       displayName: 'Hunting Snob',
       description:
         'You achieved a deep understanding of hunting and gathering hides and unlocked the ' +
-        this.itemRepoService.items['bestHidesManual'].name,
+        this.itemRepoService.items['bestHidesManual'].name + '!',
       hint: 'There are lots of activities an aspiring immortal can do on their way to immortality. Maybe you should try getting good at a few of them.',
       requirements: 'Reach 1,024 in Animal Handling and Speed.',
-      progress: () => `Animal Handling: ${Math.floor(this.characterService.characterState.attributes.animalHandling.value)}, Speed: ${Math.floor(this.characterService.characterState.attributes.speed.value)} (need 1,024 each)`,
+      progress: () => `Animal Handling: ${this.bigNumberPipe.transform(Math.floor(this.characterService.characterState.attributes.animalHandling.value))}, Speed: ${this.bigNumberPipe.transform(Math.floor(this.characterService.characterState.attributes.speed.value))} (need 1,024 each)`,
       check: () => {
         return (
           this.characterService.characterState.attributes.animalHandling.value > 1024 &&
@@ -668,10 +671,10 @@ export class AchievementService {
     },
     {
       name: 'Gem Snob',
-      description: 'You have sold 888 gems and unlocked the ' + this.itemRepoService.items['bestGemsManual'].name,
+      description: 'You have sold 888 gems and unlocked the ' + this.itemRepoService.items['bestGemsManual'].name + '!',
       hint: 'I hear the market for fine jewelry is so hot right now.',
       requirements: 'Sell 888 gems.',
-      progress: () => `${Math.min(this.inventoryService.lifetimeGemsSold, 888)} / 888 gems`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.inventoryService.lifetimeGemsSold, 888))} / 888 gems`,
       check: () => {
         return this.inventoryService.lifetimeGemsSold >= 888;
       },
@@ -701,7 +704,7 @@ export class AchievementService {
         "You filled up your purse, your wall safe, the box under your bed, and a giant money pit in the backyard. You just can't hold any more money.",
       hint: 'How rich can you get?',
       requirements: 'Fill your money to maximum capacity.',
-      progress: () => `${this.characterService.characterState.money.toExponential(2)} / ${this.characterService.characterState.maxMoney.toExponential(2)} taels`,
+      progress: () => `${this.bigNumberPipe.transform(this.characterService.characterState.money)} / ${this.bigNumberPipe.transform(this.characterService.characterState.maxMoney)} taels`,
       check: () => {
         return this.characterService.characterState.money >= this.characterService.characterState.maxMoney - 1e21; //not exactly max in case this gets checked at a bad time
       },
@@ -716,7 +719,7 @@ export class AchievementService {
         "You've gone through eight cycles of reincarnation and come to understand the value of grandfathers.",
       hint: "Just keep playing. I'm sure this will come to an aspiring immortal eventually.",
       requirements: 'Complete more than 8 reincarnation cycles.',
-      progress: () => `${Math.min(this.characterService.characterState.totalLives, 8)} / 8 lives`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.characterService.characterState.totalLives, 8))} / 8 lives`,
       check: () => {
         return this.characterService.characterState.totalLives > 8;
       },
@@ -730,7 +733,7 @@ export class AchievementService {
       description: "You've worked 888 days of odd jobs and come to understand the value of fathers.",
       hint: "Just keep playing. I'm sure this will come to an aspiring immortal eventually.",
       requirements: 'Work more than 888 days of odd jobs.',
-      progress: () => `${Math.min(this.activityService.oddJobDays, 888)} / 888 days`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.activityService.oddJobDays, 888))} / 888 days`,
       check: () => {
         return this.activityService.oddJobDays > 888;
       },
@@ -744,7 +747,7 @@ export class AchievementService {
       description: "You've done 888 days of begging and come to understand the value of mothers.",
       hint: "Just keep playing. I'm sure this will come to an aspiring immortal eventually.",
       requirements: 'Beg for more than 888 days.',
-      progress: () => `${Math.min(this.activityService.beggingDays, 888)} / 888 days`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.activityService.beggingDays, 888))} / 888 days`,
       check: () => {
         return this.activityService.beggingDays > 888;
       },
@@ -758,7 +761,7 @@ export class AchievementService {
       description: "You've developed spirituality and come to understand the value of grandmothers.",
       hint: "Just keep playing. I'm sure this will come to an aspiring immortal eventually.",
       requirements: 'Gain any Spirituality.',
-      progress: () => `Spirituality: ${Math.floor(this.characterService.characterState.attributes.spirituality.value)}`,
+      progress: () => `Spirituality: ${this.bigNumberPipe.transform(Math.floor(this.characterService.characterState.attributes.spirituality.value))}`,
       check: () => {
         return this.characterService.characterState.attributes.spirituality.value > 0;
       },
@@ -771,13 +774,13 @@ export class AchievementService {
       name: 'Weapons Grandmaster',
       description:
         'You wielded epic weapons of both metal and wood and unlocked the ' +
-        this.itemRepoService.items['bestWeaponManual'].name,
+        this.itemRepoService.items['bestWeaponManual'].name + '!',
       hint: 'Power level 10,000!',
       requirements: 'Equip weapons with 8,888+ base damage in both hands.',
       progress: () => {
         const left = this.characterService.characterState.equipment?.leftHand?.weaponStats?.baseDamage || 0;
         const right = this.characterService.characterState.equipment?.rightHand?.weaponStats?.baseDamage || 0;
-        return `Left: ${left} / 8,888, Right: ${right} / 8,888`;
+        return `Left: ${this.bigNumberPipe.transform(left)} / 8,888, Right: ${this.bigNumberPipe.transform(right)} / 8,888`;
       },
       check: () => {
         if (
@@ -799,7 +802,7 @@ export class AchievementService {
       name: 'Tank!',
       description:
         'You armored yourself with epic defenses and unlocked the ' +
-        this.itemRepoService.items['bestArmorManual'].name,
+        this.itemRepoService.items['bestArmorManual'].name + '!',
       hint: "Don't hurt me!",
       requirements: 'Equip armor with 8,888+ defense in all slots (head, body, legs, feet).',
       progress: () => {
@@ -807,7 +810,7 @@ export class AchievementService {
         const body = this.characterService.characterState.equipment?.body?.armorStats?.defense || 0;
         const legs = this.characterService.characterState.equipment?.legs?.armorStats?.defense || 0;
         const feet = this.characterService.characterState.equipment?.feet?.armorStats?.defense || 0;
-        return `Head: ${head}, Body: ${body}, Legs: ${legs}, Feet: ${feet} (need 8,888 each)`;
+        return `Head: ${this.bigNumberPipe.transform(head)}, Body: ${this.bigNumberPipe.transform(body)}, Legs: ${this.bigNumberPipe.transform(legs)}, Feet: ${this.bigNumberPipe.transform(feet)} (need 8,888 each)`;
       },
       check: () => {
         if (
@@ -830,6 +833,22 @@ export class AchievementService {
       unlocked: false,
     },
     {
+      name: 'My Favorite Things',
+      description:
+        "You've automatically replaced your equipment 888 times and unlocked the " +
+        this.itemRepoService.items['slotLockingManual'].name + '!',
+      hint: "Just keep playing. I'm sure this will come to a tanky grandmaster aspiring immortal eventually.",
+      requirements: 'Automatically replace equipment 888 times.',
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.inventoryService.lifetimeEquipmentAutoEquipped, 888))} / 888 auto-equips`,
+      check: () => {
+        return this.inventoryService.lifetimeEquipmentAutoEquipped >= 888;
+      },
+      effect: () => {
+        this.storeService.unlockManual(this.itemRepoService.items['slotLockingManual']);
+      },
+      unlocked: false,
+    },
+    {
       name: "You're a wizard now.",
       description:
         'Enlightenment! You have achieved a permanent and deep understanding of elemental balance with your high, balanced levels of lore in each of the five elements. Mana is now unlocked for all future lives.',
@@ -841,7 +860,7 @@ export class AchievementService {
         const wood = Math.floor(this.characterService.characterState.attributes.woodLore.value);
         const water = Math.floor(this.characterService.characterState.attributes.waterLore.value);
         const metal = Math.floor(this.characterService.characterState.attributes.metalLore.value);
-        return `Fire: ${fire}, Earth: ${earth}, Wood: ${wood}, Water: ${water}, Metal: ${metal} (need 1,000 each, balanced)`;
+        return `Fire: ${this.bigNumberPipe.transform(fire)}, Earth: ${this.bigNumberPipe.transform(earth)}, Wood: ${this.bigNumberPipe.transform(wood)}, Water: ${this.bigNumberPipe.transform(water)}, Metal: ${this.bigNumberPipe.transform(metal)} (need 1,000 each, balanced)`;
       },
       check: () => {
         const fireLore = this.characterService.characterState.attributes.fireLore.value;
@@ -942,7 +961,7 @@ export class AchievementService {
         const tgh = Math.floor(this.characterService.characterState.attributes.toughness.value);
         const chr = Math.floor(this.characterService.characterState.attributes.charisma.value);
         const int = Math.floor(this.characterService.characterState.attributes.intelligence.value);
-        return `Str: ${str}, Spd: ${spd}, Tgh: ${tgh}, Chr: ${chr}, Int: ${int} (need 1M each, balanced)`;
+        return `Str: ${this.bigNumberPipe.transform(str)}, Spd: ${this.bigNumberPipe.transform(spd)}, Tgh: ${this.bigNumberPipe.transform(tgh)}, Chr: ${this.bigNumberPipe.transform(chr)}, Int: ${this.bigNumberPipe.transform(int)} (need 1M each, balanced)`;
       },
       check: () => {
         const speed = this.characterService.characterState.attributes.speed.value;
@@ -973,7 +992,7 @@ export class AchievementService {
         const tgh = Math.floor(this.characterService.characterState.attributes.toughness.value);
         const chr = Math.floor(this.characterService.characterState.attributes.charisma.value);
         const int = Math.floor(this.characterService.characterState.attributes.intelligence.value);
-        return `Spi: ${spi}, Str: ${str}, Spd: ${spd}, Tgh: ${tgh}, Chr: ${chr}, Int: ${int} (need 1M each, balanced)`;
+        return `Spi: ${this.bigNumberPipe.transform(spi)}, Str: ${this.bigNumberPipe.transform(str)}, Spd: ${this.bigNumberPipe.transform(spd)}, Tgh: ${this.bigNumberPipe.transform(tgh)}, Chr: ${this.bigNumberPipe.transform(chr)}, Int: ${this.bigNumberPipe.transform(int)} (need 1M each, balanced)`;
       },
       check: () => {
         const spirituality = this.characterService.characterState.attributes.spirituality.value;
@@ -996,12 +1015,12 @@ export class AchievementService {
       name: 'Disposable Followers',
       description:
         'You have recruited so many people you can now freely dismiss followers using the ' +
-        this.itemRepoService.items['followerAutoDismissManual'].name,
+        this.itemRepoService.items['followerAutoDismissManual'].name + '!',
       hint: 'The One Hundred Companions.',
       requirements: 'Recruit 100 followers.',
-      progress: () => `${Math.min(this.followerService.followersRecruited, 100)} / 100 followers`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.followerService.totalRecruited, 100))} / 100 followers`,
       check: () => {
-        return this.followerService.followersRecruited >= 100;
+        return this.followerService.totalRecruited >= 100;
       },
       effect: () => {
         this.storeService.unlockManual(this.itemRepoService.items['followerAutoDismissManual']);
@@ -1014,7 +1033,7 @@ export class AchievementService {
         "One of your followers has trained under you so long they have nothing else to learn. In an epiphany you realized how to double your new followers' lifespan.",
       hint: 'Endless training.',
       requirements: 'Train a follower to level 100.',
-      progress: () => `Highest level: ${this.followerService.highestLevel} / 100`,
+      progress: () => `Highest level: ${this.bigNumberPipe.transform(this.followerService.highestLevel)} / 100`,
       check: () => {
         return this.followerService.highestLevel >= 100;
       },
@@ -1028,7 +1047,7 @@ export class AchievementService {
       description: 'You have developed enough spirituality to ascend.',
       hint: 'Only with spiritual development can you ascend to higher states.',
       requirements: 'Reach 10 Spirituality.',
-      progress: () => `Spirituality: ${Math.floor(this.characterService.characterState.attributes.spirituality.value)} / 10`,
+      progress: () => `Spirituality: ${this.bigNumberPipe.transform(Math.floor(this.characterService.characterState.attributes.spirituality.value))} / 10`,
       check: () => {
         return this.characterService.characterState.attributes.spirituality.value >= 10;
       },
@@ -1040,10 +1059,10 @@ export class AchievementService {
     {
       name: "I don't want to go.",
       description:
-        'You have lived many lives and unlocked the ' + this.itemRepoService.items['autoPauseSettingsManual'].name,
+        'You have lived many lives and unlocked the ' + this.itemRepoService.items['autoPauseSettingsManual'].name + '!',
       hint: "Just keep playing. I'm sure this will come to an aspiring immortal eventually.",
       requirements: 'Complete 48 lives and play for 50 years total.',
-      progress: () => `Lives: ${this.characterService.characterState.totalLives} / 48, Days: ${this.mainLoopService.totalTicks} / 18,250`,
+      progress: () => `Lives: ${this.bigNumberPipe.transform(this.characterService.characterState.totalLives)} / 48, Days: ${this.bigNumberPipe.transform(this.mainLoopService.totalTicks)} / 18,250`,
       check: () => {
         return this.characterService.characterState.totalLives >= 48 && this.mainLoopService.totalTicks > 18250;
       },
@@ -1056,10 +1075,10 @@ export class AchievementService {
       name: 'Breaks are Good',
       description:
         "You have collected two hour's worth of offline ticks and unlocked the " +
-        this.itemRepoService.items['bankedTicksEfficiencyManual'].name,
+        this.itemRepoService.items['bankedTicksEfficiencyManual'].name + '!',
       hint: 'Take a day off from cultivating.', //it takes 20h to get
       requirements: 'Bank 2 hours worth of offline ticks.',
-      progress: () => `${Math.min(this.mainLoopService.bankedTicks, 288000)} / 288,000 ticks`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.mainLoopService.bankedTicks, 288000))} / 288,000 ticks`,
       check: () => {
         return this.mainLoopService.bankedTicks > 2 * 60 * 60 * 40; //there are 40 ticks a second
       },
@@ -1072,7 +1091,7 @@ export class AchievementService {
       name: 'Breaks are Bad',
       description:
         'You died from overwork performing an activity without necessary rest and unlocked the ' +
-        this.itemRepoService.items['autoRestManual'].name,
+        this.itemRepoService.items['autoRestManual'].name + '!',
       hint: "There's no time to rest, cultivating is life.",
       requirements: 'Die from overwork or become immortal.',
       progress: () => this.activityService.activityDeath || this.characterService.characterState.immortal ? 'Complete' : 'Incomplete',
@@ -1087,10 +1106,10 @@ export class AchievementService {
     {
       name: 'Still Spry',
       description:
-        'You have lived to be 300 years old and unlocked the ' + this.itemRepoService.items['ageSpeedManual'].name,
+        'You have lived to be 300 years old and unlocked the ' + this.itemRepoService.items['ageSpeedManual'].name + '!',
       hint: 'One step to becoming immortal is to live longer.',
       requirements: 'Live to 300 years old in a single life.',
-      progress: () => `Age: ${Math.floor(this.characterService.characterState.age / 365)} / 300 years`,
+      progress: () => `Age: ${this.bigNumberPipe.transform(Math.floor(this.characterService.characterState.age / 365))} / 300 years`,
       check: () => {
         return this.characterService.characterState.age > 300 * 365;
       },
@@ -1118,7 +1137,7 @@ export class AchievementService {
       description: "You've sorted through so many applicants that you can now always find followers you want.",
       hint: "You didn't really want one thousand scouts, did you?",
       requirements: 'Dismiss more than 888 followers.',
-      progress: () => `${Math.min(this.followerService.totalDismissed, 888)} / 888 dismissed`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.followerService.totalDismissed, 888))} / 888 dismissed`,
       check: () => {
         return this.followerService.totalDismissed > 888;
       },
@@ -1161,7 +1180,7 @@ export class AchievementService {
       progress: () => {
         const stick = this.characterService.characterState.equipment.leftHand;
         if (stick?.name === "Grandmother's Walking Stick") {
-          return `Stick damage: ${stick.weaponStats?.baseDamage || 0} / 1,000,000,000`;
+          return `Stick damage: ${this.bigNumberPipe.transform(stick.weaponStats?.baseDamage || 0)} / 1,000,000,000`;
         }
         return 'Equip the stick first';
       },
@@ -1184,7 +1203,7 @@ export class AchievementService {
         'You have harvested crops every day for months and can now count on more regular and reliable harvests.',
       hint: "When starting your garden, it's best to work a little every day.",
       requirements: 'Harvest crops for 60 consecutive days.',
-      progress: () => `${Math.min(this.homeService.consecutiveHarvests, 60)} / 60 consecutive days`,
+      progress: () => `${this.bigNumberPipe.transform(Math.min(this.homeService.consecutiveHarvests, 60))} / 60 consecutive days`,
       check: () => {
         return this.homeService.consecutiveHarvests >= 60;
       },
@@ -1224,7 +1243,7 @@ export class AchievementService {
       description: 'You have burned an insane amount of money.',
       hint: "You didn't want that money anyway.",
       requirements: 'Burn more than 1 billion taels in Hell.',
-      progress: () => `${this.hellService.burnedMoney.toExponential(2)} / 1e9 taels`,
+      progress: () => `${this.bigNumberPipe.transform(this.hellService.burnedMoney)} / 1B taels`,
       check: () => {
         return this.hellService.burnedMoney > 1e9;
       },

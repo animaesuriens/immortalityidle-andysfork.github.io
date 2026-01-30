@@ -1,11 +1,29 @@
 @import (reference) "../../styles.less";
 
+.changelogWrapper {
+    display: flex;
+    flex-direction: column;
+    max-height: 700px;
+}
+
+.changelogHeader {
+    flex-shrink: 0;
+
+    h3 {
+        margin: 0 0 8px 0;
+    }
+
+    hr {
+        margin: 0;
+    }
+}
+
 table {
     border-spacing: 4px;
 }
 
 .changeLogContainer {
-    max-height: 600px;
+    flex: 1;
     overflow-y: auto;
 }
 

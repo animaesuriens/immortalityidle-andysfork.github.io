@@ -2605,6 +2605,34 @@ export class ItemRepoService {
         return this.inventoryService.autoequipBestArmor;
       },
     },
+    slotLockingManual: {
+      id: 'slotLockingManual',
+      name: 'Manual of Slot Locking',
+      type: 'manual',
+      description: 'This manual teaches you to lock equipment slots so broken equipment stays equipped instead of being automatically unequipped.',
+      value: 1e12,
+      useLabel: 'Read',
+      useDescription: 'Permanently unlock the ability to lock equipment slots to prevent broken equipment from being unequipped.',
+      useConsumes: true,
+      use: () => {
+        // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
+        if (!this.inventoryService) {
+          this.inventoryService = this.injector.get(InventoryService);
+        }
+        this.inventoryService.slotLockingUnlocked = true;
+        this.logService.log(
+          LogTopic.EVENT,
+          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
+        );
+      },
+      owned: () => {
+        // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
+        if (!this.inventoryService) {
+          this.inventoryService = this.injector.get(InventoryService);
+        }
+        return this.inventoryService.slotLockingUnlocked;
+      },
+    },
     betterStorageManual: {
       id: 'betterStorageManual',
       name: 'Manual of Efficient Item Storage',

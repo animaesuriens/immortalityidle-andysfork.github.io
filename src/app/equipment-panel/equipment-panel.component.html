@@ -10,70 +10,102 @@
 
 <div class="equipmentScrollWrapper">
 <div class="equipmentContainer" cdkDropList cdkDropListSortingDisabled>
-    <div style="grid-area: head;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'head'}" [ngClass]="getEffectClass('head')"
+    <div style="grid-area: head;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'head', 'lockedSlot': inventoryService.isSlotLocked('head')}" [ngClass]="getEffectClass('head')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
-      [cdkDragData]="character.equipment.head" [cdkDragDisabled]="!character.equipment.head"    
+      [cdkDragData]="character.equipment.head" [cdkDragDisabled]="!character.equipment.head"
       (dblclick)="slotDoubleClicked('head', $event)" tabindex="0"
       id="equipmentSlothead"
       [matTooltip]="character.equipment.head | itemTooltip">
+      @if (inventoryService.slotLockingUnlocked) {
+        <mat-icon class="slotLock" (click)="inventoryService.toggleSlotLock('head'); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isSlotLocked('head') ? 'unlock' : 'lock'}} this slot">
+          {{inventoryService.isSlotLocked('head') ? 'lock' : 'lock_open'}}
+        </mat-icon>
+      }
       @if (character.equipment.head?.imageFile){
-        <div>
-          <img src="assets/images/items/{{character.equipment.head?.imageFile}}.png" class="itemImage" 
+        <div class="equipmentImage">
+          <img src="assets/images/items/{{character.equipment.head?.imageFile}}.png" class="itemImage"
             width="48" height="48"  alt="{{character.equipment.head?.name | titlecase}}"/>
         </div>
       }
-      <div>
+      <div class="equipmentName">
         {{character.equipment.head?.name | titlecase}}
       </div>
+      @if (getQualityTier(character.equipment.head); as tierInfo) {
+        <div class="itemTier" [ngStyle]="getTierStyle(character.equipment.head)">{{tierInfo.prefix}}{{tierInfo.tier}}</div>
+      }
     </div>
     <div style="grid-area: right;" class="itemSlot textOverflow"
-      [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'rightHand'}"  [ngClass]="getEffectClass('rightHand')"
+      [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'rightHand', 'lockedSlot': inventoryService.isSlotLocked('rightHand')}"  [ngClass]="getEffectClass('rightHand')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
-      [cdkDragData]="character.equipment.rightHand" [cdkDragDisabled]="!character.equipment.rightHand"    
+      [cdkDragData]="character.equipment.rightHand" [cdkDragDisabled]="!character.equipment.rightHand"
       (dblclick)="slotDoubleClicked('rightHand', $event)" tabindex="0"
       id="equipmentSlotrightHand"
       [matTooltip]="character.equipment.rightHand | itemTooltip">
+      @if (inventoryService.slotLockingUnlocked) {
+        <mat-icon class="slotLock" (click)="inventoryService.toggleSlotLock('rightHand'); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isSlotLocked('rightHand') ? 'unlock' : 'lock'}} this slot">
+          {{inventoryService.isSlotLocked('rightHand') ? 'lock' : 'lock_open'}}
+        </mat-icon>
+      }
       @if (character.equipment.rightHand?.imageFile){
-        <div>
-          <img src="assets/images/items/{{character.equipment.rightHand?.imageFile}}.png" class="itemImage" 
+        <div class="equipmentImage">
+          <img src="assets/images/items/{{character.equipment.rightHand?.imageFile}}.png" class="itemImage"
             width="48" height="48"  alt="{{character.equipment.rightHand?.name | titlecase}}"/>
         </div>
       }
-      <div>
+      <div class="equipmentName">
         {{character.equipment.rightHand?.name | titlecase}}
       </div>
+      @if (getQualityTier(character.equipment.rightHand); as tierInfo) {
+        <div class="itemTier" [ngStyle]="getTierStyle(character.equipment.rightHand)">{{tierInfo.prefix}}{{tierInfo.tier}}</div>
+      }
     </div>
-    <div style="grid-area: body;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'body'}" [ngClass]="getEffectClass('body')"
+    <div style="grid-area: body;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'body', 'lockedSlot': inventoryService.isSlotLocked('body')}" [ngClass]="getEffectClass('body')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
-      [cdkDragData]="character.equipment.body" [cdkDragDisabled]="!character.equipment.body"    
+      [cdkDragData]="character.equipment.body" [cdkDragDisabled]="!character.equipment.body"
       (dblclick)="slotDoubleClicked('body', $event)" tabindex="0"
       id="equipmentSlotbody"
       [matTooltip]="character.equipment.body | itemTooltip">
+      @if (inventoryService.slotLockingUnlocked) {
+        <mat-icon class="slotLock" (click)="inventoryService.toggleSlotLock('body'); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isSlotLocked('body') ? 'unlock' : 'lock'}} this slot">
+          {{inventoryService.isSlotLocked('body') ? 'lock' : 'lock_open'}}
+        </mat-icon>
+      }
       @if (character.equipment.body?.imageFile){
-        <div>
-          <img src="assets/images/items/{{character.equipment.body?.imageFile}}.png" class="itemImage" 
+        <div class="equipmentImage">
+          <img src="assets/images/items/{{character.equipment.body?.imageFile}}.png" class="itemImage"
             width="48" height="48"  alt="{{character.equipment.body?.name | titlecase}}"/>
         </div>
       }
-      <div>
+      <div class="equipmentName">
         {{character.equipment.body?.name | titlecase}}
       </div>
+      @if (getQualityTier(character.equipment.body); as tierInfo) {
+        <div class="itemTier" [ngStyle]="getTierStyle(character.equipment.body)">{{tierInfo.prefix}}{{tierInfo.tier}}</div>
+      }
     </div>
-    <div style="grid-area: left;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'leftHand'}" [ngClass]="getEffectClass('leftHand')"
+    <div style="grid-area: left;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'leftHand', 'lockedSlot': inventoryService.isSlotLocked('leftHand')}" [ngClass]="getEffectClass('leftHand')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
-      [cdkDragData]="character.equipment.leftHand" [cdkDragDisabled]="!character.equipment.leftHand"    
+      [cdkDragData]="character.equipment.leftHand" [cdkDragDisabled]="!character.equipment.leftHand"
       (dblclick)="slotDoubleClicked('leftHand', $event)" tabindex="0"
       id="equipmentSlotleftHand"
       [matTooltip]="character.equipment.leftHand | itemTooltip">
+      @if (inventoryService.slotLockingUnlocked) {
+        <mat-icon class="slotLock" (click)="inventoryService.toggleSlotLock('leftHand'); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isSlotLocked('leftHand') ? 'unlock' : 'lock'}} this slot">
+          {{inventoryService.isSlotLocked('leftHand') ? 'lock' : 'lock_open'}}
+        </mat-icon>
+      }
       @if (character.equipment.leftHand?.imageFile){
-        <div>
-          <img src="assets/images/items/{{character.equipment.leftHand?.imageFile}}.png" class="itemImage" 
+        <div class="equipmentImage">
+          <img src="assets/images/items/{{character.equipment.leftHand?.imageFile}}.png" class="itemImage"
             width="48" height="48"  alt="{{character.equipment.leftHand?.name | titlecase}}"/>
         </div>
       }
-      <div>
+      <div class="equipmentName">
         {{character.equipment.leftHand?.name | titlecase}}
       </div>
+      @if (getQualityTier(character.equipment.leftHand); as tierInfo) {
+        <div class="itemTier" [ngStyle]="getTierStyle(character.equipment.leftHand)">{{tierInfo.prefix}}{{tierInfo.tier}}</div>
+      }
     </div>
     <div style="grid-area: stats;">
       <span tabindex="0" matTooltip="Accuracy. Your chance to hit monsters when you attack them. Based on your speed."><mat-icon>manage_accounts</mat-icon>{{character.accuracy | percent}}</span>
@@ -82,37 +114,53 @@
       <br/>
       <span tabindex="0" [ngClass]="{'highlightSpan': character.righteousWrathUnlocked}" matTooltip="Defense. Reduces damage when a monster hits you. Based on your toughness and armor.{{character.righteousWrathUnlocked ? ' Doubled by the power of your righteous wrath.':''}}"><mat-icon>shield</mat-icon>{{character.defense | bigNumber}}</span>
     </div>
-    <div style="grid-area: legs;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'legs'}" [ngClass]="getEffectClass('legs')"
+    <div style="grid-area: legs;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'legs', 'lockedSlot': inventoryService.isSlotLocked('legs')}" [ngClass]="getEffectClass('legs')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
-      [cdkDragData]="character.equipment.legs" [cdkDragDisabled]="!character.equipment.legs"    
+      [cdkDragData]="character.equipment.legs" [cdkDragDisabled]="!character.equipment.legs"
       (dblclick)="slotDoubleClicked('legs', $event)" tabindex="0"
       id="equipmentSlotlegs"
       [matTooltip]="character.equipment.legs | itemTooltip">
+      @if (inventoryService.slotLockingUnlocked) {
+        <mat-icon class="slotLock" (click)="inventoryService.toggleSlotLock('legs'); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isSlotLocked('legs') ? 'unlock' : 'lock'}} this slot">
+          {{inventoryService.isSlotLocked('legs') ? 'lock' : 'lock_open'}}
+        </mat-icon>
+      }
       @if (character.equipment.legs?.imageFile){
-        <div>
-          <img src="assets/images/items/{{character.equipment.legs?.imageFile}}.png" class="itemImage" 
+        <div class="equipmentImage">
+          <img src="assets/images/items/{{character.equipment.legs?.imageFile}}.png" class="itemImage"
             width="48" height="48"  alt="{{character.equipment.legs?.name | titlecase}}"/>
         </div>
       }
-      <div>
+      <div class="equipmentName">
         {{character.equipment.legs?.name | titlecase}}
       </div>
+      @if (getQualityTier(character.equipment.legs); as tierInfo) {
+        <div class="itemTier" [ngStyle]="getTierStyle(character.equipment.legs)">{{tierInfo.prefix}}{{tierInfo.tier}}</div>
+      }
     </div>
-    <div style="grid-area: feet;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'feet'}" [ngClass]="getEffectClass('feet')"
+    <div style="grid-area: feet;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'feet', 'lockedSlot': inventoryService.isSlotLocked('feet')}" [ngClass]="getEffectClass('feet')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
-      [cdkDragData]="character.equipment.feet" [cdkDragDisabled]="!character.equipment.feet"    
+      [cdkDragData]="character.equipment.feet" [cdkDragDisabled]="!character.equipment.feet"
       (dblclick)="slotDoubleClicked('feet', $event)" tabindex="0"
       id="equipmentSlotfeet"
       [matTooltip]="character.equipment.feet | itemTooltip">
+      @if (inventoryService.slotLockingUnlocked) {
+        <mat-icon class="slotLock" (click)="inventoryService.toggleSlotLock('feet'); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isSlotLocked('feet') ? 'unlock' : 'lock'}} this slot">
+          {{inventoryService.isSlotLocked('feet') ? 'lock' : 'lock_open'}}
+        </mat-icon>
+      }
       @if (character.equipment.feet?.imageFile){
-        <div>
-          <img src="assets/images/items/{{character.equipment.feet?.imageFile}}.png" class="itemImage" 
+        <div class="equipmentImage">
+          <img src="assets/images/items/{{character.equipment.feet?.imageFile}}.png" class="itemImage"
             width="48" height="48"  alt="{{character.equipment.feet?.name | titlecase}}"/>
         </div>
       }
-      <div>
+      <div class="equipmentName">
         {{character.equipment.feet?.name | titlecase}}
       </div>
+      @if (getQualityTier(character.equipment.feet); as tierInfo) {
+        <div class="itemTier" [ngStyle]="getTierStyle(character.equipment.feet)">{{tierInfo.prefix}}{{tierInfo.tier}}</div>
+      }
   </div>
 </div>
 </div>

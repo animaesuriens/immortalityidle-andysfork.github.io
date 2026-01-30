@@ -95,6 +95,7 @@ export interface HomeProperties {
   hellFood: boolean;
   hellHome: boolean;
   homeUnlocked: boolean;
+  consecutiveHarvests: number;
 }
 
 export type FurniturePosition = 'bed' | 'bathtub' | 'kitchen' | 'workbench' | 'workbench2' | 'workbench3' | 'workbench4' | 'workbench5' | 'workbench6' | 'workbench7' | 'workbench8' | 'workbench9';
@@ -739,6 +740,7 @@ export class HomeService {
       hellFood: this.hellFood,
       hellHome: this.hellHome,
       homeUnlocked: this.homeUnlocked,
+      consecutiveHarvests: this.consecutiveHarvests,
     };
   }
 
@@ -803,6 +805,7 @@ export class HomeService {
     this.hellFood = properties.hellFood || false;
     this.hellHome = properties.hellHome || false;
     this.homeUnlocked = properties.homeUnlocked || false;
+    this.consecutiveHarvests = properties.consecutiveHarvests || 0;
   }
 
   // gets the specs of the next home, doesn't actually upgrade

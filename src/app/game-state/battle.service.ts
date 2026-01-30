@@ -431,8 +431,10 @@ export class BattleService {
           this.characterService.characterState.checkOverage();
         }
         if (this.characterService.characterState.equipment.leftHand.weaponStats.durability <= 0) {
-          this.inventoryService.addItem(this.characterService.characterState.equipment.leftHand);
-          this.characterService.characterState.equipment.leftHand = null;
+          if (!this.inventoryService.isSlotLocked('leftHand')) {
+            this.inventoryService.addItem(this.characterService.characterState.equipment.leftHand);
+            this.characterService.characterState.equipment.leftHand = null;
+          }
         }
       }
       if (
@@ -475,8 +477,10 @@ export class BattleService {
           this.characterService.characterState.checkOverage();
         }
         if (this.characterService.characterState.equipment.rightHand.weaponStats.durability <= 0) {
-          this.inventoryService.addItem(this.characterService.characterState.equipment.rightHand);
-          this.characterService.characterState.equipment.rightHand = null;
+          if (!this.inventoryService.isSlotLocked('rightHand')) {
+            this.inventoryService.addItem(this.characterService.characterState.equipment.rightHand);
+            this.characterService.characterState.equipment.rightHand = null;
+          }
         }
       }
       let overage = this.damageEnemy(damage);
@@ -649,9 +653,11 @@ export class BattleService {
         this.characterService.characterState.checkOverage();
       }
       if (armor.armorStats.durability <= 0) {
-        // it broke, unequip it
-        this.inventoryService.addItem(armor);
-        this.characterService.characterState.equipment[armor.slot] = null;
+        // it broke, unequip it (unless slot is locked)
+        if (!this.inventoryService.isSlotLocked(armor.slot)) {
+          this.inventoryService.addItem(armor);
+          this.characterService.characterState.equipment[armor.slot] = null;
+        }
       }
     }
   }

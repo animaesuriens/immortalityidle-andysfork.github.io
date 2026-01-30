@@ -1,5 +1,24 @@
 @import (reference) "../../styles.less";
 
+.tutorialWrapper {
+    display: flex;
+    flex-direction: column;
+    max-height: 700px;
+}
+
+.tutorialHeader {
+    flex-shrink: 0;
+
+    h3 {
+        margin: 0 0 8px 0;
+    }
+
+    hr {
+        margin: 0;
+    }
+}
+
 .tutorialDiv {
-    max-height: 600px;
+    flex: 1;
+    overflow-y: auto;
 }

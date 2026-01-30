@@ -522,7 +522,7 @@ export class AppComponent implements OnInit {
 
   achievementsClicked() {
     this.dialog.open(AchievementPanelComponent, {
-      width: '750px',
+      width: '720px', // 7 achievements (654px) + scrollbar + dialog padding
       data: { someField: 'foo' },
       autoFocus: false,
     });

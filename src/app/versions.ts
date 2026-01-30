@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.17.0', description: 'Equipment panel: quality indicators (colored borders) and slot locking. Statistics panel reorganized with sections. Lifetime counters now persist in saves. Sticky headers on modals. New achievement "My Favorite Things" unlocks slot locking manual.' },
   { version: '1.16.1', description: 'Fix: Changelog header stays fixed when scrolling. Renamed to "Changelog".' },
   { version: '1.16.0', description: 'Version data now in single source of truth - top bar and changelog always in sync.' },
   { version: '1.15.0', description: 'Top bar has distinct background color. Title updated to "Andy\'s Fork" branding. Changelog now follows SemVer.' },
