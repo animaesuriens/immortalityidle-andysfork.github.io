@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.16.1', description: 'Fix: Changelog header stays fixed when scrolling. Renamed to "Changelog".' },
   { version: '1.16.0', description: 'Version data now in single source of truth - top bar and changelog always in sync.' },
   { version: '1.15.0', description: 'Top bar has distinct background color. Title updated to "Andy\'s Fork" branding. Changelog now follows SemVer.' },
   { version: '1.14.0', description: 'Attributes panel now displays column headers and additional stats (Starting Value, Aptitude, Gain Multiplier).' },
