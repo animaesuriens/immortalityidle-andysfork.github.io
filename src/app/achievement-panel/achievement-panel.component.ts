@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AchievementService } from '../game-state/achievement.service';
-import { CharacterService } from '../game-state/character.service';
+import { GameStateService } from '../game-state/game-state.service';
 
 @Component({
   selector: 'app-achievement-panel',
@@ -10,6 +10,6 @@ import { CharacterService } from '../game-state/character.service';
 export class AchievementPanelComponent {
   constructor(
     public achievementService: AchievementService,
-    public characterService: CharacterService
+    public gameStateService: GameStateService
   ) {}
 }

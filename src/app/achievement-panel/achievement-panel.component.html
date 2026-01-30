@@ -8,7 +8,7 @@
         @for (achievement of achievementService.achievements; track $index) {
           @if (!achievement.unlocked) {
             <div class="itemSlot" matTooltip="
-Tip: {{achievement.hint}}{{characterService.characterState.easyMode ? '
+Tip: {{achievement.hint}}{{gameStateService.easyModeEver ? '
 
 Requires: ' + achievement.requirements + '
 Current Progress: ' + (achievement.progress ? achievement.progress() : 'N/A') : ''}}
@@ -27,7 +27,7 @@ Current Progress: ' + (achievement.progress ? achievement.progress() : 'N/A') : 
             <div class="itemSlot" tabindex="0" matTooltip="
 {{achievement.description}}
 
-Tip: {{achievement.hint}}{{characterService.characterState.easyMode ? '
+Tip: {{achievement.hint}}{{gameStateService.easyModeEver ? '
 
 Requires: ' + achievement.requirements + '
 Current Progress: ' + (achievement.progress ? achievement.progress() : 'N/A') : ''}}
