@@ -109,22 +109,16 @@
     @if (inventoryService.selectedItem?.item){
       <div>
         @if (inventoryService.selectedItem?.item?.imageFile){
-          <img src="assets/images/items/{{inventoryService.selectedItem?.item?.imageFile}}.png" class="itemImage" 
+          <img src="assets/images/items/{{inventoryService.selectedItem?.item?.imageFile}}.png" class="itemImage"
             [style]="getStyle(inventoryService.selectedItem)"
             width="48" height="48"/>
         }
       </div>
       <div class='selectedItemText'>
         <div class='selectedItemName'>
-          <span>
-            {{inventoryService.selectedItem?.item?.name | titlecase}}
-          </span>
+          <span>{{getItemName(inventoryService.selectedItem?.item)}}</span>
         </div>
-        <div class='selectedItemTextBody'>
-          <span>
-            {{inventoryService.selectedItem?.item?.description}}
-          </span>
-        </div>
+        <pre class='selectedItemTooltip'>{{getTooltipBody(inventoryService.selectedItem?.item)}}</pre>
       </div>
     }
     @else {

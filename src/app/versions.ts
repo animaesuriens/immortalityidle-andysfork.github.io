@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.18.1', description: 'Fix: Selected item details now shows the same content as the hover tooltip.' },
   { version: '1.18.0', description: 'Equipment names now progress linearly (no more cycling back to bad names). Track best equipment value per slot in Statistics. Grandmother\'s Walking Stick gets special naming at 1B+ damage.' },
   { version: '1.17.1', description: 'Fix: Derive lifetime counter values from unlocked achievements for old saves (one-time migration). Add pre-commit hook to enforce changelog updates.' },
   { version: '1.17.0', description: 'Equipment panel: quality indicators (colored borders) and slot locking. Statistics panel reorganized with sections. Lifetime counters now persist in saves. Sticky headers on modals. New achievement "My Favorite Things" unlocks slot locking manual.' },

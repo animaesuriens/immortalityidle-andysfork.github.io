@@ -1,13 +1,15 @@
 import { Component } from '@angular/core';
+import { TitleCasePipe } from '@angular/common';
 import { trigger, state, style, transition, animate, keyframes } from '@angular/animations';
 import { CharacterService } from '../game-state/character.service';
 import { EquipmentPosition } from '../game-state/character';
-import { InventoryService, ItemStack, instanceOfEquipment } from '../game-state/inventory.service';
+import { InventoryService, ItemStack, Item, instanceOfEquipment } from '../game-state/inventory.service';
 import { HellService } from '../game-state/hell.service';
 import { MainLoopService } from '../game-state/main-loop.service';
 import { GameStateService } from '../game-state/game-state.service';
 import { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
 import { ItemRepoService } from '../game-state/item-repo.service';
+import { ItemTooltipPipe } from '../app.component';
 
 @Component({
   selector: 'app-inventory-panel',
@@ -32,13 +34,16 @@ export class InventoryPanelComponent {
   dragPositionX = 0;
   dragPositionY = 0;
 
+  private titleCasePipe = new TitleCasePipe();
+
   constructor(
     public inventoryService: InventoryService,
     public characterService: CharacterService,
     public hellService: HellService,
     public mainLoopService: MainLoopService,
     public gameStateService: GameStateService,
-    public itemRepoService: ItemRepoService
+    public itemRepoService: ItemRepoService,
+    private itemTooltipPipe: ItemTooltipPipe
   ) {
     this.equipmentSlots = Object.keys(this.characterService.characterState.equipment);
     this.moneyUpdates = [];
@@ -369,5 +374,18 @@ export class InventoryPanelComponent {
       red: true
     };
     return darkColors[color] ? 'white' : 'black';
+  }
+
+  getItemName(item: Item | null | undefined): string {
+    if (!item) return '';
+    return this.titleCasePipe.transform(item.name);
+  }
+
+  getTooltipBody(item: Item | null | undefined): string {
+    if (!item) return '';
+    const tooltip = this.itemTooltipPipe.transform(item);
+    // Skip the first line (name) and the empty second line
+    const lines = tooltip.split('\n');
+    return lines.slice(2).join('\n');
   }
 }
