@@ -145,6 +145,7 @@ export interface InventoryProperties {
   lifetimeGemsSold: number;
   lifetimeEquipmentAutoEquipped: number;
   highestMaxItems: number;
+  highestEquipmentValue: { [key: string]: number };
   countersMigrated: boolean;
 }
 
@@ -158,6 +159,14 @@ export class InventoryService {
   stashedItemStacks: (ItemStack | null)[] = [];
   maxItems = 10;
   highestMaxItems = 10;
+  highestEquipmentValue: { [key: string]: number } = {
+    head: 0,
+    body: 0,
+    leftHand: 0,
+    rightHand: 0,
+    legs: 0,
+    feet: 0,
+  };
   countersMigrated = false;
   maxStackSize = 100;
   noFood: boolean;
@@ -381,6 +390,7 @@ export class InventoryService {
       lifetimeGemsSold: this.lifetimeGemsSold,
       lifetimeEquipmentAutoEquipped: this.lifetimeEquipmentAutoEquipped,
       highestMaxItems: this.highestMaxItems,
+      highestEquipmentValue: this.highestEquipmentValue,
       countersMigrated: this.countersMigrated,
     };
   }
@@ -453,6 +463,14 @@ export class InventoryService {
     this.lifetimeGemsSold = properties.lifetimeGemsSold || 0;
     this.lifetimeEquipmentAutoEquipped = properties.lifetimeEquipmentAutoEquipped || 0;
     this.highestMaxItems = properties.highestMaxItems || 10;
+    this.highestEquipmentValue = properties.highestEquipmentValue || {
+      head: 0,
+      body: 0,
+      leftHand: 0,
+      rightHand: 0,
+      legs: 0,
+      feet: 0,
+    };
     this.countersMigrated = properties.countersMigrated || false;
   }
 
@@ -586,28 +604,30 @@ export class InventoryService {
         grade = Math.floor(Math.pow(grade, 1 + value / 400));
       }
     }
+    // Linear progression: all name components advance proportionally with grade
     const highestGrade = ItemPrefixes.length * WeaponSuffixes.length * WeaponSuffixModifiers.length;
     const nameGrade = Math.ceil(Math.sqrt(grade / 1e10) * highestGrade); // Name spreads up to 10B Value (coincides with damage)
-    let prefixIndex = nameGrade % ItemPrefixes.length;
-    if (nameGrade >= highestGrade) {
-      prefixIndex = ItemPrefixes.length - 1;
-    }
-    let suffixIndex = Math.floor(nameGrade / ItemPrefixes.length);
+    const progress = Math.min(nameGrade / highestGrade, 1);
+
+    // Prefix scales linearly with progress
+    const prefixIndex = Math.floor(progress * (ItemPrefixes.length - 1));
     const prefix = ItemPrefixes[prefixIndex];
+
+    // Suffix appears after 25% progress (prefix-only names last longer)
     let suffix = '';
-    if (suffixIndex > 0) {
-      let suffixModifierIndex = Math.floor(suffixIndex / WeaponSuffixes.length);
-      if (suffixModifierIndex > 0) {
-        if (suffixModifierIndex > WeaponSuffixModifiers.length) {
-          suffixModifierIndex = WeaponSuffixModifiers.length;
-          suffixIndex = WeaponSuffixes.length - 1;
-        } else {
-          suffixIndex = suffixIndex % WeaponSuffixes.length;
-        }
-        const suffixModifier = WeaponSuffixModifiers[suffixModifierIndex - 1];
-        suffix = ' of ' + suffixModifier + ' ' + WeaponSuffixes[suffixIndex];
+    const suffixThreshold = 0.25;
+    if (progress > suffixThreshold) {
+      const suffixProgress = (progress - suffixThreshold) / (1 - suffixThreshold);
+      const suffixIndex = Math.floor(suffixProgress * (WeaponSuffixes.length - 1));
+
+      // Modifier appears after suffix is 30% through
+      const modifierThreshold = 0.3;
+      if (suffixProgress > modifierThreshold) {
+        const modifierProgress = (suffixProgress - modifierThreshold) / (1 - modifierThreshold);
+        const modifierIndex = Math.floor(modifierProgress * (WeaponSuffixModifiers.length - 1));
+        suffix = ' of ' + WeaponSuffixModifiers[modifierIndex] + ' ' + WeaponSuffixes[suffixIndex];
       } else {
-        suffix = ' of ' + WeaponSuffixes[suffixIndex - 1];
+        suffix = ' of ' + WeaponSuffixes[suffixIndex];
       }
     }
     let materialPrefix = material;
@@ -619,11 +639,21 @@ export class InventoryService {
       imageFileName = 'woodenWeapon';
     }
     const baseName = defaultName ?? WeaponNames[Math.floor(Math.random() * WeaponNames.length)];
+    const durability = grade * 15;
+    const damage = Math.max(Math.sqrt(grade), 1000) * grade;
     let name: string;
     if (baseName === "Grandmother's Walking Stick") {
-      // don't rename grandma's stick!
-      name = baseName;
       imageFileName = 'stick';
+      if (damage >= 1e9) {
+        // Special naming for achievement-level stick: "Grandmother's [prefix] Walking Stick of [modifier] [suffix]"
+        const stickPrefixIndex = Math.floor(progress * (ItemPrefixes.length - 1));
+        const stickPrefix = ItemPrefixes[stickPrefixIndex];
+        const stickSuffixIndex = Math.floor(progress * (WeaponSuffixes.length - 1));
+        const stickModifierIndex = Math.floor(progress * (WeaponSuffixModifiers.length - 1));
+        name = "Grandmother's " + stickPrefix + ' Walking Stick of ' + WeaponSuffixModifiers[stickModifierIndex] + ' ' + WeaponSuffixes[stickSuffixIndex];
+      } else {
+        name = baseName;
+      }
     } else {
       name = prefix + ' ' + materialPrefix + ' ' + baseName + suffix;
     }
@@ -631,8 +661,10 @@ export class InventoryService {
       LogTopic.CRAFTING,
       'Your hard work paid off! You created a new weapon: ' + this.titleCasePipe.transform(name) + '!'
     );
-    const durability = grade * 15;
-    const damage = Math.max(Math.sqrt(grade), 1000) * grade;
+    // Track highest equipment value per slot
+    if (grade > this.highestEquipmentValue[slot]) {
+      this.highestEquipmentValue[slot] = grade;
+    }
     return {
       id: 'weapon',
       imageFile: imageFileName,
@@ -907,28 +939,30 @@ export class InventoryService {
         grade = Math.floor(Math.pow(grade, 1 + value / 400));
       }
     }
+    // Linear progression: all name components advance proportionally with grade
     const highestGrade = ItemPrefixes.length * ArmorSuffixes.length * ArmorSuffixModifiers.length;
     const nameGrade = Math.ceil(Math.sqrt(grade / 1e10) * highestGrade); // Name spreads up to 10B Value (coincides with defense)
-    let prefixIndex = nameGrade % ItemPrefixes.length;
-    if (nameGrade >= highestGrade) {
-      prefixIndex = ItemPrefixes.length - 1;
-    }
-    let suffixIndex = Math.floor(nameGrade / ItemPrefixes.length);
+    const progress = Math.min(nameGrade / highestGrade, 1);
+
+    // Prefix scales linearly with progress
+    const prefixIndex = Math.floor(progress * (ItemPrefixes.length - 1));
     const prefix = ItemPrefixes[prefixIndex];
+
+    // Suffix appears after 25% progress (prefix-only names last longer)
     let suffix = '';
-    if (suffixIndex > 0) {
-      let suffixModifierIndex = Math.floor(suffixIndex / ArmorSuffixes.length);
-      if (suffixModifierIndex > 0) {
-        if (suffixModifierIndex > ArmorSuffixModifiers.length) {
-          suffixModifierIndex = ArmorSuffixModifiers.length;
-          suffixIndex = ArmorSuffixes.length - 1;
-        } else {
-          suffixIndex = suffixIndex % ArmorSuffixes.length;
-        }
-        const suffixModifier = ArmorSuffixModifiers[suffixModifierIndex - 1];
-        suffix = ' of ' + suffixModifier + ' ' + ArmorSuffixes[suffixIndex];
+    const suffixThreshold = 0.25;
+    if (progress > suffixThreshold) {
+      const suffixProgress = (progress - suffixThreshold) / (1 - suffixThreshold);
+      const suffixIndex = Math.floor(suffixProgress * (ArmorSuffixes.length - 1));
+
+      // Modifier appears after suffix is 30% through
+      const modifierThreshold = 0.3;
+      if (suffixProgress > modifierThreshold) {
+        const modifierProgress = (suffixProgress - modifierThreshold) / (1 - modifierThreshold);
+        const modifierIndex = Math.floor(modifierProgress * (ArmorSuffixModifiers.length - 1));
+        suffix = ' of ' + ArmorSuffixModifiers[modifierIndex] + ' ' + ArmorSuffixes[suffixIndex];
       } else {
-        suffix = ' of ' + ArmorSuffixes[suffixIndex - 1];
+        suffix = ' of ' + ArmorSuffixes[suffixIndex];
       }
     }
     let namePicker = ChestArmorNames;
@@ -951,6 +985,10 @@ export class InventoryService {
     );
     const durability = grade * 10;
     const defense = Math.max(Math.sqrt(grade), 1000) * grade;
+    // Track highest equipment value per slot
+    if (grade > this.highestEquipmentValue[slot]) {
+      this.highestEquipmentValue[slot] = grade;
+    }
     return {
       id: 'armor',
       imageFile: imageFileName,

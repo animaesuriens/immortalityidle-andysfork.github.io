@@ -210,6 +210,35 @@
           <td>{{inventoryService.highestMaxItems}}</td>
         </tr>
       </table>
+      <div class="statisticsSubsection">
+        <h5>Best Equipment Value</h5>
+        <table>
+          <tr>
+            <td>Head:</td>
+            <td>{{inventoryService.highestEquipmentValue['head'] | bigNumber}}</td>
+          </tr>
+          <tr>
+            <td>Body:</td>
+            <td>{{inventoryService.highestEquipmentValue['body'] | bigNumber}}</td>
+          </tr>
+          <tr>
+            <td>Left Hand:</td>
+            <td>{{inventoryService.highestEquipmentValue['leftHand'] | bigNumber}}</td>
+          </tr>
+          <tr>
+            <td>Right Hand:</td>
+            <td>{{inventoryService.highestEquipmentValue['rightHand'] | bigNumber}}</td>
+          </tr>
+          <tr>
+            <td>Legs:</td>
+            <td>{{inventoryService.highestEquipmentValue['legs'] | bigNumber}}</td>
+          </tr>
+          <tr>
+            <td>Feet:</td>
+            <td>{{inventoryService.highestEquipmentValue['feet'] | bigNumber}}</td>
+          </tr>
+        </table>
+      </div>
     </div>
 
     <div class="statisticsSection">
