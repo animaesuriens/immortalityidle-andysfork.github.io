@@ -52,11 +52,40 @@ export * from './types/context.types';
 export * from './formulas/formula.builders';
 
 // =============================================================================
-// HANDLER INTERFACE
+// HANDLER INTERFACE AND REGISTRY
 // =============================================================================
 
 // EffectHandler interface, RenderFormat, HandlerRegistry
 export * from './handlers/handler.interface';
+
+// Handler registry (all 14 handlers)
+export { handlerRegistry } from './handlers/handler-registry';
+
+// =============================================================================
+// CONTEXT
+// =============================================================================
+
+// GameContext (concrete EffectContext implementation)
+export { GameContext } from './context/game-context';
+
+// =============================================================================
+// SERVICES
+// =============================================================================
+
+// Effect execution service
+export { EffectExecutorService } from './executor/effect-executor.service';
+
+// Effect rendering service
+export { EffectRendererService } from './renderer/effect-renderer.service';
+
+// =============================================================================
+// ANGULAR PIPES
+// =============================================================================
+
+// Thin pipes for template use
+export { EffectShortPipe } from './pipes/effect-short.pipe';
+export { EffectLongPipe } from './pipes/effect-long.pipe';
+export { EffectFormulaPipe } from './pipes/effect-formula.pipe';
 
 // =============================================================================
 // UTILITIES
