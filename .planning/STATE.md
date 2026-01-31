@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-31)
 ## Current Position
 
 Phase: 3 of 7 (First Vertical Slice)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-01-31 - Completed 03-01-PLAN.md (Type Updates and Formula Builders)
+Last activity: 2026-01-31 - Completed 03-02-PLAN.md (Condition Evaluator and Effect Handlers)
 
-Progress: [████░░░░░░] 40%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
+- Total plans completed: 5
 - Average duration: 9min
-- Total execution time: 0.6 hours
+- Total execution time: 0.75 hours
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [████░░░░░░] 40%
 |-------|-------|-------|----------|
 | 01-duration-foundation | 1 | 12min | 12min |
 | 02-interface-design | 2 | 17min | 8.5min |
-| 03-first-vertical-slice | 1 | 8min | 8min |
+| 03-first-vertical-slice | 2 | 15min | 7.5min |
 
 **Recent Trend:**
-- Last 5 plans: 12min, 10min, 7min, 8min
-- Trend: Stable (~8-10min)
+- Last 5 plans: 12min, 10min, 7min, 8min, 7min
+- Trend: Stable (~7-8min)
 
 *Updated after each plan completion*
 
@@ -57,6 +57,8 @@ Decisions are logged in DECISIONS.md. Key decisions affecting current work:
 - **Field name 'amount'**: All quantity fields use 'amount' consistently
 - **Condition naming**: Has/Is/Compare prefix (HasFlag, CompareAttribute, CompareValues)
 - **Formula builders**: Object literals with evaluate() and render() methods
+- **Singleton handler pattern**: const exports, not classes (simpler, better tree-shaking)
+- **Late-bound registry reference**: setRegistryRef() breaks conditional handler circular dependency
 
 ### Pending Todos
 
@@ -68,8 +70,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-31T11:44:17Z
-Stopped at: Completed 03-01-PLAN.md (Type Updates and Formula Builders)
+Last session: 2026-01-31T11:55:49Z
+Stopped at: Completed 03-02-PLAN.md (Condition Evaluator and Effect Handlers)
 Resume file: None
 
 ## Completed Phases
@@ -91,10 +93,13 @@ Resume file: None
 - **Plan 03-01:** Type discriminators updated (type->kind), field names standardized (value/change->amount), CompareValues condition added, all 17 formula builders implemented
 - **Summary:** `.planning/phases/03-first-vertical-slice/03-01-SUMMARY.md`
 - **Commits:** c922319, 7a4cf83, 3cd6a6a
+- **Plan 03-02:** Condition evaluator (9 kinds), 4 implemented handlers (status, attribute, yinyang, conditional), 10 stub handlers, handler registry
+- **Summary:** `.planning/phases/03-first-vertical-slice/03-02-SUMMARY.md`
+- **Commits:** bbb7bc3, 312f529, 69d6353
 
 ## Effects Module Structure
 
-After Phase 3 Plan 1 completion, the effects module contains 9 files:
+After Phase 3 Plan 2 completion, the effects module contains 25 files:
 
 ```
 src/app/effects/
@@ -105,12 +110,29 @@ src/app/effects/
 │   └── context.types.ts     # EffectContext interface
 ├── formulas/
 │   └── formula.builders.ts  # 17 implemented formula builders
+├── conditions/
+│   └── condition-evaluator.ts # evaluateCondition function (9 kinds)
 ├── handlers/
-│   └── handler.interface.ts # EffectHandler, HandlerRegistry (uses kind)
+│   ├── handler.interface.ts   # EffectHandler, HandlerRegistry
+│   ├── handler-registry.ts    # Complete registry (14 handlers)
+│   ├── status.handler.ts      # Implemented
+│   ├── attribute.handler.ts   # Implemented
+│   ├── yinyang.handler.ts     # Implemented
+│   ├── conditional.handler.ts # Implemented
+│   ├── money.handler.ts       # Stub
+│   ├── item-add.handler.ts    # Stub
+│   ├── item-consume.handler.ts    # Stub
+│   ├── item-generate.handler.ts   # Stub
+│   ├── chance.handler.ts      # Stub
+│   ├── progress.handler.ts    # Stub
+│   ├── spawn-enemy.handler.ts # Stub
+│   ├── spawn-follower.handler.ts  # Stub
+│   ├── trigger-battle.handler.ts  # Stub
+│   └── lifespan.handler.ts    # Stub
 ├── utils/
 │   ├── exhaustive.ts        # assertNever helper
 │   └── abbreviations.ts     # ABBREVIATIONS constant
 └── index.ts                 # Barrel export
 ```
 
-Ready for Plan 03-02: Handler stubs and Resting handler implementations
+Ready for Plan 03-03: Effect executor and context adapter
