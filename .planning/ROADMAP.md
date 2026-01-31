@@ -50,11 +50,22 @@ Plans:
 **Goal**: ONE activity (Resting) works end-to-end with declarative effects
 **Depends on**: Phase 2
 **Requirements**: ATTR-01, ATTR-02, STAT-01, REND-01, REND-02, REND-06
+**Context**: `.planning/phases/03-first-vertical-slice/03-CONTEXT.md`
 **Success Criteria** (what must be TRUE):
   1. Resting activity uses declarative effect definition (not consequence function)
   2. Effect execution produces same game state changes as old code
   3. Activity card displays rendered effects (short format)
   4. Adding a new attribute effect requires only definition change (no handler modification)
+**Cascading Decisions** (established in Phase 3, apply to Phase 4+):
+  - `kind` instead of `type` for effect/condition discriminators
+  - `amount` standardized across all value fields
+  - Condition types: HasFlag, CompareValues, And, Or, Not
+  - GameFlag and GameProperty enums in game-state
+  - Discriminated union for Activity (DeclarativeActivity | LegacyActivity)
+  - Rendering formats: short (+25 Sta), long (sentence), formula (breakdown)
+  - Computed signals for Angular templates
+  - One file per handler, singleton pattern
+  - Static handler registry with type-enforced completeness
 **Plans**: TBD
 
 Plans:
@@ -63,6 +74,7 @@ Plans:
 ### Phase 4: Validation Slice
 **Goal**: 4 diverse activities validate architecture handles all complexity
 **Depends on**: Phase 3
+**Inherits**: All Phase 3 cascading decisions (type system, rendering, architecture)
 **Requirements**: ATTR-03, STAT-02, STAT-03, MONEY-01, MONEY-02, ITEM-01, ITEM-02, ITEM-03, ITEM-04, ITEM-05, COND-01, COND-02, COND-03, COND-04, COND-05, SPEC-01, SPEC-02, SPEC-03, SPEC-04, SPEC-05, REND-03, REND-04, REND-05, MIG-02
 **Success Criteria** (what must be TRUE):
   1. OddJobs activity works (formula-based money, conditional effects)
@@ -78,6 +90,8 @@ Plans:
 ### Phase 5: Full Migration
 **Goal**: All ~45 remaining activities converted to declarative format
 **Depends on**: Phase 4
+**Inherits**: All Phase 3-4 patterns and decisions
+**Cleanup**: Remove LegacyActivity type, make effects required, delete effectsLegacy/consequence
 **Requirements**: MIG-01, MIG-03, MIG-04
 **Success Criteria** (what must be TRUE):
   1. All activities use declarative effect definitions
