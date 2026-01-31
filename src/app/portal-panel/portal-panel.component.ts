@@ -1,14 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { GameStateService } from '../game-state/game-state.service';
 import { ActivityService } from '../game-state/activity.service';
 import { CharacterService } from '../game-state/character.service';
-import { Activity } from '../game-state/activity';
+import { Activity, isDeclarativeActivity } from '../game-state/activity';
 import { Character } from '../game-state/character';
 import { HellService } from '../game-state/hell.service';
 import { TextPanelComponent } from '../text-panel/text-panel.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ImpossibleTaskService } from '../game-state/impossibleTask.service';
 import { MainLoopService } from '../game-state/main-loop.service';
+import { EffectExecutorService, EffectShortPipe } from '../effects';
 
 @Component({
   selector: 'app-portal-panel',
@@ -20,6 +21,8 @@ export class PortalPanelComponent {
   Math: Math;
   dragPositionX = 0;
   dragPositionY = 0;
+  private readonly effectExecutor = inject(EffectExecutorService);
+  private readonly effectShortPipe = inject(EffectShortPipe);
 
   constructor(
     public gameStateService: GameStateService,
@@ -35,12 +38,25 @@ export class PortalPanelComponent {
   }
 
   doActivity(activity: Activity) {
-    activity.consequence[activity.level]();
+    if (isDeclarativeActivity(activity)) {
+      const effects = activity.effects[activity.level] ?? [];
+      this.effectExecutor.executeEffects(effects);
+    } else {
+      activity.consequence[activity.level]();
+      this.characterService.characterState.checkOverage();
+    }
   }
 
   showActivity(event: MouseEvent, activity: Activity) {
     event.stopPropagation();
-    const bodyString = activity.description[activity.level] + '\n\n' + activity.consequenceDescription[activity.level];
+    let effectsText: string;
+    if (isDeclarativeActivity(activity)) {
+      const effects = activity.effects[activity.level] ?? [];
+      effectsText = this.effectShortPipe.transform(effects);
+    } else {
+      effectsText = activity.consequenceDescription[activity.level];
+    }
+    const bodyString = activity.description[activity.level] + '\n\n' + effectsText;
 
     const dialogProperties = { titleText: activity.name[activity.level], bodyText: bodyString, imageFile: '' };
     if (activity.imageBaseName) {

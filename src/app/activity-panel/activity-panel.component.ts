@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { GameStateService } from '../game-state/game-state.service';
 import { ActivityService } from '../game-state/activity.service';
 import { CharacterService } from '../game-state/character.service';
-import { Activity, ActivityType } from '../game-state/activity';
+import { Activity, ActivityType, isDeclarativeActivity } from '../game-state/activity';
 import { Character } from '../game-state/character';
 import { HellService } from '../game-state/hell.service';
 import { TextPanelComponent } from '../text-panel/text-panel.component';
@@ -16,6 +16,7 @@ import { BigNumberPipe, CamelToTitlePipe } from '../app.component';
 import { MainLoopService } from '../game-state/main-loop.service';
 import { LogService, LogTopic } from '../game-state/log.service';
 import { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
+import { EffectShortPipe } from '../effects';
 
 interface ActivityGroup {
   name: string;
@@ -36,6 +37,7 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
   dragPositionX = 0;
   dragPositionY = 0;
   private subscriptions: Subscription[] = [];
+  private readonly effectShortPipe = inject(EffectShortPipe);
 
   // Activity type categories for grouping
   private readonly basicTypes = [ActivityType.OddJobs, ActivityType.Resting, ActivityType.Begging, ActivityType.Taunting, ActivityType.CombatTraining];
@@ -347,7 +349,14 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
 
   showActivity(event: MouseEvent, activity: Activity) {
     event.stopPropagation();
-    let bodyString = activity.description[activity.level] + '\n\n' + activity.consequenceDescription[activity.level];
+    let effectsText: string;
+    if (isDeclarativeActivity(activity)) {
+      const effects = activity.effects[activity.level] ?? [];
+      effectsText = this.effectShortPipe.transform(effects);
+    } else {
+      effectsText = activity.consequenceDescription[activity.level];
+    }
+    let bodyString = activity.description[activity.level] + '\n\n' + effectsText;
     if (activity.projectionOnly) {
       bodyString +=
         '\n\nThis activity can only be performed by a spiritual projection of yourself back in the mortal realm.';
@@ -387,9 +396,15 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
   }
 
   getActivityEffects(activity: Activity): string {
-    // Use the new effects field if available
-    if (activity.effects?.[activity.level]) {
-      return activity.effects[activity.level];
+    // Use declarative effects if available
+    if (isDeclarativeActivity(activity)) {
+      const effects = activity.effects[activity.level] ?? [];
+      return this.effectShortPipe.transform(effects);
+    }
+
+    // Use legacy effectsLegacy string if available
+    if (activity.effectsLegacy?.[activity.level]) {
+      return activity.effectsLegacy[activity.level];
     }
 
     // Fallback: parse from consequenceDescription

@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.25.2', description: 'Internal: Wire effect rendering to activity-panel and portal-panel UI components (Phase 3 plan 4 task 3).' },
   { version: '1.25.1', description: 'Internal: Convert Resting to declarative effects, add executeActivity helper, rename legacy string effects to effectsLegacy (Phase 3 plan 4 task 2).' },
   { version: '1.25.0', description: 'Internal: Add Activity discriminated union (DeclarativeActivity | LegacyActivity), isDeclarativeActivity type guard, and fix FormulaContext/EffectContext type compatibility (Phase 3 plan 4).' },
   { version: '1.24.0', description: 'Internal: Add effect executor/renderer services, GameContext class, and Angular pipes for declarative effects (Phase 3 plan 3).' },
