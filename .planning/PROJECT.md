@@ -1,56 +1,71 @@
-# Immortality Idle - UI Improvements
+# Declarative Activity Effects System
 
 ## What This Is
 
-An Angular 18 idle/incremental game with a cultivation theme. Currently working on UI improvements in quick-fix mode (no formal roadmap).
+A refactor of Immortality Idle's activity system from imperative consequence functions to a declarative effects system. Activities will define their effects as structured data that can be both executed and rendered, eliminating duplication between code and display strings. Also includes support for multi-day activities and schedule rework.
 
 ## Core Value
 
-Improve panel usability and information display without breaking existing functionality.
+Single source of truth for activity effects - change the definition once, both execution and display update automatically.
 
 ## Requirements
 
 ### Validated
 
-- Codebase mapped (`.planning/codebase/`)
+(None yet - ship to validate)
 
 ### Active
 
-- [ ] UI improvements (iterative, user-driven)
-
-### Completed This Session
-
-- [x] Added scrollbars to Home, Equipment, and Health panels (content scrolls, title bar stays fixed)
-- [x] Fixed Equipment panel scrollbar to stick to panel edge (not content edge)
-- [x] Fixed Equipment panel grid to not dynamically resize with wrapper
-- [x] Fixed Home panel buttons to stick to bottom of panel
-- [x] Added regen info (health, stamina, mana per day) to Home panel
-- [x] Reordered Home panel: regen info now above cost info
-- [x] Reduced spacing between "You live in a ***" and descriptive content
-- [x] Added spacing (16px) between descriptive content and furniture slots
+- [ ] Effect type system with union types and exhaustive checking
+- [ ] Handler registry pattern for effect execution and rendering
+- [ ] Composable effect primitives (conditional, probabilistic, etc.)
+- [ ] Formula builder system for computed values
+- [ ] EffectRenderService with multiple render formats
+- [ ] Thin pipes for template usage (effectShort, effectLong, effectFormula)
+- [ ] Multi-day activity support with configurable duration
+- [ ] Completion-based scheduling (Time panel rework)
+- [ ] Statistics layer for tracking (lastIncome, activity counters)
+- [ ] Migrate all existing activities to declarative format
+- [ ] Remove old consequence functions and effects strings
 
 ### Out of Scope
 
-(None defined)
+- Items/equipment/furniture effects — start with activities only, expand later if successful
+- Escape hatch for custom functions — always extend type system instead
+- Per-day effects for multi-day activities — effects apply at completion only
+- Partial completion effects — complete fully or don't get effects
 
 ## Context
 
-Working on branch: `v1-ui-improvements`
+**Codebase:** Angular 18 idle/incremental game with cultivation theme
+**Branch:** andy's-fork
+**Key file:** `src/app/game-state/activity.service.ts` - contains ~50 activities with consequence functions
 
-Files modified:
-- `src/app/home-panel/home-panel.component.html` - Added regen display, reordered content
-- `src/app/home-panel/home-panel.component.less` - Scrollbar, h3 margin, furniture spacing
-- `src/app/equipment-panel/equipment-panel.component.html` - Added scroll wrapper
-- `src/app/equipment-panel/equipment-panel.component.less` - Fixed grid sizing, scroll wrapper
-- `src/app/health-panel/health-panel.component.less` - Added scrollbar support
-- `src/app/game-state/home.service.ts` - Added healthRegen, staminaRegen, manaRegen to Home interface and all home definitions
+**Current pain point:** Activity effects are defined twice:
+1. `effects: ['+Str, +Spd']` - display string (hardcoded)
+2. `consequence: [() => { ... }]` - execution code
+
+These can drift out of sync. Declarative system eliminates this.
+
+## Constraints
+
+- **Tech stack**: Angular 18, TypeScript — use standard patterns
+- **Testing**: Design for easy mocking with context object pattern
+- **Migration**: Big bang — convert all activities at once, no hybrid period
+- **Backward compatibility**: Save format may change, handle migration
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Quick fixes mode | User prefers iterative fixes over formal planning | Working well |
-| Add regen properties to Home interface | Needed to display regen info in panel | Done |
+| Activities only (start narrow) | Reduce scope, validate approach before expanding | — Pending |
+| Handler registry pattern | Extensible without modifying core executor | — Pending |
+| Union types for effects | Compiler enforces exhaustive handling | — Pending |
+| Composable primitives | Fewer building blocks, infinite combinations | — Pending |
+| Formula builders | Same definition executes AND renders | — Pending |
+| Context object for services | Easy testing with mock context | — Pending |
+| Completion-based scheduling | Cleaner mental model than day-based | — Pending |
+| Per-activity interrupt flags | Different activities need different behavior | — Pending |
 
 ---
-*Last updated: 2026-01-29 after UI improvements session*
+*Last updated: 2026-01-31 after initialization*
