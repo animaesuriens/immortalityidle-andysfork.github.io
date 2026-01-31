@@ -6,7 +6,7 @@ Transform Immortality Idle's ~50 activities from imperative consequence function
 
 ## Phases
 
-- [ ] **Phase 1: Duration Foundation** - Add duration field to all activities (default 1 day)
+- [x] **Phase 1: Duration Foundation** - Add duration field to all activities (default 1 day)
 - [ ] **Phase 2: Interface Design** - Define all type contracts (no implementation)
 - [ ] **Phase 3: First Vertical Slice** - ONE activity (Resting) working end-to-end
 - [ ] **Phase 4: Validation Slice** - 4 diverse activities stress-testing all effect types
@@ -28,7 +28,7 @@ Transform Immortality Idle's ~50 activities from imperative consequence function
 **Plans**: 1 plan
 
 Plans:
-- [ ] 01-01-PLAN.md - Add duration field to interface and all 69 activity definitions
+- [x] 01-01-PLAN.md - Add duration field to interface and all 69 activity definitions
 
 ### Phase 2: Interface Design
 **Goal**: Define all contracts (types, interfaces, handler signatures) without implementation
@@ -120,7 +120,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Duration Foundation | 0/1 | Planned | - |
+| 1. Duration Foundation | 1/1 | Complete | 2026-01-31 |
 | 2. Interface Design | 0/TBD | Not started | - |
 | 3. First Vertical Slice | 0/TBD | Not started | - |
 | 4. Validation Slice | 0/TBD | Not started | - |

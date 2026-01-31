@@ -59,7 +59,7 @@
 
 ### Multi-day Activities
 
-- [ ] **MDAY-01**: Duration field - base duration per activity level
+- [x] **MDAY-01**: Duration field - base duration per activity level
 - [ ] **MDAY-02**: Duration scaling - optional modifier based on attributes
 - [ ] **MDAY-03**: Progress tracking - current day / total days
 - [ ] **MDAY-04**: Progress bar display in activity card
@@ -107,13 +107,59 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (To be filled during roadmap creation) | | |
+| CORE-01 | Phase 1 | Pending |
+| CORE-02 | Phase 1 | Pending |
+| CORE-03 | Phase 1 | Pending |
+| CORE-04 | Phase 1 | Pending |
+| CORE-05 | Phase 1 | Pending |
+| ATTR-01 | Phase 2 | Pending |
+| ATTR-02 | Phase 2 | Pending |
+| ATTR-03 | Phase 3 | Pending |
+| STAT-01 | Phase 2 | Pending |
+| STAT-02 | Phase 3 | Pending |
+| STAT-03 | Phase 3 | Pending |
+| MONEY-01 | Phase 3 | Pending |
+| MONEY-02 | Phase 3 | Pending |
+| ITEM-01 | Phase 3 | Pending |
+| ITEM-02 | Phase 3 | Pending |
+| ITEM-03 | Phase 3 | Pending |
+| ITEM-04 | Phase 3 | Pending |
+| ITEM-05 | Phase 3 | Pending |
+| COND-01 | Phase 3 | Pending |
+| COND-02 | Phase 3 | Pending |
+| COND-03 | Phase 3 | Pending |
+| COND-04 | Phase 3 | Pending |
+| COND-05 | Phase 3 | Pending |
+| SPEC-01 | Phase 3 | Pending |
+| SPEC-02 | Phase 3 | Pending |
+| SPEC-03 | Phase 3 | Pending |
+| SPEC-04 | Phase 3 | Pending |
+| SPEC-05 | Phase 3 | Pending |
+| REND-01 | Phase 2 | Pending |
+| REND-02 | Phase 2 | Pending |
+| REND-03 | Phase 3 | Pending |
+| REND-04 | Phase 3 | Pending |
+| REND-05 | Phase 3 | Pending |
+| REND-06 | Phase 2 | Pending |
+| MDAY-01 | Phase 1 | Complete |
+| MDAY-02 | Phase 5 | Pending |
+| MDAY-03 | Phase 5 | Pending |
+| MDAY-04 | Phase 5 | Pending |
+| MDAY-05 | Phase 5 | Pending |
+| SCHED-01 | Phase 6 | Pending |
+| SCHED-02 | Phase 6 | Pending |
+| SCHED-03 | Phase 6 | Pending |
+| SCHED-04 | Phase 6 | Pending |
+| MIG-01 | Phase 4 | Pending |
+| MIG-02 | Phase 3 | Pending |
+| MIG-03 | Phase 4 | Pending |
+| MIG-04 | Phase 4 | Pending |
 
 **Coverage:**
-- v1 requirements: 38 total
-- Mapped to phases: 0
-- Unmapped: 38
+- v1 requirements: 47 total
+- Mapped to phases: 47
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-31*
-*Last updated: 2026-01-31 after initial definition*
+*Last updated: 2026-01-31 after Phase 1 completion*
