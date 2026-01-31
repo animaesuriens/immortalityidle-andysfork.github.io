@@ -40,10 +40,11 @@ Plans:
   3. Formula builder function signatures exist (attr, add, mult, log2, etc.)
   4. EffectContext interface specifies all service access points
   5. TypeScript compiles with no implementation (stubs/throw only)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: TBD
+- [ ] 02-01-PLAN.md - Foundation types (Effect, Condition, Formula, Context)
+- [ ] 02-02-PLAN.md - Formula builders, handler interface, barrel export
 
 ### Phase 3: First Vertical Slice
 **Goal**: ONE activity (Resting) works end-to-end with declarative effects
@@ -121,7 +122,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Duration Foundation | 1/1 | Complete | 2026-01-31 |
-| 2. Interface Design | 0/TBD | Not started | - |
+| 2. Interface Design | 0/2 | In progress | - |
 | 3. First Vertical Slice | 0/TBD | Not started | - |
 | 4. Validation Slice | 0/TBD | Not started | - |
 | 5. Full Migration | 0/TBD | Not started | - |
