@@ -66,10 +66,13 @@ Plans:
   - Computed signals for Angular templates
   - One file per handler, singleton pattern
   - Static handler registry with type-enforced completeness
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 03-01: TBD
+- [ ] 03-01-PLAN.md - Type system updates (kind, amount, condition naming) and formula builder implementations
+- [ ] 03-02-PLAN.md - Condition evaluator and effect handlers (4 implemented, 10 stubs)
+- [ ] 03-03-PLAN.md - GameContext, executor service, renderer service, and Angular pipes
+- [ ] 03-04-PLAN.md - Activity integration (DeclarativeActivity type, Resting definition, executeActivity)
 
 ### Phase 4: Validation Slice
 **Goal**: 4 diverse activities validate architecture handles all complexity
@@ -137,7 +140,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Duration Foundation | 1/1 | Complete | 2026-01-31 |
 | 2. Interface Design | 2/2 | Complete | 2026-01-31 |
-| 3. First Vertical Slice | 0/TBD | Not started | - |
+| 3. First Vertical Slice | 0/4 | Ready to execute | - |
 | 4. Validation Slice | 0/TBD | Not started | - |
 | 5. Full Migration | 0/TBD | Not started | - |
 | 6. Multi-day Logic | 0/TBD | Not started | - |
