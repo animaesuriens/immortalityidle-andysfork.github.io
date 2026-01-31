@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.20.3', description: 'Internal: Remove deprecated ::ng-deep CSS selector.' },
   { version: '1.20.2', description: 'Internal: Migrate remaining panels to modern Angular @for syntax.' },
   { version: '1.20.1', description: 'Fix: Activity card clicks now work correctly (fixed nested loop click event issue).' },
   { version: '1.20.0', description: 'Activity panel shows grouped activities with cost/effects. Attributes panel UI refinements.' },
