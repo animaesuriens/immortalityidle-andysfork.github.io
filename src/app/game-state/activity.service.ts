@@ -918,8 +918,10 @@ export class ActivityService {
       name: ['Swim Deeper'],
       imageBaseName: 'swim',
       activityType: ActivityType.Swim,
+      duration: 1,
       description: ['Swim down further into the depths.'],
       consequenceDescription: ['Uses 20 Stamina. Reduce health by 100.'],
+      effects: ['-100 HP, +Dive Progress'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 20;
@@ -949,10 +951,12 @@ export class ActivityService {
       name: ['Forge Unbreakable Chain'],
       imageBaseName: 'forgechains',
       activityType: ActivityType.ForgeChains,
+      duration: 1,
       description: ['Forge a chain strong enough to pull the island from the depths.'],
       consequenceDescription: [
         'Uses 100 Stamina. If you have the right facilities, materials, and knowledge you might be able to create an unbreakable chain.',
       ],
+      effects: ['+Unbreakable Chain (10% with Anvil, Metal, 1B Metal Lore)'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 100;
@@ -1007,10 +1011,12 @@ export class ActivityService {
       name: ['Attach Chains to the Island'],
       imageBaseName: 'attachchains',
       activityType: ActivityType.AttachChains,
+      duration: 1,
       description: ['Swim deep and attach one of your chains to the island, then pull.'],
       consequenceDescription: [
         'Uses 1,000,000 Stamina. These chains are really, REALLY heavy. You better plan on having an Unbreakable Chain and a good place to rest afterwards.',
       ],
+      effects: ['+Island Progress (requires Chain)'],
       consequence: [
         () => {
           if (
@@ -1067,10 +1073,12 @@ export class ActivityService {
       name: ['Create an Everlasting Brick'],
       imageBaseName: 'makebrick',
       activityType: ActivityType.MakeBrick,
+      duration: 1,
       description: ['Create bricks sturdy enough to support the weight of your tower.'],
       consequenceDescription: [
         'Uses 100 Stamina. If you have the right followers and materials you will create some everlasting bricks.',
       ],
+      effects: ['+Everlasting Bricks (requires Ore, Builders)'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 100;
@@ -1110,10 +1118,12 @@ export class ActivityService {
       name: ['Build Scaffolding'],
       imageBaseName: 'scaffolding',
       activityType: ActivityType.MakeScaffold,
+      duration: 1,
       description: ['Set up the scaffolding for the next level of your tower.'],
       consequenceDescription: [
         'Uses 1000 Stamina. If you have the right materials you might succeed in setting up the scaffolding for the next level.',
       ],
+      effects: ['+Scaffolding (requires Wood)'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 1000;
@@ -1150,10 +1160,12 @@ export class ActivityService {
       name: ['Mix Everlasting Mortar'],
       imageBaseName: 'makemortar',
       activityType: ActivityType.MakeMortar,
+      duration: 1,
       description: ['Mix mortar powerful enough to hold your mighty tower together.'],
       consequenceDescription: [
         'Uses 100 Stamina. If you have the right followers, facilities, and materials you might succeed in mixing some proper mortar.',
       ],
+      effects: ['+Everlasting Mortar (requires Ore, Cauldron, Builders)'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 100;
@@ -1197,12 +1209,14 @@ export class ActivityService {
       name: ['Build the Next Level'],
       imageBaseName: 'buildtower',
       activityType: ActivityType.BuildTower,
+      duration: 1,
       description: [
         'Assemble 1000 bricks, 100 barrels of mortar, and your scaffolding to construct the next level of your tower. You will need a lot of expert help for this.',
       ],
       consequenceDescription: [
         'Uses 1000 Stamina. If you have the right followers and materials you will build the next level.',
       ],
+      effects: ['+Tower Level (requires 10 Builders, Scaffolding, 100 Mortar, 1000 Bricks)'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 1000;
@@ -1288,10 +1302,12 @@ export class ActivityService {
       name: ['Research Wind Control'],
       imageBaseName: 'researchwind',
       activityType: ActivityType.ResearchWind,
+      duration: 1,
       description: ['Delve deep into wind lore to understand how the neverending storm can be controlled.'],
       consequenceDescription: [
         'Uses 100 Stamina and Mana. Compile your research and if you have done enough you may produce a Tome of Wind Control.',
       ],
+      effects: ['+Wind Tome (1% chance)'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 100;
@@ -1330,8 +1346,10 @@ export class ActivityService {
       name: ['Tame Winds'],
       imageBaseName: 'tamewind',
       activityType: ActivityType.TameWinds,
+      duration: 1,
       description: ['Use your research to tame the winds.'],
       consequenceDescription: ['Uses 100 Stamina. Use a Tome of Wind Control to tame the hurricane.'],
+      effects: ['+Hurricane Progress (requires Wind Tome)'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 100;
@@ -1371,8 +1389,10 @@ export class ActivityService {
       name: ['Learn To Fly'],
       imageBaseName: 'learntofly',
       activityType: ActivityType.LearnToFly,
+      duration: 1,
       description: ['Jump off your tower and practice flying. This will definitely go well for you.'],
       consequenceDescription: ['You will certainly, probably, maybe not die doing this.'],
+      effects: ['-HP (decreases with progress), +Flight Progress'],
       consequence: [
         () => {
           this.impossibleTaskService.taskProgress[ImpossibleTaskType.LearnToFly].progress++;
@@ -1422,8 +1442,10 @@ export class ActivityService {
       name: ['Offer Food'],
       imageBaseName: 'offerfood',
       activityType: ActivityType.OfferDragonFood,
+      duration: 1,
       description: ['It turns out that dragons love peaches. Bring the dragon a bunch and he may be more friendly.'],
       consequenceDescription: ['You will need at least 1000 food for this to work.'],
+      effects: ['+Dragon Friendship (requires 1000 Food)'],
       consequence: [
         () => {
           let value = 0;
@@ -1457,8 +1479,10 @@ export class ActivityService {
       name: ['Offer Wealth'],
       imageBaseName: 'offergold',
       activityType: ActivityType.OfferDragonWealth,
+      duration: 1,
       description: ['You have heard that dragons like treasure. Bring the dragon a bunch and he may be more friendly.'],
       consequenceDescription: ['You will need at least a billion taels for this to work.'],
+      effects: ['+Dragon Friendship, -1B Taels'],
       consequence: [
         () => {
           if (this.characterService.characterState.money < 1e9) {
@@ -1491,8 +1515,10 @@ export class ActivityService {
       name: ['Talk to the Dragon'],
       imageBaseName: 'talktodragon',
       activityType: ActivityType.TalkToDragon,
+      duration: 1,
       description: ['Try to strike up a conversation with the dragon.'],
       consequenceDescription: ['The dragon probably likes you enough to talk to you now, right?'],
+      effects: ['+Dragon Friendship (requires 10B Cha, 3500 Friendship)'],
       consequence: [
         () => {
           if (this.characterService.characterState.attributes.charisma.value < 1e10) {
@@ -1531,8 +1557,10 @@ export class ActivityService {
       name: ['Gather Armies'],
       imageBaseName: 'gatherarmy',
       activityType: ActivityType.GatherArmies,
+      duration: 1,
       description: ['Gather troops into armies. This will require vast amounts of food and money.'],
       consequenceDescription: ["You rule a country by now, right? If not, this isn't going to go well."],
+      effects: ['+Army (requires Capital, 10k Food, 10B Taels)'],
       consequence: [
         () => {
           if (this.homeService.homeValue < HomeType.Capital) {
@@ -1611,10 +1639,12 @@ export class ActivityService {
       name: ['Conquer More Territory'],
       imageBaseName: 'conquer',
       activityType: ActivityType.ConquerTheWorld,
+      duration: 1,
       description: ['Send out your armies to conquer the world.'],
       consequenceDescription: [
         "I'm sure you have plenty of armies for this. You wouldn't try this without enough armies, that would end badly.",
       ],
+      effects: ['+Conquest Progress (requires increasing Armies)'],
       consequence: [
         () => {
           let value = 0;
@@ -1665,8 +1695,10 @@ export class ActivityService {
       name: ['Move Stars'],
       imageBaseName: 'movestars',
       activityType: ActivityType.MoveStars,
+      duration: 1,
       description: ['Extend your vast magical powers into the heavens and force the stars into alignment.'],
       consequenceDescription: ['Uses 1000 Stamina and Mana.'],
+      effects: ['+Star Progress'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 1000;
@@ -1711,10 +1743,12 @@ export class ActivityService {
       name: ['Odd Jobs'],
       imageBaseName: 'oddjobs',
       activityType: ActivityType.OddJobs,
+      duration: 1,
       description: [oddJobsDescription],
       consequenceDescription: [
         'Uses 5 Stamina. Increases all your basic attributes by a small amount and provides a little money.',
       ],
+      effects: ['+Str, +Tough, +Spd, +Int, +Cha, +Money'],
       consequence: [
         () => {
           this.characterService.characterState.increaseAttribute('strength', 0.02);
@@ -1744,6 +1778,7 @@ export class ActivityService {
       name: ['Resting', 'Meditation', 'Communing With Divinity', 'Finding True Inner Peace'],
       imageBaseName: 'resting',
       activityType: ActivityType.Resting,
+      duration: 1,
       description: [
         'Take a break and get some sleep. Good sleeping habits are essential for cultivating immortal attributes.',
         'Enter a meditative state and begin your journey toward spritual enlightenment.',
@@ -1755,6 +1790,12 @@ export class ActivityService {
         'Restores 100 Stamina, 10 Health, and 1 Mana (if unlocked).',
         'Restores 200 Stamina, 20 Health, and 10 Mana (if unlocked).',
         'Restores 300 Stamina, 30 Health, and 20 Mana (if unlocked).',
+      ],
+      effects: [
+        '+50 Sta, +2 HP',
+        '+100 Sta, +10 HP, +1 Mana, +Spirituality',
+        '+200 Sta, +20 HP, +10 Mana, +Spirituality',
+        '+300 Sta, +30 HP, +20 Mana, +Spirituality',
       ],
       consequence: [
         () => {
@@ -1849,6 +1890,7 @@ export class ActivityService {
       name: ['Begging', 'Street Performing', 'Oration', 'Politics'],
       imageBaseName: 'begging',
       activityType: ActivityType.Begging,
+      duration: 1,
       description: [
         'Find a nice spot on the side of the street, look sad, and put your hand out. Someone might put a coin in it if you are charasmatic enough.',
         'Add some musical flair to your begging.',
@@ -1861,6 +1903,7 @@ export class ActivityService {
         'Uses 5 Stamina. Increases charisma and provides money.',
         'Uses 5 Stamina. Increases charisma, provides money, and makes you wonder if there is more to life than just money and fame.',
       ],
+      effects: ['+Cha, +Money', '+Cha, +Money', '+Cha, +Money', '+Cha, +Money'],
       consequence: [
         () => {
           this.characterService.characterState.increaseAttribute('charisma', 0.1);
@@ -1944,6 +1987,7 @@ export class ActivityService {
       name: ['Apprentice Blacksmithing', 'Journeyman Blacksmithing', 'Blacksmithing', 'Master Blacksmithing'],
       imageBaseName: 'blacksmithing',
       activityType: ActivityType.Blacksmithing,
+      duration: 1,
       description: [
         "Work for the local blacksmith. You mostly pump the bellows, but at least you're learning a trade.",
         'Mold metal into useful things. You might even produce something you want to keep now and then.',
@@ -1955,6 +1999,12 @@ export class ActivityService {
         'Uses 25 Stamina. Increases strength, toughness, and money.',
         'Uses 25 Stamina. Build your physical power, master your craft, and create weapons.',
         'Uses 50 Stamina. Bring down your mighty hammer and create works of metal wonder.',
+      ],
+      effects: [
+        '+Str, +Tough, +Metal Lore, +Money',
+        '+Str, +Tough, +Metal Lore, +Fire Lore, +Money, +Weapon',
+        '+Str, +Tough, +Metal Lore, +Fire Lore, +Money, +Weapon',
+        '+Str, +Tough, +Metal Lore, +Fire Lore, +Money, +Weapon',
       ],
       consequence: [
         // grade 0
@@ -2158,8 +2208,10 @@ export class ActivityService {
       name: ['Gathering Herbs'],
       imageBaseName: 'herbs',
       activityType: ActivityType.GatherHerbs,
+      duration: 1,
       description: ['Search the natural world for useful herbs.'],
       consequenceDescription: ['Uses 10 Stamina. Find herbs and learn about plants'],
+      effects: ['+Int, +Spd, +Herb, +Wood Lore'],
       consequence: [
         () => {
           this.characterService.characterState.increaseAttribute('intelligence', 0.1);
@@ -2196,6 +2248,7 @@ export class ActivityService {
       name: ['Apprentice Alchemy', 'Journeyman Alchemy', 'Alchemy', 'Master Alchemy'],
       imageBaseName: 'alchemy',
       activityType: ActivityType.Alchemy,
+      duration: 1,
       description: [
         "Get a job at the alchemist's workshop. It smells awful but you might learn a few things.",
         'Get a cauldron and do a little brewing of your own.',
@@ -2207,6 +2260,12 @@ export class ActivityService {
         'Uses 10 Stamina. Get smarter, make money, practice your craft. If you have some herbs, you might make a usable potion or pill.',
         'Uses 10 Stamina. Get smarter, make money, and make some decent potions or pills.',
         'Uses 20 Stamina. Create amazing potions and pills.',
+      ],
+      effects: [
+        '+Int, +Wood Lore, +Water Lore, +Money',
+        '+Int, +Wood Lore, +Water Lore, +Money, +Potion',
+        '+Int, +Wood Lore, +Water Lore, +Money, +Potion',
+        '+Int, +Wood Lore, +Water Lore, +Money, +Potion',
       ],
       consequence: [
         () => {
@@ -2359,8 +2418,10 @@ export class ActivityService {
       name: ['Chopping Wood'],
       imageBaseName: 'chopping',
       activityType: ActivityType.ChopWood,
+      duration: 1,
       description: ['Work as a woodcutter, cutting logs in the forest.'],
       consequenceDescription: ['Uses 10 Stamina. Get a log and learn about plants.'],
+      effects: ['+Str, +Wood, +Wood Lore'],
       consequence: [
         () => {
           this.characterService.characterState.increaseAttribute('strength', 0.1);
@@ -2391,6 +2452,7 @@ export class ActivityService {
       name: ['Apprentice Woodworking', 'Journeyman Woodworking', 'Woodworking', 'Master Woodworking'],
       imageBaseName: 'woodworking',
       activityType: ActivityType.Woodworking,
+      duration: 1,
       description: [
         "Work in a woodcarver's shop.",
         'Carve wood into useful items.',
@@ -2402,6 +2464,12 @@ export class ActivityService {
         'Uses 20 Stamina. Increases strength and intelligence and provides a little money. You may make something you want to keep now and then.',
         'Uses 20 Stamina. Increases strength and intelligence, earn some money, create wooden equipment.',
         'Uses 40 Stamina. Create the best of wooden weapons.',
+      ],
+      effects: [
+        '+Str, +Int, +Wood Lore, +Money',
+        '+Str, +Int, +Wood Lore, +Money, +Weapon',
+        '+Str, +Int, +Wood Lore, +Money, +Weapon',
+        '+Str, +Int, +Wood Lore, +Money, +Weapon',
       ],
       consequence: [
         () => {
@@ -2571,6 +2639,7 @@ export class ActivityService {
       name: ['Apprentice Leatherworking', 'Journeyman Leatherworking', 'Leatherworking', 'Master Leatherworking'],
       imageBaseName: 'leatherworking',
       activityType: ActivityType.Leatherworking,
+      duration: 1,
       description: [
         'Work in a tannery, where hides are turned into leather items.',
         'Convert hides into leather items.',
@@ -2582,6 +2651,12 @@ export class ActivityService {
         'Uses 20 Stamina. Increases speed and toughness and provides a little money. You may make something you want to keep now and then.',
         'Uses 20 Stamina. Increases speed and toughness, earn some money, create leather equipment.',
         'Uses 40 Stamina. Create the fanciest pants you can imagine. Maybe some boots, too.',
+      ],
+      effects: [
+        '+Spd, +Tough, +Animal Handling, +Money',
+        '+Spd, +Tough, +Animal Handling, +Money, +Armor',
+        '+Spd, +Tough, +Animal Handling, +Money, +Armor',
+        '+Spd, +Tough, +Animal Handling, +Money, +Armor',
       ],
       consequence: [
         () => {
@@ -2758,10 +2833,12 @@ export class ActivityService {
       name: ['Farming'],
       imageBaseName: 'farming',
       activityType: ActivityType.Farming,
+      duration: 1,
       description: ["Plant crops in your fields. This is a waste of time if you don't have some fields ready to work."],
       consequenceDescription: [
         'Uses 20 Stamina. Increases strength and speed and helps your fields to produce more food.',
       ],
+      effects: ['+Str, +Spd, +Wood Lore, +Earth Lore, +Field Progress'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 20;
@@ -2804,8 +2881,10 @@ export class ActivityService {
       name: ['Mining'],
       imageBaseName: 'mining',
       activityType: ActivityType.Mining,
+      duration: 1,
       description: ['Dig in the ground for usable minerals.'],
       consequenceDescription: ['Uses 20 Stamina. Increases strength and sometimes finds something useful.'],
+      effects: ['+Str, +Earth Lore, +Ore (50%)'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 20;
@@ -2838,10 +2917,12 @@ export class ActivityService {
       name: ['Smelting'],
       imageBaseName: 'smelting',
       activityType: ActivityType.Smelting,
+      duration: 1,
       description: ['Smelt metal ores into usable metal.'],
       consequenceDescription: [
         'Uses 20 Stamina. Increases toughness and intelligence. If you have metal ores, you can make them into bars.',
       ],
+      effects: ['+Tough, +Int, +Metal Lore, +Metal Bar (from Ore)'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 20;
@@ -2880,10 +2961,12 @@ export class ActivityService {
       name: ['Hunting'],
       imageBaseName: 'hunting',
       activityType: ActivityType.Hunting,
+      duration: 1,
       description: ['Hunt for animals in the nearby woods.'],
       consequenceDescription: [
         'Uses 50 Stamina. Increases speed and a good hunt provides some meat. It might draw unwanted attention to yourself.',
       ],
+      effects: ['+Spd, +Animal Handling, +Meat (10%), +Hide, may attract wolves'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 50;
@@ -2937,8 +3020,10 @@ export class ActivityService {
       imageBaseName: 'fishing',
       // cormorant fishing later!
       activityType: ActivityType.Fishing,
+      duration: 1,
       description: ['Grab your net and see if you can catch some fish.'],
       consequenceDescription: ['Uses 30 Stamina. Increases intelligence and strength and you might catch a fish.'],
+      effects: ['+Str, +Int, +Animal Handling, +Water Lore, +Fish (20%)'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 30;
@@ -2974,8 +3059,10 @@ export class ActivityService {
       name: ['Burning Things'],
       imageBaseName: 'burning',
       activityType: ActivityType.Burning,
+      duration: 1,
       description: ['Light things on fire and watch them burn.'],
       consequenceDescription: ['Uses 5 Stamina. You will be charged for what you burn. Teaches you to love fire.'],
+      effects: ['+Fire Lore, -Money'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 5;
@@ -3008,8 +3095,10 @@ export class ActivityService {
       name: ['Balance Your Chi'],
       imageBaseName: 'balance',
       activityType: ActivityType.BalanceChi,
+      duration: 1,
       description: ['Balance the flow of your chi and widen your meridians.'],
       consequenceDescription: ['Uses 100 Stamina. Increases your weakest lore.'],
+      effects: ['+Weakest Lore, +Spirituality'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 100;
@@ -3066,12 +3155,14 @@ export class ActivityService {
       name: ['Body Cultivation'],
       imageBaseName: 'bodycultivation',
       activityType: ActivityType.BodyCultivation,
+      duration: 1,
       description: [
         'Focus on the development of your body. Unblock your meridians, let your chi flow, and prepare your body for immortality.',
       ],
       consequenceDescription: [
         'Uses 100 Stamina. Increases your physical abilities and strengthen your aptitudes in them.',
       ],
+      effects: ['+Str, +Spd, +Tough, +Physical Aptitudes, +Spirituality'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 100;
@@ -3109,12 +3200,14 @@ export class ActivityService {
       name: ['Mind Cultivation'],
       imageBaseName: 'mindcultivation',
       activityType: ActivityType.MindCultivation,
+      duration: 1,
       description: [
         'Focus on the development of your mind. Unblock your meridians, let your chi flow, and prepare your mind for immortality.',
       ],
       consequenceDescription: [
         'Uses 100 Stamina. Increases your mental abilities and strengthen your aptitudes in them.',
       ],
+      effects: ['+Int, +Cha, +Mental Aptitudes, +Spirituality'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 100;
@@ -3149,10 +3242,12 @@ export class ActivityService {
       name: ['Core Cultivation'],
       imageBaseName: 'corecultivation',
       activityType: ActivityType.CoreCultivation,
+      duration: 1,
       description: ['Focus on the development of your soul core.'],
       consequenceDescription: [
         'Uses 200 Stamina. A very advanced cultivation technique. Make sure you have achieved a deep understanding of elemental balance before attempting this. Gives you a small chance of increasing your mana capabilities.',
       ],
+      effects: ['+Max Mana (1% chance)'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 200;
@@ -3192,10 +3287,12 @@ export class ActivityService {
       name: ['Soul Cultivation'],
       imageBaseName: 'soulcultivation',
       activityType: ActivityType.SoulCultivation,
+      duration: 1,
       description: ['Focus on the development of your immortal soul.'],
       consequenceDescription: [
         "Uses 1000 health. An immortal's cultivation technique. Balance your attributes and your lore, and improve yourself in every way.",
       ],
+      effects: ['+Weakest Lore, +Weakest Stat, +Spirituality, +Max HP/Sta/Mana'],
       consequence: [
         () => {
           this.characterService.characterState.status.health.value -= 1000;
@@ -3255,8 +3352,10 @@ export class ActivityService {
       name: ['Infuse Equipment'],
       imageBaseName: 'infuseequipment',
       activityType: ActivityType.InfuseEquipment,
+      duration: 1,
       description: ['Infuse the power of a gem into your equipment.'],
       consequenceDescription: ['Uses 200 Stamina and 10 mana. An advanced magical technique.'],
+      effects: ['+Equipment Power (uses Spirit Gem)'],
       consequence: [
         () => {
           if (!this.characterService.characterState.manaUnlocked) {
@@ -3297,12 +3396,14 @@ export class ActivityService {
       name: ['Infuse Body'],
       imageBaseName: 'infusebody',
       activityType: ActivityType.InfuseBody,
+      duration: 1,
       description: [
         'Direct your magical energy into reinforcing your physical body, making it healthier and more able to sustain damage without falling.',
       ],
       consequenceDescription: [
         'Uses 10 Mana and 200 Stamina. Make sure you have enough magical power before attempting this.',
       ],
+      effects: ['+Max HP'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 200;
@@ -3344,10 +3445,12 @@ export class ActivityService {
       name: ['Extending Life'],
       imageBaseName: 'extendlife',
       activityType: ActivityType.ExtendLife,
+      duration: 1,
       description: ['Direct your magical energy into extending your lifespan, making you live longer.'],
       consequenceDescription: [
         'Uses 20 Mana and 400 Stamina. Make sure you have enough magical power before attempting this.',
       ],
+      effects: ['+10 Lifespan (up to 100 years)'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 400;
@@ -3391,10 +3494,12 @@ export class ActivityService {
       name: ['Recruiting Followers'],
       imageBaseName: 'recruiting',
       activityType: ActivityType.Recruiting,
+      duration: 1,
       description: ['Look for followers willing to serve you.'],
       consequenceDescription: [
         'Uses 100 Stamina and 1M taels. Gives you a small chance of finding a follower, if you are powerful enough to attract any.',
       ],
+      effects: ['+Follower (1% chance), -1M Taels'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 100;
@@ -3436,10 +3541,12 @@ export class ActivityService {
       name: ['Training Followers'],
       imageBaseName: 'trainingfollowers',
       activityType: ActivityType.TrainingFollowers,
+      duration: 1,
       description: ['Train your followers to make them more powerful.'],
       consequenceDescription: [
         'Uses 1000 Stamina. Gives you a small chance for each follower of increasing their power. They might learn more if you are a better leader.',
       ],
+      effects: ['+Follower Power (chance)'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 1000;
@@ -3468,8 +3575,10 @@ export class ActivityService {
       name: ['Taunting Enemies'],
       imageBaseName: 'taunting',
       activityType: ActivityType.Taunting,
+      duration: 1,
       description: ['Rudely point at your enemies and call them out to battle.'],
       consequenceDescription: ['Incites a fight with your current enemy this very night.'],
+      effects: ['Trigger battle immediately'],
       consequence: [
         () => {
           this.battleService.tickCounter = this.battleService.ticksPerFight;
@@ -3494,10 +3603,12 @@ export class ActivityService {
       name: ['Combat Training'],
       imageBaseName: 'combattraining',
       activityType: ActivityType.CombatTraining,
+      duration: 1,
       description: [
         'Hone every fiber of your being to martial sepremacy. Your experience in the Hell of Mirrors allowed you to examine your own combat form and understand how to improve it. Now all you need is practice.',
       ],
       consequenceDescription: ['Uses 10000 stamina. Trains your Combat Mastery.'],
+      effects: ['+Combat Mastery'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 10000;
@@ -3527,8 +3638,10 @@ export class ActivityService {
       name: ['Finding Pets'],
       imageBaseName: 'findingpets',
       activityType: ActivityType.PetRecruiting,
+      duration: 1,
       description: ['Look for animals that want to be your pets.'],
       consequenceDescription: ['Uses 100 Stamina and 100,000 food. Gives you a small chance of finding a pet.'],
+      effects: ['+Pet (1% chance), +Animal Handling, -100k Food'],
       consequence: [
         () => {
           if (this.inventoryService.getQuantityByType('food') < 100000) {
@@ -3568,10 +3681,12 @@ export class ActivityService {
       name: ['Training Pets'],
       imageBaseName: 'trainingpets',
       activityType: ActivityType.PetTraining,
+      duration: 1,
       description: ['Train your pets to make them more powerful.'],
       consequenceDescription: [
         'Uses 1000 Stamina and 100k food. Gives you a small chance for each pet of increasing their power. They might learn more if you are a better with animals.',
       ],
+      effects: ['+Pet Power (chance), +Animal Handling, -100k Food'],
       consequence: [
         () => {
           if (this.inventoryService.getQuantityByType('food') < 100000) {
@@ -3610,8 +3725,10 @@ export class ActivityService {
       name: ['Purifying Gems'],
       imageBaseName: 'purifyinggems',
       activityType: ActivityType.PurifyGems,
+      duration: 1,
       description: ['Purify corrupted spirit gems into something more useful.'],
       consequenceDescription: ['Uses 100000 Stamina and a corrupted spirit gem.'],
+      effects: ['+Life Spirit Gem (from Corrupted Gem)'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 100000;

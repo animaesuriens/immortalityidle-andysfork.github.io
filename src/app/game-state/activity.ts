@@ -80,8 +80,11 @@ export interface Activity {
   imageBaseName?: string;
   level: number;
   activityType: ActivityType;
+  duration: number;
   description: string[];
   consequenceDescription: string[];
+  /** Short mechanical effects shown on activity cards (no flavor text) */
+  effects?: string[];
   requirements: CharacterAttribute[];
   landRequirements?: number;
   consequence: (() => void)[];
