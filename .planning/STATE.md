@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-31)
 ## Current Position
 
 Phase: 3 of 7 (First Vertical Slice)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-01-31 - Phase 2 complete, verified
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-01-31 - Completed 03-01-PLAN.md (Type Updates and Formula Builders)
 
-Progress: [███░░░░░░░] 30%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 10min
-- Total execution time: 0.5 hours
+- Total plans completed: 4
+- Average duration: 9min
+- Total execution time: 0.6 hours
 
 **By Phase:**
 
@@ -29,10 +29,11 @@ Progress: [███░░░░░░░] 30%
 |-------|-------|-------|----------|
 | 01-duration-foundation | 1 | 12min | 12min |
 | 02-interface-design | 2 | 17min | 8.5min |
+| 03-first-vertical-slice | 1 | 8min | 8min |
 
 **Recent Trend:**
-- Last 5 plans: 12min, 10min, 7min
-- Trend: Improving
+- Last 5 plans: 12min, 10min, 7min, 8min
+- Trend: Stable (~8-10min)
 
 *Updated after each plan completion*
 
@@ -49,10 +50,13 @@ Decisions are logged in DECISIONS.md. Key decisions affecting current work:
 - Duration field placed after activityType, before description
 - 14 effect variants covering all current consequence patterns
 - EnemyConfig in effect.types.ts to avoid circular dependencies
-- Formula builders are pure stubs (throw 'Not implemented') in Phase 2
 - RenderFormat: 'short' | 'long' | 'formula' for different display contexts
 - HandlerRegistry uses mapped type for exhaustive handler registration
 - **Code Standards**: Modern TypeScript/Angular syntax required (see DECISIONS.md)
+- **Type discriminator 'kind'**: All effects and conditions use 'kind' not 'type' (avoids TypeScript keyword)
+- **Field name 'amount'**: All quantity fields use 'amount' consistently
+- **Condition naming**: Has/Is/Compare prefix (HasFlag, CompareAttribute, CompareValues)
+- **Formula builders**: Object literals with evaluate() and render() methods
 
 ### Pending Todos
 
@@ -64,8 +68,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-31T08:07:56Z
-Stopped at: Completed 02-02-PLAN.md (Formula Builders, Handler Interface, Utilities)
+Last session: 2026-01-31T11:44:17Z
+Stopped at: Completed 03-01-PLAN.md (Type Updates and Formula Builders)
 Resume file: None
 
 ## Completed Phases
@@ -83,24 +87,30 @@ Resume file: None
 - **Summary:** `.planning/phases/02-interface-design/02-02-SUMMARY.md`
 - **Commits:** 5fb8780, 640efa5, c4b22f3
 
+### Phase 3: First Vertical Slice (In Progress)
+- **Plan 03-01:** Type discriminators updated (type->kind), field names standardized (value/change->amount), CompareValues condition added, all 17 formula builders implemented
+- **Summary:** `.planning/phases/03-first-vertical-slice/03-01-SUMMARY.md`
+- **Commits:** c922319, 7a4cf83, 3cd6a6a
+
 ## Effects Module Structure
 
-After Phase 2 completion, the effects module contains 8 files:
+After Phase 3 Plan 1 completion, the effects module contains 9 files:
 
 ```
 src/app/effects/
 ├── types/
-│   ├── effect.types.ts      # 14 effect variants
-│   ├── condition.types.ts   # 8 condition variants
+│   ├── effect.types.ts      # 14 effect variants (kind discriminator)
+│   ├── condition.types.ts   # 9 condition variants (kind discriminator)
 │   ├── formula.types.ts     # Formula interface
 │   └── context.types.ts     # EffectContext interface
 ├── formulas/
-│   └── formula.builders.ts  # 17 builder function stubs
+│   └── formula.builders.ts  # 17 implemented formula builders
 ├── handlers/
-│   └── handler.interface.ts # EffectHandler, HandlerRegistry
+│   └── handler.interface.ts # EffectHandler, HandlerRegistry (uses kind)
 ├── utils/
-│   └── exhaustive.ts        # assertNever helper
+│   ├── exhaustive.ts        # assertNever helper
+│   └── abbreviations.ts     # ABBREVIATIONS constant
 └── index.ts                 # Barrel export
 ```
 
-Ready for Phase 3: First Vertical Slice (Resting activity end-to-end)
+Ready for Plan 03-02: Handler stubs and Resting handler implementations
