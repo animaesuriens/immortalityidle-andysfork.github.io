@@ -52,6 +52,7 @@ Decisions are logged in DECISIONS.md. Key decisions affecting current work:
 - Formula builders are pure stubs (throw 'Not implemented') in Phase 2
 - RenderFormat: 'short' | 'long' | 'formula' for different display contexts
 - HandlerRegistry uses mapped type for exhaustive handler registration
+- **Code Standards**: Modern TypeScript/Angular syntax required (see DECISIONS.md)
 
 ### Pending Todos
 

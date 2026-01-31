@@ -2,6 +2,25 @@
 
 Captured during questioning phase (conversation may compact).
 
+## Code Standards
+
+- **Modern TypeScript syntax** - Use current best practices, not legacy patterns that "just work"
+  - Discriminated unions over enums
+  - `readonly` modifiers for immutable data
+  - Utility types (`Record`, `Extract`, `Pick`, etc.) over manual definitions
+  - Literal types over loose `string` / `number`
+  - `satisfies` operator where applicable (TS 4.9+)
+- **Modern Angular syntax** - Use current patterns, not deprecated ones
+  - `@for` / `@if` control flow (not `*ngFor` / `*ngIf`)
+  - `inject()` function (not constructor injection)
+  - Standalone components (not NgModule-based)
+  - Signals where appropriate for reactive state
+  - No `::ng-deep` (deprecated)
+- **No legacy patterns** - Avoid patterns that are outdated even if they compile
+  - No `var` (use `const` / `let`)
+  - No `any` unless absolutely necessary
+  - No `namespace` (use ES modules)
+
 ## Scope
 
 - **Activities only** - start narrow, expand to items/equipment/furniture later if it works
