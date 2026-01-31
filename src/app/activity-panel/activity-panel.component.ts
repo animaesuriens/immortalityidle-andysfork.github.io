@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, QueryList, ViewChildren } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { GameStateService } from '../game-state/game-state.service';
 import { ActivityService } from '../game-state/activity.service';
 import { CharacterService } from '../game-state/character.service';
@@ -16,17 +17,32 @@ import { MainLoopService } from '../game-state/main-loop.service';
 import { LogService, LogTopic } from '../game-state/log.service';
 import { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
 
+interface ActivityGroup {
+  name: string;
+  activities: Activity[];
+}
+
 @Component({
   selector: 'app-activity-panel',
   templateUrl: './activity-panel.component.html',
   styleUrls: ['./activity-panel.component.less', '../app.component.less'],
 })
-export class ActivityPanelComponent {
+export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
+  @ViewChildren('activityLabelText') activityLabelTexts!: QueryList<ElementRef<HTMLSpanElement>>;
+
   camelToTitle = new CamelToTitlePipe();
   character: Character;
   Math: Math;
   dragPositionX = 0;
   dragPositionY = 0;
+  private subscriptions: Subscription[] = [];
+
+  // Activity type categories for grouping
+  private readonly basicTypes = [ActivityType.OddJobs, ActivityType.Resting, ActivityType.Begging, ActivityType.Taunting, ActivityType.CombatTraining];
+  private readonly craftingTypes = [ActivityType.Blacksmithing, ActivityType.Alchemy, ActivityType.Woodworking, ActivityType.Leatherworking];
+  private readonly gatheringTypes = [ActivityType.GatherHerbs, ActivityType.ChopWood, ActivityType.Mining, ActivityType.Smelting, ActivityType.Hunting, ActivityType.Fishing, ActivityType.Farming, ActivityType.Burning];
+  private readonly cultivationTypes = [ActivityType.BalanceChi, ActivityType.BodyCultivation, ActivityType.MindCultivation, ActivityType.CoreCultivation, ActivityType.SoulCultivation, ActivityType.InfuseBody, ActivityType.ExtendLife, ActivityType.InfuseEquipment];
+  private readonly followerTypes = [ActivityType.Recruiting, ActivityType.TrainingFollowers, ActivityType.PetRecruiting, ActivityType.PetTraining];
 
   constructor(
     public gameStateService: GameStateService,
@@ -43,6 +59,116 @@ export class ActivityPanelComponent {
   ) {
     this.Math = Math;
     this.character = characterService.characterState;
+  }
+
+  getGroupedActivities(): ActivityGroup[] {
+    const groups: ActivityGroup[] = [];
+    const visibleActivities = this.activityService.activities.filter(
+      a => !a.portal && (a.discovered || a.unlocked)
+    );
+
+    // Helper to get activities for a category
+    const getActivitiesForTypes = (types: ActivityType[]): Activity[] => {
+      return visibleActivities.filter(a => types.includes(a.activityType));
+    };
+
+    // Build groups - only include groups that have visible activities
+    const basicActivities = getActivitiesForTypes(this.basicTypes);
+    if (basicActivities.length > 0) {
+      groups.push({ name: 'Basic', activities: basicActivities });
+    }
+
+    const gatheringActivities = getActivitiesForTypes(this.gatheringTypes);
+    if (gatheringActivities.length > 0) {
+      groups.push({ name: 'Gathering', activities: gatheringActivities });
+    }
+
+    const craftingActivities = getActivitiesForTypes(this.craftingTypes);
+    if (craftingActivities.length > 0) {
+      groups.push({ name: 'Crafting', activities: craftingActivities });
+    }
+
+    const cultivationActivities = getActivitiesForTypes(this.cultivationTypes);
+    if (cultivationActivities.length > 0) {
+      groups.push({ name: 'Cultivation', activities: cultivationActivities });
+    }
+
+    const followerActivities = getActivitiesForTypes(this.followerTypes);
+    if (followerActivities.length > 0) {
+      groups.push({ name: 'Followers & Pets', activities: followerActivities });
+    }
+
+    // Collect all categorized activity types
+    const categorizedTypes = [
+      ...this.basicTypes,
+      ...this.gatheringTypes,
+      ...this.craftingTypes,
+      ...this.cultivationTypes,
+      ...this.followerTypes
+    ];
+
+    // Other activities (impossible tasks, hell activities, etc.) go in their own section
+    const otherActivities = visibleActivities.filter(a => !categorizedTypes.includes(a.activityType));
+    if (otherActivities.length > 0) {
+      groups.push({ name: 'Special', activities: otherActivities });
+    }
+
+    return groups;
+  }
+
+  ngAfterViewInit(): void {
+    // Recalculate when the list of activity labels changes (activities added/removed)
+    this.subscriptions.push(
+      this.activityLabelTexts.changes.subscribe(() => {
+        setTimeout(() => this.fitActivityLabels(), 0);
+      })
+    );
+
+    // Recalculate periodically to handle activity level/name changes
+    this.subscriptions.push(
+      this.mainLoopService.longTickSubject.subscribe(() => {
+        this.fitActivityLabels();
+      })
+    );
+
+    // Initial calculation
+    setTimeout(() => this.fitActivityLabels(), 0);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  private fitActivityLabels(): void {
+    if (!this.activityLabelTexts) return;
+
+    const maxFontSize = 14; // Base font size in pixels
+    const minFontSize = 9;  // Minimum readable font size
+
+    this.activityLabelTexts.forEach(labelRef => {
+      const span = labelRef.nativeElement;
+      const container = span.parentElement;
+      if (!container) return;
+
+      // Get available width (container width minus padding)
+      const containerStyle = getComputedStyle(container);
+      const paddingLeft = parseFloat(containerStyle.paddingLeft) || 0;
+      const paddingRight = parseFloat(containerStyle.paddingRight) || 0;
+      const availableWidth = container.clientWidth - paddingLeft - paddingRight;
+
+      // Reset to max font size to measure natural width
+      span.style.fontSize = `${maxFontSize}px`;
+
+      // Measure the text width at max font size
+      const textWidth = span.scrollWidth;
+
+      if (textWidth > availableWidth && availableWidth > 0) {
+        // Calculate the scale factor needed
+        const scaleFactor = availableWidth / textWidth;
+        const newFontSize = Math.max(minFontSize, Math.floor(maxFontSize * scaleFactor));
+        span.style.fontSize = `${newFontSize}px`;
+      }
+    });
   }
 
   JoinTheGodsClick() {
@@ -236,5 +362,46 @@ export class ActivityPanelComponent {
       data: dialogProperties,
       autoFocus: false,
     });
+  }
+
+  getActivityCost(activity: Activity): string {
+    const resourceUse = activity.resourceUse?.[activity.level];
+    if (!resourceUse) return '';
+
+    const costs: string[] = [];
+    const resourceNames: Record<string, string> = {
+      health: 'HP',
+      stamina: 'Sta',
+      mana: 'Mana',
+      nourishment: 'Food'
+    };
+
+    for (const [key, value] of Object.entries(resourceUse)) {
+      if (value && value > 0) {
+        const name = resourceNames[key] || this.camelToTitle.transform(key);
+        costs.push(`${this.bigNumberPipe.transform(value)} ${name}`);
+      }
+    }
+
+    return costs.length > 0 ? costs.join(', ') : '';
+  }
+
+  getActivityEffects(activity: Activity): string {
+    // Use the new effects field if available
+    if (activity.effects?.[activity.level]) {
+      return activity.effects[activity.level];
+    }
+
+    // Fallback: parse from consequenceDescription
+    const description = activity.consequenceDescription?.[activity.level];
+    if (!description) return '';
+
+    let effects = description;
+
+    // Remove cost mentions (already shown separately)
+    effects = effects.replace(/Uses \d[\d,]* (Stamina|Health|Mana|Nourishment)\.?\s*/gi, '');
+    effects = effects.replace(/Reduce health by \d[\d,]*\.?\s*/gi, '');
+
+    return effects.trim();
   }
 }

@@ -10,6 +10,11 @@ export type AttributeUpdatesArrays = {
   [key in AttributeType]: number[];
 };
 
+export interface AttributeGroup {
+  name: string;
+  keys: AttributeType[];
+}
+
 @Component({
   selector: 'app-attributes-panel',
   templateUrl: './attributes-panel.component.html',
@@ -26,9 +31,25 @@ export type AttributeUpdatesArrays = {
     ]),
   ],
 })
+
 export class AttributesPanelComponent {
   character: Character;
   popupCounter = 0;
+
+  attributeGroups: AttributeGroup[] = [
+    {
+      name: 'Basic',
+      keys: ['strength', 'toughness', 'speed', 'intelligence', 'charisma'],
+    },
+    {
+      name: 'Cultivation',
+      keys: ['spirituality', 'earthLore', 'metalLore', 'woodLore', 'waterLore', 'fireLore'],
+    },
+    {
+      name: 'Proficiency',
+      keys: ['animalHandling', 'combatMastery', 'magicMastery'],
+    },
+  ];
 
   constructor(
     public characterService: CharacterService,
@@ -87,5 +108,14 @@ export class AttributesPanelComponent {
   getAttributeUpdates(key: string): number[] {
     const attributeType = key as AttributeType;
     return this.attributeUpdates[attributeType];
+  }
+
+  isAttributeVisible(key: AttributeType): boolean {
+    const attr = this.character.attributes[key];
+    return attr.value !== 0 || !!this.character.highestAttributes[key];
+  }
+
+  hasVisibleAttributes(group: AttributeGroup): boolean {
+    return group.keys.some(key => this.isAttributeVisible(key));
   }
 }

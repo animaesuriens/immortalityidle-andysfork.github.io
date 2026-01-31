@@ -20,15 +20,29 @@ td:not(:last-child):before {
 
 .activitiesHeader {
   display: flex;
+  margin: 0;
 }
 
 .activitiesContainer {
   display: flex;
   flex-direction: column;
-  padding: 4px;
+  padding: 2px 4px 4px 4px;
   overflow: auto;
 }
 
+
+.activityGroupHeader {
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--bodyText);
+  padding: 2px;
+  margin-top: 6px;
+  border-bottom: 1px solid var(--panelBorder);
+
+  &:first-of-type {
+    margin-top: 0;
+  }
+}
 
 .activityGrid {
   display: flex;
@@ -42,14 +56,14 @@ td:not(:last-child):before {
   position: relative;
   border-radius: 4px;
   border: 1px solid var(--panelBorder);
-  padding: 2px;
+  padding: 4px;
   border-spacing: 0px;
   cursor: pointer;
   background-color: var(--itemSlotColor);
   color: var(--bodyText);
   box-sizing: border-box;
-  width: 160px;
-  height: 75px;
+  width: 180px;
+  height: 110px;
   display: flex;
   flex-direction: column;
 }
@@ -98,8 +112,36 @@ button {
 }
 
 .activityLabel {
-  font-size: 120%;
+  white-space: nowrap;
+  overflow: hidden;
+
+  span {
+    display: inline-block;
+    line-height: 1.2;
+  }
+}
+
+.activityDetails {
   flex-grow: 1;
+  font-size: 11px;
+  color: var(--bodyTextFaded);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-top: 2px;
+
+  .activityCost {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--negativeColor, #c77);
+  }
+
+  .activityEffects {
+    color: var(--positiveColor, #7c7);
+    line-height: 1.2;
+  }
 }
 
 .activityButtons {

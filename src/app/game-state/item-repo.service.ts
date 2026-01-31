@@ -349,11 +349,11 @@ export class ItemRepoService {
     },
     bookshelf: {
       id: 'bookshelf',
-      name: 'bookshelf',
+      name: 'book nook',
       type: 'furniture',
       slot: 'workbench',
       value: 1000000,
-      description: 'An bookshelf to read and expand your mind.',
+      description: 'A book nook to read and expand your mind.',
       effects: '+0.1 intelligence',
       useConsumes: false,
       use: () => {

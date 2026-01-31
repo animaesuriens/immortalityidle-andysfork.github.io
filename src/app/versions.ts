@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.20.0', description: 'Activity panel shows grouped activities with cost/effects. Attributes panel UI refinements.' },
   { version: '1.19.0', description: 'Internal: Add duration field to activity definitions (foundation for multi-day activities).' },
   { version: '1.18.2', description: 'Fix: Battle panel now shows scrollbars when content exceeds panel size.' },
   { version: '1.18.1', description: 'Fix: Selected item details now shows the same content as the hover tooltip.' },

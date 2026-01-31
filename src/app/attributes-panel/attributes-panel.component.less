@@ -43,44 +43,54 @@ span {
 }
 
 .attributesContainer {
-  display: flex;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
-.attributeHeaderCell {
-  position: sticky;
-  top: 0;
-  background: var(--panelBackground);
-  height: 20px;
-  margin-top: 2px;
-  padding-bottom: 2px;
-  border-bottom: 1px var(--tableDividerColor) solid;
-}
-
 .attributesTable {
+  width: 100%;
   border-collapse: collapse;
-  margin-left: 4px;
-  margin-right: 4px;
-  display: flex;
-}
+  margin: 0 4px;
 
-.attributeColumn {
-  margin-left: 6px;
-  margin-right: 6px;
+  thead {
+    position: sticky;
+    top: 0;
+    background: var(--panelBackground);
+    z-index: 1;
+  }
+
+  th {
+    text-align: left;
+    padding: 2px 6px;
+    border-bottom: 1px var(--tableDividerColor) solid;
+    white-space: nowrap;
+    font-weight: normal;
+    color: var(--bodyText);
+  }
+
+  td {
+    padding: 2px 6px;
+    white-space: nowrap;
+  }
 }
 
 .growColumn {
-  flex-grow: 1;
+  width: 100%;
+}
+
+.attributeGroupHeader {
+  font-size: 12px;
+  color: var(--textHighlight);
+  padding: 6px 6px 2px 6px !important;
+  font-weight: 500;
 }
 
 .attributeLine {
-  height: 20px;
-  margin-top: 2px;
-  padding-bottom: 2px;
-  border-bottom: 1px var(--tableDividerColor) solid;
+  td {
+    border-bottom: 1px var(--tableDividerColor) solid;
+  }
 }
 
 .attributeValueCell {

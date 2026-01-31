@@ -101,10 +101,19 @@ From audit of all consequence functions in activity.service.ts:
 
 - **Duration**: Base duration per activity + optional scaling modifier (faster as attributes improve)
 - **Effect timing**: Effects apply once at completion (not per-day)
-- **Interruption**: Configurable per activity
-  - `resetOnInterrupt: true` - progress lost, start over
-  - `resetOnInterrupt: false` - resume from where you left off
+- **Interruption handling**:
+  - `resetOnInterrupt: true/false` - per-activity flag for manual switches
+  - `persistAcrossLives: true/false` - per-activity flag for death
 - **Display**: Progress bar showing current/total days
+
+## Schedule Rework (Time Panel)
+
+- **Completion-based scheduling**: `repeatTimes` means completions, not days
+  - "Blacksmithing x2" = complete twice (6 days if 3-day activity)
+  - Schedule advances only after completions done
+- **Display format**: "Blacksmithing x10 (30 days)" - show both completions and total time
+- **No partial completions**: Schedule doesn't loop back mid-activity
+- **Sequential execution**: Activities run in order, each completing before next starts
 
 ## Still To Discuss
 

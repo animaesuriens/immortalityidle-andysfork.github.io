@@ -8,73 +8,45 @@
   </mat-icon>
 </div>
 <div class="attributesContainer">
-  <div class="attributesTable">
-    <div class="attributeColumn">
-      <div class="attributeHeaderCell"><span>Name</span></div>
-      @for (attribute of character.attributes | keyvalue: originalOrder; track attribute) {
-        @if ((attribute.value.value !== 0 || character.highestAttributes[attribute.key])) {
-          <div class='attributeLine'
-            matTooltip="{{attribute.value.description}} Your aptitude of {{attribute.value.aptitude | bigNumber}} multiplies your gains by {{attribute.value.aptitudeMult | bigNumber}}.">
-            <mat-icon>{{attribute.value.icon}}</mat-icon>
-            <span>
-              {{attribute.key | camelToTitle}}:
-            </span>
-          </div>
-        }
-      }
-    </div>
-    <div class="attributeColumn">
-      <div class="attributeHeaderCell"><span>SV</span></div>
-      @for (attribute of character.attributes | keyvalue: originalOrder; track attribute) {
-        @if ((attribute.value.value !== 0 || character.highestAttributes[attribute.key])) {
-          <div class='attributeLine'>
-            <span>
-              {{attribute.value.lifeStartValue | bigNumber}}
-            </span>
-          </div>
-        }
-      }
-    </div>
-    <div class="attributeColumn">
-      <div class="attributeHeaderCell"><span>Aptitude</span></div>
-      @for (attribute of character.attributes | keyvalue: originalOrder; track attribute) {
-        @if ((attribute.value.value !== 0 || character.highestAttributes[attribute.key])) {
-          <div class='attributeLine'>
-            <span>
-              {{attribute.value.aptitude | bigNumber}}
-            </span>
-          </div>
-        }
-      }
-    </div>
-    <div class="attributeColumn">
-      <div class="attributeHeaderCell"><span>Gain Mult.</span></div>
-      @for (attribute of character.attributes | keyvalue: originalOrder; track attribute) {
-        @if ((attribute.value.value !== 0 || character.highestAttributes[attribute.key])) {
-          <div class='attributeLine'>
-            <span>
-              {{attribute.value.aptitudeMult | bigNumber}}
-            </span>
-          </div>
-        }
-      }
-    </div>
-    <div class="attributeColumn growColumn">
-      <div class="attributeHeaderCell"><span>Value</span></div>
-      @for (attribute of character.attributes | keyvalue: originalOrder; track attribute) {
-        @if ((attribute.value.value !== 0 || character.highestAttributes[attribute.key])) {
-          <div class='attributeLine'>
-            <span>
-              {{attribute.value.value | bigNumber}}
-            </span>
-            @for (update of getAttributeUpdates(attribute.key); track update) {
-              <span class="popupText"
-              [@popupText]=update (@popupText.done)="animationDoneEvent($event, attribute.key)">+{{update | bigNumber}}</span>
+  <table class="attributesTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>SV</th>
+        <th>Aptitude</th>
+        <th>Gain Mult.</th>
+        <th class="growColumn">Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (group of attributeGroups; track group.name) {
+        @if (hasVisibleAttributes(group)) {
+          <tr class="attributeGroupRow">
+            <td colspan="5" class="attributeGroupHeader">{{group.name}}</td>
+          </tr>
+          @for (key of group.keys; track key) {
+            @if (isAttributeVisible(key)) {
+              <tr class="attributeLine">
+                <td matTooltip="{{character.attributes[key].description}} Your aptitude of {{character.attributes[key].aptitude | bigNumber}} multiplies your gains by {{character.attributes[key].aptitudeMult | bigNumber}}.">
+                  <mat-icon>{{character.attributes[key].icon}}</mat-icon>
+                  <span>{{key | camelToTitle}}:</span>
+                </td>
+                <td>{{character.attributes[key].lifeStartValue | bigNumber}}</td>
+                <td>{{character.attributes[key].aptitude | bigNumber}}</td>
+                <td>{{character.attributes[key].aptitudeMult | bigNumber}}</td>
+                <td class="growColumn">
+                  {{character.attributes[key].value | bigNumber}}
+                  @for (update of getAttributeUpdates(key); track update) {
+                    <span class="popupText"
+                    [@popupText]=update (@popupText.done)="animationDoneEvent($event, key)">+{{update | bigNumber}}</span>
+                  }
+                </td>
+              </tr>
             }
-          </div>
+          }
         }
       }
-    </div>
-  </div>
+    </tbody>
+  </table>
 </div>
 <div class="panelResizeHandle"></div>

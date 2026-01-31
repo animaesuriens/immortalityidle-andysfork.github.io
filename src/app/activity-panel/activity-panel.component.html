@@ -55,18 +55,26 @@
   </div>
 </h3>
 <div class="activitiesContainer">
-  <!-- draggable="true" (dragstart)="drag(activity, $event)" -->
   <div class="overflow">
-    <div class="activityGrid" cdkDropList cdkDropListSortingDisabled>
-      <ng-container *ngFor="let activity of activityService.activities; let indexOfelement=index;">
-        @if (!activity.portal && (activity.discovered || activity.unlocked)) {
+    <ng-container *ngFor="let group of getGroupedActivities()">
+      <div class="activityGroupHeader">{{group.name}}</div>
+      <div class="activityGrid" cdkDropList cdkDropListSortingDisabled>
+        <ng-container *ngFor="let activity of group.activities">
           <div class="activitySlot" [ngClass]="{'projectionOnly': activity.projectionOnly, 'lockedActivity': !activity.unlocked}"
             [tabindex]="0"
             cdkDrag [cdkDragDisabled]="!activity.unlocked" [cdkDragData]="activity.activityType"
             (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
             (click)="doActivity(activity)" >
             <div class="activityLabel" matTooltip="{{getActivityTooltip(activity, true)}}" >
-              <span>{{activity.name[activity.level]}}</span>
+              <span #activityLabelText>{{activity.name[activity.level]}}</span>
+            </div>
+            <div class="activityDetails">
+              @if (getActivityCost(activity)) {
+                <div class="activityCost" matTooltip="Resource cost per day">{{getActivityCost(activity)}}</div>
+              }
+              @if (getActivityEffects(activity)) {
+                <div class="activityEffects" matTooltip="{{activity.consequenceDescription[activity.level]}}">{{getActivityEffects(activity)}}</div>
+              }
             </div>
             <div class="activityButtons">
               <span>
@@ -100,10 +108,9 @@
               </span>
             </div>
           </div>
-        }
-      </ng-container>
-    </div>
+        </ng-container>
+      </div>
+    </ng-container>
   </div>
-
 </div>
 <div class="panelResizeHandle"></div>
