@@ -7,7 +7,7 @@ Transform Immortality Idle's ~50 activities from imperative consequence function
 ## Phases
 
 - [x] **Phase 1: Duration Foundation** - Add duration field to all activities (default 1 day)
-- [ ] **Phase 2: Interface Design** - Define all type contracts (no implementation)
+- [x] **Phase 2: Interface Design** - Define all type contracts (no implementation)
 - [ ] **Phase 3: First Vertical Slice** - ONE activity (Resting) working end-to-end
 - [ ] **Phase 4: Validation Slice** - 4 diverse activities stress-testing all effect types
 - [ ] **Phase 5: Full Migration** - Apply proven patterns to remaining ~45 activities
@@ -43,8 +43,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md - Foundation types (Effect, Condition, Formula, Context)
-- [ ] 02-02-PLAN.md - Formula builders, handler interface, barrel export
+- [x] 02-01-PLAN.md - Foundation types (Effect, Condition, Formula, Context)
+- [x] 02-02-PLAN.md - Formula builders, handler interface, barrel export
 
 ### Phase 3: First Vertical Slice
 **Goal**: ONE activity (Resting) works end-to-end with declarative effects
@@ -122,7 +122,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Duration Foundation | 1/1 | Complete | 2026-01-31 |
-| 2. Interface Design | 0/2 | In progress | - |
+| 2. Interface Design | 2/2 | Complete | 2026-01-31 |
 | 3. First Vertical Slice | 0/TBD | Not started | - |
 | 4. Validation Slice | 0/TBD | Not started | - |
 | 5. Full Migration | 0/TBD | Not started | - |

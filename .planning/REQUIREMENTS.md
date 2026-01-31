@@ -7,11 +7,11 @@
 
 ### Core System
 
-- [ ] **CORE-01**: Discriminated union types for all effect kinds with exhaustive type checking
-- [ ] **CORE-02**: Handler registry pattern - each effect type has execute() + render() handler
-- [ ] **CORE-03**: Formula builder system - same AST executes AND renders to multiple formats
-- [ ] **CORE-04**: Context object pattern for service access in handlers
-- [ ] **CORE-05**: Integration with expr-eval library for complex math formulas
+- [x] **CORE-01**: Discriminated union types for all effect kinds with exhaustive type checking
+- [x] **CORE-02**: Handler registry pattern - each effect type has execute() + render() handler
+- [x] **CORE-03**: Formula builder system - same AST executes AND renders to multiple formats
+- [x] **CORE-04**: Context object pattern for service access in handlers
+- [x] **CORE-05**: Integration with expr-eval library for complex math formulas
 
 ### Effect Types - Basic
 
@@ -107,11 +107,11 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CORE-01 | Phase 1 | Pending |
-| CORE-02 | Phase 1 | Pending |
-| CORE-03 | Phase 1 | Pending |
-| CORE-04 | Phase 1 | Pending |
-| CORE-05 | Phase 1 | Pending |
+| CORE-01 | Phase 2 | Complete |
+| CORE-02 | Phase 2 | Complete |
+| CORE-03 | Phase 2 | Complete |
+| CORE-04 | Phase 2 | Complete |
+| CORE-05 | Phase 2 | Complete |
 | ATTR-01 | Phase 2 | Pending |
 | ATTR-02 | Phase 2 | Pending |
 | ATTR-03 | Phase 3 | Pending |
@@ -162,4 +162,4 @@
 
 ---
 *Requirements defined: 2026-01-31*
-*Last updated: 2026-01-31 after Phase 1 completion*
+*Last updated: 2026-01-31 after Phase 2 completion*
