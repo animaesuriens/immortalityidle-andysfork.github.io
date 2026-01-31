@@ -56,10 +56,10 @@
 </h3>
 <div class="activitiesContainer">
   <div class="overflow">
-    <ng-container *ngFor="let group of getGroupedActivities()">
+    @for (group of getGroupedActivities(); track group.name) {
       <div class="activityGroupHeader">{{group.name}}</div>
       <div class="activityGrid" cdkDropList cdkDropListSortingDisabled>
-        <ng-container *ngFor="let activity of group.activities">
+        @for (activity of group.activities; track activity.activityType) {
           <div class="activitySlot" [ngClass]="{'projectionOnly': activity.projectionOnly, 'lockedActivity': !activity.unlocked}"
             [tabindex]="0"
             cdkDrag [cdkDragDisabled]="!activity.unlocked" [cdkDragData]="activity.activityType"
@@ -70,10 +70,10 @@
             </div>
             <div class="activityDetails">
               @if (getActivityCost(activity)) {
-                <div class="activityCost" matTooltip="Resource cost per day">{{getActivityCost(activity)}}</div>
+                <div class="activityCost">{{getActivityCost(activity)}}</div>
               }
               @if (getActivityEffects(activity)) {
-                <div class="activityEffects" matTooltip="{{activity.consequenceDescription[activity.level]}}">{{getActivityEffects(activity)}}</div>
+                <div class="activityEffects">{{getActivityEffects(activity)}}</div>
               }
             </div>
             <div class="activityButtons">
@@ -108,9 +108,9 @@
               </span>
             </div>
           </div>
-        </ng-container>
+        }
       </div>
-    </ng-container>
+    }
   </div>
 </div>
 <div class="panelResizeHandle"></div>
