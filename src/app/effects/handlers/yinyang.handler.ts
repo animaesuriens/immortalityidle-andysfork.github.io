@@ -6,6 +6,7 @@
 import { EffectHandler, RenderFormat } from './handler.interface';
 import { YinYangEffect } from '../types/effect.types';
 import { EffectContext } from '../types/context.types';
+import { renderFormulaLong } from '../utils/render-helpers';
 
 /**
  * Handler for YinYangEffect.
@@ -39,6 +40,8 @@ export const yinyangHandler: EffectHandler<YinYangEffect> = {
   render(effect: YinYangEffect, context: EffectContext, format: RenderFormat): string {
     const amount = effect.amount ?? 1;
     const sign = amount >= 0 ? '+' : '';
+    // YinYang effects currently only support fixed amounts
+    const formulaStr = renderFormulaLong(amount, {} as any);
 
     switch (format) {
       case 'short':
@@ -54,11 +57,11 @@ export const yinyangHandler: EffectHandler<YinYangEffect> = {
       case 'long':
         switch (effect.modify) {
           case 'yin':
-            return `Increases Yin by ${Math.abs(amount)}.`;
+            return `<span class="effect-positive">Increases Yin by ${Math.abs(amount)}.</span> <span class="effect-formula">(${formulaStr})</span>`;
           case 'yang':
-            return `Increases Yang by ${Math.abs(amount)}.`;
+            return `<span class="effect-positive">Increases Yang by ${Math.abs(amount)}.</span> <span class="effect-formula">(${formulaStr})</span>`;
           case 'balance':
-            return `Balances Yin and Yang (increases the lower value by ${amount}).`;
+            return `<span class="effect-positive">Balances Yin and Yang (increases the lower value).</span> <span class="effect-formula">(${formulaStr})</span>`;
         }
         break;
       case 'formula':

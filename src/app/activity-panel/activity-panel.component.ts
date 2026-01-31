@@ -16,7 +16,7 @@ import { BigNumberPipe, CamelToTitlePipe } from '../app.component';
 import { MainLoopService } from '../game-state/main-loop.service';
 import { LogService, LogTopic } from '../game-state/log.service';
 import { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
-import { EffectShortPipe } from '../effects';
+import { EffectShortPipe, EffectLongPipe } from '../effects';
 
 interface ActivityGroup {
   name: string;
@@ -27,6 +27,7 @@ interface ActivityGroup {
   selector: 'app-activity-panel',
   templateUrl: './activity-panel.component.html',
   styleUrls: ['./activity-panel.component.less', '../app.component.less'],
+  providers: [EffectShortPipe, EffectLongPipe],
 })
 export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
   @ViewChildren('activityLabelText') activityLabelTexts!: QueryList<ElementRef<HTMLSpanElement>>;
@@ -38,6 +39,7 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
   dragPositionY = 0;
   private subscriptions: Subscription[] = [];
   private readonly effectShortPipe = inject(EffectShortPipe);
+  private readonly effectLongPipe = inject(EffectLongPipe);
 
   // Activity type categories for grouping
   private readonly basicTypes = [ActivityType.OddJobs, ActivityType.Resting, ActivityType.Begging, ActivityType.Taunting, ActivityType.CombatTraining];
@@ -352,11 +354,11 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
     let effectsText: string;
     if (isDeclarativeActivity(activity)) {
       const effects = activity.effects[activity.level] ?? [];
-      effectsText = this.effectShortPipe.transform(effects);
+      effectsText = this.effectLongPipe.transform(effects);
     } else {
       effectsText = activity.consequenceDescription[activity.level];
     }
-    let bodyString = activity.description[activity.level] + '\n\n' + effectsText;
+    let bodyString = activity.description[activity.level] + '<br><br>' + effectsText;
     if (activity.projectionOnly) {
       bodyString +=
         '\n\nThis activity can only be performed by a spiritual projection of yourself back in the mortal realm.';
@@ -367,7 +369,8 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
       dialogProperties.imageFile = 'assets/images/activities/' + activity.imageBaseName + activity.level + '.png';
     }
     this.dialog.open(TextPanelComponent, {
-      width: '400px',
+      width: 'auto',
+      maxWidth: '90vw',
       data: dialogProperties,
       autoFocus: false,
     });

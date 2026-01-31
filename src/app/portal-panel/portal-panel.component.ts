@@ -9,12 +9,13 @@ import { TextPanelComponent } from '../text-panel/text-panel.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ImpossibleTaskService } from '../game-state/impossibleTask.service';
 import { MainLoopService } from '../game-state/main-loop.service';
-import { EffectExecutorService, EffectShortPipe } from '../effects';
+import { EffectExecutorService, EffectShortPipe, EffectLongPipe } from '../effects';
 
 @Component({
   selector: 'app-portal-panel',
   templateUrl: './portal-panel.component.html',
   styleUrls: ['./portal-panel.component.less', '../app.component.less'],
+  providers: [EffectShortPipe, EffectLongPipe],
 })
 export class PortalPanelComponent {
   character: Character;
@@ -23,6 +24,7 @@ export class PortalPanelComponent {
   dragPositionY = 0;
   private readonly effectExecutor = inject(EffectExecutorService);
   private readonly effectShortPipe = inject(EffectShortPipe);
+  private readonly effectLongPipe = inject(EffectLongPipe);
 
   constructor(
     public gameStateService: GameStateService,
@@ -52,18 +54,19 @@ export class PortalPanelComponent {
     let effectsText: string;
     if (isDeclarativeActivity(activity)) {
       const effects = activity.effects[activity.level] ?? [];
-      effectsText = this.effectShortPipe.transform(effects);
+      effectsText = this.effectLongPipe.transform(effects);
     } else {
       effectsText = activity.consequenceDescription[activity.level];
     }
-    const bodyString = activity.description[activity.level] + '\n\n' + effectsText;
+    const bodyString = activity.description[activity.level] + '<br><br>' + effectsText;
 
     const dialogProperties = { titleText: activity.name[activity.level], bodyText: bodyString, imageFile: '' };
     if (activity.imageBaseName) {
       dialogProperties.imageFile = 'assets/images/activities/' + activity.imageBaseName + activity.level + '.png';
     }
     this.dialog.open(TextPanelComponent, {
-      width: '400px',
+      width: 'auto',
+      maxWidth: '90vw',
       data: dialogProperties,
       autoFocus: false,
     });

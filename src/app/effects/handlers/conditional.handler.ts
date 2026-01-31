@@ -7,6 +7,7 @@ import { EffectHandler, RenderFormat, HandlerRegistry } from './handler.interfac
 import { ConditionalEffect, Effect } from '../types/effect.types';
 import { EffectContext } from '../types/context.types';
 import { evaluateCondition } from '../conditions/condition-evaluator';
+import { FLAG_DISPLAY_NAMES } from '../utils/render-helpers';
 
 /**
  * Late-bound reference to the handler registry.
@@ -50,8 +51,10 @@ function renderEffect(effect: Effect, context: EffectContext, format: RenderForm
  */
 function renderCondition(condition: ConditionalEffect['condition']): string {
   switch (condition.kind) {
-    case 'HasFlag':
-      return condition.negate ? `!${condition.flag}` : condition.flag;
+    case 'HasFlag': {
+      const name = FLAG_DISPLAY_NAMES[condition.flag] ?? condition.flag;
+      return condition.negate ? `not ${name}` : name;
+    }
     case 'CompareValues':
       return `${condition.left} ${condition.operator} ${condition.right}`;
     case 'CompareAttribute':
@@ -63,11 +66,11 @@ function renderCondition(condition: ConditionalEffect['condition']): string {
     case 'HasInventory':
       return condition.check === 'hasSlots' ? 'has slots' : `has ${condition.itemId}`;
     case 'And':
-      return condition.conditions.map(c => renderCondition(c)).join(' AND ');
+      return condition.conditions.map(c => renderCondition(c)).join(' and ');
     case 'Or':
-      return condition.conditions.map(c => renderCondition(c)).join(' OR ');
+      return condition.conditions.map(c => renderCondition(c)).join(' or ');
     case 'Not':
-      return `NOT (${renderCondition(condition.condition)})`;
+      return `not (${renderCondition(condition.condition)})`;
   }
 }
 
@@ -92,25 +95,47 @@ export const conditionalHandler: EffectHandler<ConditionalEffect> = {
   },
 
   render(effect: ConditionalEffect, context: EffectContext, format: RenderFormat): string {
+    const conditionMet = evaluateCondition(effect.condition, context);
     const conditionStr = renderCondition(effect.condition);
 
     switch (format) {
       case 'short': {
-        // Render the 'then' effects with condition hint
-        const thenParts = effect.then.map(e => renderEffect(e, context, 'short'));
-        return `${thenParts.join(', ')} (if ${conditionStr})`;
+        // Short format: Only show effects if condition is met, hide otherwise
+        if (conditionMet) {
+          const thenParts = effect.then.map(e => renderEffect(e, context, 'short')).filter(s => s);
+          return thenParts.join(', ');
+        } else if (effect.else && effect.else.length > 0) {
+          const elseParts = effect.else.map(e => renderEffect(e, context, 'short')).filter(s => s);
+          return elseParts.join(', ');
+        }
+        return ''; // Hide when condition not met and no else branch
       }
       case 'long': {
-        const thenParts = effect.then.map(e => renderEffect(e, context, 'long'));
-        let result = `If ${conditionStr}: ${thenParts.join(' ')}`;
+        // Long format: Append condition hint inside the formula parentheses
+        // e.g., "(Fixed: 1)</span>" becomes "(Fixed: 1; if Yin/Yang unlocked)</span>"
+        const conditionHint = `if ${conditionStr}`;
+        const thenParts = effect.then.map(e => {
+          const rendered = renderEffect(e, context, 'long');
+          // Find the pattern ")</span>" at the end and insert before the ")"
+          const endPattern = ')</span>';
+          const endIdx = rendered.lastIndexOf(endPattern);
+          if (endIdx !== -1) {
+            return rendered.slice(0, endIdx) + `; ${conditionHint}` + rendered.slice(endIdx);
+          }
+          return rendered + ` <span class="effect-formula">(${conditionHint})</span>`;
+        }).filter(s => s);
+
+        let result = thenParts.join(' ');
         if (effect.else && effect.else.length > 0) {
-          const elseParts = effect.else.map(e => renderEffect(e, context, 'long'));
-          result += ` Otherwise: ${elseParts.join(' ')}`;
+          const elseParts = effect.else.map(e => renderEffect(e, context, 'long')).filter(s => s);
+          if (elseParts.length > 0) {
+            result += ` Otherwise: ${elseParts.join(' ')}`;
+          }
         }
         return result;
       }
       case 'formula': {
-        const thenParts = effect.then.map(e => renderEffect(e, context, 'formula'));
+        const thenParts = effect.then.map(e => renderEffect(e, context, 'formula')).filter(s => s);
         return `if(${conditionStr}) { ${thenParts.join('; ')} }`;
       }
     }

@@ -221,6 +221,15 @@ export interface EffectContext {
    * Log an injury message (red color).
    */
   logInjury(topic: LogTopic, message: string): void;
+
+  // ============================================================
+  // FORMATTING
+  // ============================================================
+
+  /**
+   * Format a number for display (uses BigNumberPipe).
+   */
+  formatNumber(value: number): string;
 }
 
 /**

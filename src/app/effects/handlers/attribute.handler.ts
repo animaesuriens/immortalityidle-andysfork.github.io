@@ -6,64 +6,13 @@
 import { EffectHandler, RenderFormat } from './handler.interface';
 import { AttributeEffect } from '../types/effect.types';
 import { EffectContext, toFormulaContext } from '../types/context.types';
-import { Formula } from '../types/formula.types';
 import { ABBREVIATIONS } from '../utils/abbreviations';
-
-/**
- * Evaluate an amount that may be a number or a formula.
- */
-function evaluateAmount(amount: number | Formula, context: EffectContext): number {
-  return typeof amount === 'number' ? amount : amount.evaluate(toFormulaContext(context));
-}
-
-/**
- * Get the full name for an attribute type.
- */
-function getAttributeName(attribute: keyof typeof ABBREVIATIONS.attributes): string {
-  switch (attribute) {
-    case 'strength':
-      return 'Strength';
-    case 'toughness':
-      return 'Toughness';
-    case 'speed':
-      return 'Speed';
-    case 'intelligence':
-      return 'Intelligence';
-    case 'charisma':
-      return 'Charisma';
-    case 'spirituality':
-      return 'Spirituality';
-    case 'earthLore':
-      return 'Earth Lore';
-    case 'metalLore':
-      return 'Metal Lore';
-    case 'woodLore':
-      return 'Wood Lore';
-    case 'waterLore':
-      return 'Water Lore';
-    case 'fireLore':
-      return 'Fire Lore';
-    case 'animalHandling':
-      return 'Animal Handling';
-    case 'combatMastery':
-      return 'Combat Mastery';
-    case 'magicMastery':
-      return 'Magic Mastery';
-    default:
-      return attribute;
-  }
-}
-
-/**
- * Format a small number for display (preserves decimal places).
- */
-function formatAmount(value: number): string {
-  if (Math.abs(value) >= 1) {
-    return String(Math.floor(value));
-  }
-  // For small values like 0.001, show decimal places
-  return value.toFixed(3).replace(/\.?0+$/, '');
-}
+import {
+  evaluateAmount,
+  renderFormulaLong,
+  renderGainMultiplierFormula,
+  getAttributeDisplayName,
+} from '../utils/render-helpers';
 
 /**
  * Handler for AttributeEffect.
@@ -72,7 +21,8 @@ function formatAmount(value: number): string {
  */
 export const attributeHandler: EffectHandler<AttributeEffect> = {
   execute(effect: AttributeEffect, context: EffectContext): void {
-    const amount = evaluateAmount(effect.amount, context);
+    const formulaContext = toFormulaContext(context);
+    const amount = evaluateAmount(effect.amount, formulaContext);
     if (effect.aptitude) {
       context.modifyAptitude(effect.attribute, amount);
     } else {
@@ -81,24 +31,35 @@ export const attributeHandler: EffectHandler<AttributeEffect> = {
   },
 
   render(effect: AttributeEffect, context: EffectContext, format: RenderFormat): string {
-    const amount = evaluateAmount(effect.amount, context);
+    const formulaContext = toFormulaContext(context);
+    const amount = evaluateAmount(effect.amount, formulaContext);
     const sign = amount >= 0 ? '+' : '';
     const abbrev = ABBREVIATIONS.attributes[effect.attribute];
     const aptSuffix = effect.aptitude ? ' Apt' : '';
 
     switch (format) {
       case 'short':
-        return `${sign}${formatAmount(amount)} ${abbrev}${aptSuffix}`;
+        return `${sign}${context.formatNumber(amount)} ${abbrev}${aptSuffix}`;
       case 'long': {
         const verb = amount >= 0 ? 'Increases' : 'Decreases';
-        const name = getAttributeName(effect.attribute);
+        const name = getAttributeDisplayName(effect.attribute);
         const aptWord = effect.aptitude ? ' aptitude' : '';
-        return `${verb} ${name}${aptWord} by ${formatAmount(Math.abs(amount))}.`;
+        let formulaStr: string;
+        if (effect.aptitude) {
+          // Aptitude changes are not multiplied
+          formulaStr = renderFormulaLong(effect.amount, formulaContext);
+        } else {
+          // Attribute gains are multiplied by gain multiplier
+          const gainMult = context.attributes[effect.attribute].aptitudeMult;
+          formulaStr = renderGainMultiplierFormula(effect.amount, name, gainMult, formulaContext, v => context.formatNumber(v));
+        }
+        const cssClass = amount >= 0 ? 'effect-positive' : 'effect-negative';
+        return `<span class="${cssClass}">${verb} ${name}${aptWord} by ${context.formatNumber(Math.abs(amount))}.</span> <span class="effect-formula">(${formulaStr})</span>`;
       }
       case 'formula':
         return typeof effect.amount === 'number'
           ? String(effect.amount)
-          : effect.amount.render(toFormulaContext(context), 'formula');
+          : effect.amount.render(formulaContext, 'formula');
     }
   },
 };

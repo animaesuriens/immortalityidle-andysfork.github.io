@@ -18,6 +18,7 @@ import { InventoryService, Equipment, Pill } from '../../game-state/inventory.se
 import { AttributeType, StatusType, EquipmentPosition } from '../../game-state/character';
 import { LogTopic } from '../../game-state/log.service';
 import { EnemyConfig } from '../types/effect.types';
+import { BigNumberPipe } from '../../app.component';
 
 /**
  * Concrete implementation of EffectContext that bridges effect handlers to Angular services.
@@ -31,6 +32,7 @@ export class GameContext implements EffectContext {
   constructor(
     private readonly characterService: CharacterService,
     private readonly inventoryService: InventoryService,
+    private readonly bigNumberPipe: BigNumberPipe,
   ) {}
 
   // ============================================================
@@ -263,5 +265,13 @@ export class GameContext implements EffectContext {
   logInjury(topic: LogTopic, message: string): void {
     // TODO: Wire up LogService when needed
     console.warn(`[${topic}] INJURY: ${message}`);
+  }
+
+  // ============================================================
+  // FORMATTING
+  // ============================================================
+
+  formatNumber(value: number): string {
+    return this.bigNumberPipe.transform(value);
   }
 }
