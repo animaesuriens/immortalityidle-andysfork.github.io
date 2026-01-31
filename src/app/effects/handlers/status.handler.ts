@@ -5,7 +5,7 @@
 
 import { EffectHandler, RenderFormat } from './handler.interface';
 import { StatusEffect } from '../types/effect.types';
-import { EffectContext } from '../types/context.types';
+import { EffectContext, toFormulaContext } from '../types/context.types';
 import { Formula } from '../types/formula.types';
 import { ABBREVIATIONS } from '../utils/abbreviations';
 
@@ -13,7 +13,7 @@ import { ABBREVIATIONS } from '../utils/abbreviations';
  * Evaluate an amount that may be a number or a formula.
  */
 function evaluateAmount(amount: number | Formula, context: EffectContext): number {
-  return typeof amount === 'number' ? amount : amount.evaluate(context);
+  return typeof amount === 'number' ? amount : amount.evaluate(toFormulaContext(context));
 }
 
 /**
@@ -66,7 +66,7 @@ export const statusHandler: EffectHandler<StatusEffect> = {
       case 'formula':
         return typeof effect.amount === 'number'
           ? String(effect.amount)
-          : effect.amount.render(context, 'formula');
+          : effect.amount.render(toFormulaContext(context), 'formula');
     }
   },
 };

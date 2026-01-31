@@ -53,7 +53,8 @@ export class EffectRendererService {
   renderEffect(effect: Effect, context: EffectContext, format: RenderFormat): string {
     try {
       const handler = handlerRegistry[effect.kind];
-      return handler.render(effect, context, format);
+      // Type assertion needed because TypeScript can't narrow the union through index access
+      return (handler.render as (e: Effect, c: EffectContext, f: RenderFormat) => string)(effect, context, format);
     } catch (error) {
       console.error(`Effect render error for ${effect.kind}:`, error);
       return '';

@@ -12,7 +12,7 @@ import {
   HasFurniture,
   HasInventory,
 } from '../types/condition.types';
-import { EffectContext } from '../types/context.types';
+import { EffectContext, toFormulaContext } from '../types/context.types';
 import { assertNever } from '../utils/exhaustive';
 
 /**
@@ -110,7 +110,7 @@ function evaluateCompareValues(condition: CompareValues, context: EffectContext)
 function evaluateCompareAttribute(condition: CompareAttribute, context: EffectContext): boolean {
   const attrValue = context.attributes[condition.attribute].value;
   const threshold =
-    typeof condition.value === 'number' ? condition.value : condition.value.evaluate(context);
+    typeof condition.value === 'number' ? condition.value : condition.value.evaluate(toFormulaContext(context));
   return compare(attrValue, condition.operator, threshold);
 }
 
@@ -121,7 +121,7 @@ function evaluateCompareAttribute(condition: CompareAttribute, context: EffectCo
 function evaluateCompareStatus(condition: CompareStatus, context: EffectContext): boolean {
   const statusValue = context.status[condition.status].value;
   const threshold =
-    typeof condition.value === 'number' ? condition.value : condition.value.evaluate(context);
+    typeof condition.value === 'number' ? condition.value : condition.value.evaluate(toFormulaContext(context));
   return compare(statusValue, condition.operator, threshold);
 }
 

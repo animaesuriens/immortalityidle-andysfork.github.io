@@ -41,7 +41,7 @@ export * from './types/condition.types';
 // Formula interface and context
 export * from './types/formula.types';
 
-// Effect execution context
+// Effect execution context and toFormulaContext helper
 export * from './types/context.types';
 
 // =============================================================================

@@ -50,7 +50,8 @@ export class EffectExecutorService {
   private executeEffect(effect: Effect, context: EffectContext): void {
     try {
       const handler = handlerRegistry[effect.kind];
-      handler.execute(effect, context);
+      // Type assertion needed because TypeScript can't narrow the union through index access
+      (handler.execute as (e: Effect, c: EffectContext) => void)(effect, context);
     } catch (error) {
       console.error(`Effect execution error for ${effect.kind}:`, error);
       // Non-blocking - continue to next effect per 03-CONTEXT.md

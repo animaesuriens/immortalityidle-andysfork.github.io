@@ -8,6 +8,7 @@ import { AttributeType, StatusType, EquipmentPosition } from '../../game-state/c
 import { Equipment, Pill } from '../../game-state/inventory.service';
 import { LogTopic } from '../../game-state/log.service';
 import { EnemyConfig } from './effect.types';
+import { FormulaContext } from './formula.types';
 
 /**
  * Read-only view of attribute data.
@@ -220,4 +221,27 @@ export interface EffectContext {
    * Log an injury message (red color).
    */
   logInjury(topic: LogTopic, message: string): void;
+}
+
+/**
+ * Extract a FormulaContext from an EffectContext.
+ * This creates a snapshot of values suitable for formula evaluation.
+ */
+export function toFormulaContext(ctx: EffectContext): FormulaContext {
+  const attributes: Record<string, number> = {};
+  for (const key of Object.keys(ctx.attributes) as AttributeType[]) {
+    attributes[key] = ctx.attributes[key].value;
+  }
+
+  const status: Record<string, { value: number; max: number }> = {};
+  for (const key of ['health', 'stamina', 'mana', 'nourishment'] as StatusType[]) {
+    status[key] = { value: ctx.status[key].value, max: ctx.status[key].max };
+  }
+
+  return {
+    attributes: attributes as Record<AttributeType, number>,
+    status: status as Record<StatusType, { value: number; max: number }>,
+    money: ctx.money,
+    variables: ctx.variables,
+  };
 }
