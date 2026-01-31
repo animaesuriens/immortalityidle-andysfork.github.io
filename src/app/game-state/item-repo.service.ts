@@ -566,7 +566,7 @@ export class ItemRepoService {
       value: 100,
       description: 'A divinely prized and delicious fruit.',
       useLabel: 'Eat',
-      useDescription: '+1 max nourishment, +1 nourishment, +2 max health, +20 health, +2 stamina, +2 max stamina, +1 mana, +1 day food lifespan (max 720 years).',
+      useDescription: '+1 max nourishment, +1 nourishment, +2 max health, +20 health, +2 stamina, +2 max stamina, +1 qi, +1 day food lifespan (max 720 years).',
       useConsumes: true,
       use: (quantity = 1) => {
         this.characterService.characterState.status.nourishment.max += quantity;
@@ -575,7 +575,7 @@ export class ItemRepoService {
         this.characterService.characterState.status.health.value += quantity * 20;
         this.characterService.characterState.status.stamina.value += quantity * 2;
         this.characterService.characterState.status.stamina.max += quantity * 2;
-        this.characterService.characterState.status.mana.value += quantity;
+        this.characterService.characterState.status.qi.value += quantity;
         if (this.characterService.characterState.foodLifespan + quantity <= daysInYear * 720) {
           this.characterService.characterState.foodLifespan += quantity;
         } else if (this.characterService.characterState.foodLifespan < daysInYear * 720) {

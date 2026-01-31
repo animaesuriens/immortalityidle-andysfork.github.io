@@ -1,16 +1,17 @@
 /**
- * EffectShortPipe - Thin pipe for short format effect rendering.
+ * EffectShortPipe - Pipe for rendering effects to structured data.
  *
  * Usage in templates:
- *   {{ effects | effectShort }}
+ *   @for (effect of (effects | effectShort); track $index) { ... }
  *
- * Delegates to EffectRendererService with 'short' format.
+ * Returns RenderedEffect[] for template iteration with short format display.
  * Impure because effects array reference may not change but level does.
  */
 
 import { Pipe, PipeTransform, inject } from '@angular/core';
 import { EffectRendererService } from '../renderer/effect-renderer.service';
 import { Effect } from '../types/effect.types';
+import { RenderedEffect } from '../types/render.types';
 
 @Pipe({
   name: 'effectShort',
@@ -20,10 +21,10 @@ import { Effect } from '../types/effect.types';
 export class EffectShortPipe implements PipeTransform {
   private readonly renderer = inject(EffectRendererService);
 
-  transform(effects: Effect[] | undefined): string {
+  transform(effects: Effect[] | undefined): RenderedEffect[] {
     if (!effects || effects.length === 0) {
-      return '';
+      return [];
     }
-    return this.renderer.renderEffects(effects, 'short');
+    return this.renderer.renderEffects(effects);
   }
 }

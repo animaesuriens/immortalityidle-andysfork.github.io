@@ -5,22 +5,14 @@
 
 import { Effect, EffectKind } from '../types/effect.types';
 import { EffectContext } from '../types/context.types';
-
-/**
- * Format for rendered effect text.
- *
- * - 'short': Compact format for activity cards (e.g., "+1 Str, -5 Sta")
- * - 'long': Full sentence for tooltips (e.g., "Increases Strength by 1")
- * - 'formula': Show the formula (e.g., "log2(Charisma) + 5")
- */
-export type RenderFormat = 'short' | 'long' | 'formula';
+import { RenderedEffect } from '../types/render.types';
 
 /**
  * Interface that all effect handlers must implement.
  *
  * Effect handlers are responsible for:
  * 1. Executing the effect (modifying game state)
- * 2. Rendering the effect (generating display text)
+ * 2. Rendering the effect (generating structured display data)
  *
  * This separation allows the same effect definition to be used
  * for both execution and display - the "single source of truth"
@@ -39,13 +31,15 @@ export type RenderFormat = 'short' | 'long' | 'formula';
  *     }
  *   }
  *
- *   render(effect: AttributeEffect, context: EffectContext, format: RenderFormat): string {
+ *   render(effect: AttributeEffect, context: EffectContext): RenderedEffect {
  *     const value = evaluateFormula(effect.value, context);
- *     switch (format) {
- *       case 'short': return `+${value} ${effect.attribute}`;
- *       case 'long': return `Increases ${effect.attribute} by ${value}`;
- *       case 'formula': return renderFormula(effect.value);
- *     }
+ *     return {
+ *       kind: 'attribute',
+ *       visible: true,
+ *       positive: value >= 0,
+ *       short: { sign: '+', amount: value, label: 'Str' },
+ *       long: { verb: 'Increases', amount: value, name: 'Strength' },
+ *     };
  *   }
  * }
  */
@@ -64,19 +58,21 @@ export interface EffectHandler<T extends Effect = Effect> {
   execute(effect: T, context: EffectContext): void;
 
   /**
-   * Render the effect to a display string.
+   * Render the effect to structured display data.
    *
-   * Handlers should generate appropriate text based on format:
-   * - 'short': Compact, for activity cards and lists
-   * - 'long': Full sentences for tooltips and details
-   * - 'formula': Show underlying calculation for transparency
+   * Returns a RenderedEffect (or array for conditional effects) that contains:
+   * - Short format: compact data for activity cards (sign, amount, label)
+   * - Long format: full sentence data for tooltips (verb, amount, name)
+   * - Formula breakdown: optional calculation details
+   * - Condition hint: optional condition text for conditional effects
+   *
+   * Templates use this data with pipes like | bigNumber to format numbers.
    *
    * @param effect The effect definition to render
    * @param context Access to game state for value computation
-   * @param format The output format
-   * @returns Display string for UI
+   * @returns Structured display data for UI (single effect or array for conditionals)
    */
-  render(effect: T, context: EffectContext, format: RenderFormat): string;
+  render(effect: T, context: EffectContext): RenderedEffect | RenderedEffect[];
 }
 
 /**

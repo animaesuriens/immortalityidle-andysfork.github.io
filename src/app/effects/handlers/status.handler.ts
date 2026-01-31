@@ -1,15 +1,15 @@
 /**
  * StatusEffect handler for the declarative effects system.
- * Modifies status values (health, stamina, mana, nourishment).
+ * Modifies status values (health, stamina, qi, nourishment).
  */
 
-import { EffectHandler, RenderFormat } from './handler.interface';
+import { EffectHandler } from './handler.interface';
 import { StatusEffect } from '../types/effect.types';
 import { EffectContext, toFormulaContext } from '../types/context.types';
+import { RenderedEffect, FormulaBreakdown } from '../types/render.types';
 import { ABBREVIATIONS } from '../utils/abbreviations';
 import {
   evaluateAmount,
-  renderFormulaLong,
   getStatusDisplayName,
 } from '../utils/render-helpers';
 
@@ -28,28 +28,41 @@ export const statusHandler: EffectHandler<StatusEffect> = {
     }
   },
 
-  render(effect: StatusEffect, context: EffectContext, format: RenderFormat): string {
+  render(effect: StatusEffect, context: EffectContext): RenderedEffect {
     const formulaContext = toFormulaContext(context);
     const amount = evaluateAmount(effect.amount, formulaContext);
-    const sign = amount >= 0 ? '+' : '';
+    const positive = amount >= 0;
     const abbrev = ABBREVIATIONS.status[effect.status];
     const maxSuffix = effect.modifyMax ? ' Max' : '';
+    const name = getStatusDisplayName(effect.status);
 
-    switch (format) {
-      case 'short':
-        return `${sign}${Math.floor(amount)} ${abbrev}${maxSuffix}`;
-      case 'long': {
-        const verb = amount >= 0 ? 'Restores' : 'Uses';
-        const name = getStatusDisplayName(effect.status);
-        const maxWord = effect.modifyMax ? ' max' : '';
-        const formulaStr = renderFormulaLong(effect.amount, formulaContext);
-        const cssClass = amount >= 0 ? 'effect-positive' : 'effect-negative';
-        return `<span class="${cssClass}">${verb} ${Math.abs(Math.floor(amount))}${maxWord} ${name}.</span> <span class="effect-formula">(${formulaStr})</span>`;
-      }
-      case 'formula':
-        return typeof effect.amount === 'number'
-          ? String(effect.amount)
-          : effect.amount.render(formulaContext, 'formula');
+    // Build formula breakdown
+    let formula: FormulaBreakdown;
+    if (typeof effect.amount === 'number') {
+      formula = { type: 'fixed', base: effect.amount };
+    } else {
+      formula = {
+        type: 'fixed',
+        expression: effect.amount.render(formulaContext, 'both'),
+      };
     }
+
+    return {
+      kind: 'status',
+      visible: true,
+      positive,
+      short: {
+        sign: positive ? '+' : '',
+        amount: Math.abs(Math.floor(amount)),
+        label: `${abbrev}${maxSuffix}`,
+      },
+      long: {
+        verb: positive ? 'Restores' : 'Uses',
+        amount: Math.abs(Math.floor(amount)),
+        name,
+        suffix: effect.modifyMax ? 'max' : undefined,
+      },
+      formula,
+    };
   },
 };

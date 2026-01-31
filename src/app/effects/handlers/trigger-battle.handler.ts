@@ -3,9 +3,10 @@
  * Stub implementation - Phase 4.
  */
 
-import { EffectHandler, RenderFormat } from './handler.interface';
+import { EffectHandler } from './handler.interface';
 import { TriggerBattleEffect } from '../types/effect.types';
 import { EffectContext } from '../types/context.types';
+import { RenderedEffect } from '../types/render.types';
 
 /**
  * Handler for TriggerBattleEffect.
@@ -15,7 +16,7 @@ export const triggerBattleHandler: EffectHandler<TriggerBattleEffect> = {
   execute(_effect: TriggerBattleEffect, _context: EffectContext): void {
     throw new Error('TriggerBattleHandler not implemented - Phase 4');
   },
-  render(_effect: TriggerBattleEffect, _context: EffectContext, _format: RenderFormat): string {
+  render(_effect: TriggerBattleEffect, _context: EffectContext): RenderedEffect {
     throw new Error('TriggerBattleHandler not implemented - Phase 4');
   },
 };

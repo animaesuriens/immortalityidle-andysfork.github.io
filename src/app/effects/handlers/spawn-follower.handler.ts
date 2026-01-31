@@ -3,9 +3,10 @@
  * Stub implementation - Phase 4.
  */
 
-import { EffectHandler, RenderFormat } from './handler.interface';
+import { EffectHandler } from './handler.interface';
 import { SpawnFollowerEffect } from '../types/effect.types';
 import { EffectContext } from '../types/context.types';
+import { RenderedEffect } from '../types/render.types';
 
 /**
  * Handler for SpawnFollowerEffect.
@@ -15,7 +16,7 @@ export const spawnFollowerHandler: EffectHandler<SpawnFollowerEffect> = {
   execute(_effect: SpawnFollowerEffect, _context: EffectContext): void {
     throw new Error('SpawnFollowerHandler not implemented - Phase 4');
   },
-  render(_effect: SpawnFollowerEffect, _context: EffectContext, _format: RenderFormat): string {
+  render(_effect: SpawnFollowerEffect, _context: EffectContext): RenderedEffect {
     throw new Error('SpawnFollowerHandler not implemented - Phase 4');
   },
 };

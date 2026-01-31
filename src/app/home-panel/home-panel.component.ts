@@ -114,6 +114,16 @@ export class HomePanelComponent {
     }
   }
 
+  resetFieldsClicked(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    const totalFields = this.homeService.fields.length + this.homeService.extraFields;
+    if (totalFields > 0) {
+      this.homeService.clearField(-1);
+      this.homeService.addField(totalFields);
+    }
+  }
+
   getActiveFurnitureEffects(): { name: string; count: number; effects: string }[] {
     // Count furniture by name and track their effects
     const counts: { [name: string]: { count: number; effects: string } } = {};

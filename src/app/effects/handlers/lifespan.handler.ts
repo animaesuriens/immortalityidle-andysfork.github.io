@@ -3,9 +3,10 @@
  * Stub implementation - Phase 4.
  */
 
-import { EffectHandler, RenderFormat } from './handler.interface';
+import { EffectHandler } from './handler.interface';
 import { LifespanEffect } from '../types/effect.types';
 import { EffectContext } from '../types/context.types';
+import { RenderedEffect } from '../types/render.types';
 
 /**
  * Handler for LifespanEffect.
@@ -15,7 +16,7 @@ export const lifespanHandler: EffectHandler<LifespanEffect> = {
   execute(_effect: LifespanEffect, _context: EffectContext): void {
     throw new Error('LifespanHandler not implemented - Phase 4');
   },
-  render(_effect: LifespanEffect, _context: EffectContext, _format: RenderFormat): string {
+  render(_effect: LifespanEffect, _context: EffectContext): RenderedEffect {
     throw new Error('LifespanHandler not implemented - Phase 4');
   },
 };

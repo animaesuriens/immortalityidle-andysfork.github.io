@@ -10,6 +10,8 @@ import { GameStateService } from '../game-state/game-state.service';
 import { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
 import { ItemRepoService } from '../game-state/item-repo.service';
 import { ItemTooltipPipe } from '../app.component';
+import { HomeService } from '../game-state/home.service';
+import { FollowersService } from '../game-state/followers.service';
 
 @Component({
   selector: 'app-inventory-panel',
@@ -43,7 +45,9 @@ export class InventoryPanelComponent {
     public mainLoopService: MainLoopService,
     public gameStateService: GameStateService,
     public itemRepoService: ItemRepoService,
-    private itemTooltipPipe: ItemTooltipPipe
+    private itemTooltipPipe: ItemTooltipPipe,
+    public homeService: HomeService,
+    public followersService: FollowersService
   ) {
     this.equipmentSlots = Object.keys(this.characterService.characterState.equipment);
     this.moneyUpdates = [];
@@ -387,5 +391,37 @@ export class InventoryPanelComponent {
     // Skip the first line (name) and the empty second line
     const lines = tooltip.split('\n');
     return lines.slice(2).join('\n');
+  }
+
+  getDailyCostsTooltip(): string {
+    const costs: string[] = [];
+    let total = 0;
+
+    // Home cost
+    const homeCost = this.homeService.home.costPerDay;
+    if (homeCost > 0) {
+      costs.push(`Home: ${homeCost}`);
+      total += homeCost;
+    }
+
+    // Food cost (only if no food and autoBuyFood enabled)
+    if (this.inventoryService.noFood && this.inventoryService.autoBuyFood && !this.hellService.inHell) {
+      costs.push(`Food: ${this.inventoryService.riceCost}`);
+      total += this.inventoryService.riceCost;
+    }
+
+    // Follower costs
+    const followerCost = this.followersService.followers.reduce((sum, f) => sum + f.cost, 0);
+    if (followerCost > 0) {
+      costs.push(`Followers: ${followerCost}`);
+      total += followerCost;
+    }
+
+    if (costs.length === 0) {
+      return 'No daily costs';
+    }
+
+    costs.push(`Total: ${total} taels/day`);
+    return costs.join('\n');
   }
 }

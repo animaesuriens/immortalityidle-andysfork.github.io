@@ -3,9 +3,10 @@
  * Stub implementation - Phase 4.
  */
 
-import { EffectHandler, RenderFormat } from './handler.interface';
+import { EffectHandler } from './handler.interface';
 import { ChanceEffect } from '../types/effect.types';
 import { EffectContext } from '../types/context.types';
+import { RenderedEffect } from '../types/render.types';
 
 /**
  * Handler for ChanceEffect.
@@ -15,7 +16,7 @@ export const chanceHandler: EffectHandler<ChanceEffect> = {
   execute(_effect: ChanceEffect, _context: EffectContext): void {
     throw new Error('ChanceHandler not implemented - Phase 4');
   },
-  render(_effect: ChanceEffect, _context: EffectContext, _format: RenderFormat): string {
+  render(_effect: ChanceEffect, _context: EffectContext): RenderedEffect {
     throw new Error('ChanceHandler not implemented - Phase 4');
   },
 };

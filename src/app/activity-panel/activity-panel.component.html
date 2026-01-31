@@ -72,8 +72,19 @@
               @if (getActivityCost(activity)) {
                 <div class="activityCost">{{getActivityCost(activity)}}</div>
               }
-              @if (getActivityEffects(activity)) {
-                <div class="activityEffects">{{getActivityEffects(activity)}}</div>
+              @if (hasActivityEffects(activity)) {
+                <div class="activityEffects">
+                  @if (getActivityEffects(activity); as effects) {
+                    @for (effect of effects; track $index; let last = $last) {
+                      @if (effect.visible) {
+                        <span [class.effect-positive]="effect.positive"
+                              [class.effect-negative]="!effect.positive">{{formatEffectShort(effect)}}</span>@if (!last && effect.visible) {<span>, </span>}
+                      }
+                    }
+                  } @else {
+                    {{getLegacyEffects(activity)}}
+                  }
+                </div>
               }
             </div>
             <div class="activityButtons">

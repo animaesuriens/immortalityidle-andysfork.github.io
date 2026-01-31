@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CharacterService } from '../game-state/character.service';
 import { GameStateService } from '../game-state/game-state.service';
 import { FieldBatch, HomeService } from '../game-state/home.service';
+import { BigNumberPipe } from '../app.component';
 
 export interface DisplayBatch {
   count: number;
@@ -19,8 +20,19 @@ export class FarmPanelComponent {
   constructor(
     public homeService: HomeService,
     private characterService: CharacterService,
-    public gameStateService: GameStateService
+    public gameStateService: GameStateService,
+    private bigNumberPipe: BigNumberPipe
   ) {}
+
+  getLandPrice(count: number): string {
+    const price = this.homeService.landPrice * count + 10 * ((count * (count - 1)) / 2);
+    return this.bigNumberPipe.transform(price);
+  }
+
+  getHalfAffordableLand(): string {
+    const max = this.homeService.calculateAffordableLand(this.characterService.characterState.money);
+    return this.bigNumberPipe.transform(Math.floor(max / 2));
+  }
 
   getFieldBatches(): DisplayBatch[] {
     const batchMap = new Map<string, DisplayBatch>();

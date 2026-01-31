@@ -27,7 +27,7 @@ export interface AttributeEffect extends BaseEffect {
 }
 
 /**
- * Status modification effect (health, stamina, mana, nourishment).
+ * Status modification effect (health, stamina, qi, nourishment).
  */
 export interface StatusEffect extends BaseEffect {
   readonly kind: 'status';

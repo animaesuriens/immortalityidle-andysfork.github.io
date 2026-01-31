@@ -23,7 +23,7 @@ export const ABBREVIATIONS = {
   status: {
     health: 'HP',
     stamina: 'Sta',
-    mana: 'Mana',
+    qi: 'Qi',
     nourishment: 'Food',
   },
 } as const;

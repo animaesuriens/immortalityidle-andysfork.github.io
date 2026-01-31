@@ -479,19 +479,19 @@ export class HellService {
     description: [
       'You notice that not all the animals here are frenzied killers. Some of them are sick, wounded, and miserable. You resolve to do what good you can here.',
     ],
-    consequenceDescription: ['Uses 10,000 mana and 10,000 stamina. Heals an animal.'],
+    consequenceDescription: ['Uses 10,000 qi and 10,000 stamina. Heals an animal.'],
     effectsLegacy: ['+Animals Healed'],
     consequence: [
       () => {
         this.characterService.characterState.status.stamina.value -= 10000;
-        this.characterService.characterState.status.mana.value -= 10000;
+        this.characterService.characterState.status.qi.value -= 10000;
         this.animalsHealed++;
       },
     ],
     resourceUse: [
       {
         stamina: 10000,
-        mana: 10000,
+        qi: 10000,
       },
     ],
     requirements: [{}],
@@ -517,7 +517,7 @@ export class HellService {
     resourceUse: [
       {
         stamina: 10000,
-        mana: 10000,
+        qi: 10000,
       },
     ],
     requirements: [{}],
@@ -1733,7 +1733,7 @@ export class HellService {
       completeEffect: () => {
         this.logService.log(
           LogTopic.STORY,
-          "You realize that the power of the ice cores is all that prevents the heat from the neighboring hells from turning the mountain into slush. With enough of these tucked away in your pack, the mountain dwindles down to a managable size. Now to see who's in charge around here."
+          "You realize that the power of the ice cores is all that prevents the heat from the neighboring hells from turning the mountain into slush. With enough of these tucked away in your pack, the mountain dwindles down to a manageable size. Now to see who's in charge around here."
         );
       },
       dailyEffect: () => {

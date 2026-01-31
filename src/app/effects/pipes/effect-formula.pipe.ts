@@ -1,16 +1,17 @@
 /**
- * EffectFormulaPipe - Thin pipe for formula format effect rendering.
+ * EffectFormulaPipe - Pipe for rendering effects to structured data.
  *
  * Usage in templates:
- *   {{ effects | effectFormula }}
+ *   @for (effect of (effects | effectFormula); track $index) { ... }
  *
- * Delegates to EffectRendererService with 'formula' format.
+ * Returns RenderedEffect[] for template iteration with formula display.
  * Impure because effects array reference may not change but level does.
  */
 
 import { Pipe, PipeTransform, inject } from '@angular/core';
 import { EffectRendererService } from '../renderer/effect-renderer.service';
 import { Effect } from '../types/effect.types';
+import { RenderedEffect } from '../types/render.types';
 
 @Pipe({
   name: 'effectFormula',
@@ -20,10 +21,10 @@ import { Effect } from '../types/effect.types';
 export class EffectFormulaPipe implements PipeTransform {
   private readonly renderer = inject(EffectRendererService);
 
-  transform(effects: Effect[] | undefined): string {
+  transform(effects: Effect[] | undefined): RenderedEffect[] {
     if (!effects || effects.length === 0) {
-      return '';
+      return [];
     }
-    return this.renderer.renderEffects(effects, 'formula');
+    return this.renderer.renderEffects(effects);
   }
 }

@@ -1,10 +1,12 @@
 <div class="darkMode furnitureModal">
-  <span>Furniture Shop</span>
-  <hr/>
-  <br>
+  <div class="modalHeader">
+    <h3>Furniture Shop</h3>
+    <hr/>
+  </div>
+  <div class="modalContent">
     @if (storeService.getFurnitureForSlot('bed').length > 0) {
       <div>
-        <span>Bed</span>
+        <span>Bedroom</span>
         <hr/>
         <div class="inventoryGrid">
           @for (item of storeService.getFurnitureForSlot('bed'); track item) {
@@ -28,7 +30,7 @@
     }
     @if (storeService.getFurnitureForSlot('bathtub').length > 0) {
       <div>
-        <span>Bathtub</span>
+        <span>Bathroom</span>
         <hr/>
         <div class="inventoryGrid">
           @for (item of storeService.getFurnitureForSlot('bathtub'); track item) {
@@ -75,3 +77,4 @@
       </div>
     }
   </div>
+</div>

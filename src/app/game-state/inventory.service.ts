@@ -170,6 +170,7 @@ export class InventoryService {
   countersMigrated = false;
   maxStackSize = 100;
   noFood: boolean;
+  readonly riceCost = 1;
   selectedItem: ItemStack | null = null;
   autoSellUnlocked: boolean;
   autoSellEntries: AutoItemEntry[];
@@ -1192,7 +1193,7 @@ export class InventoryService {
       // no food found, buy a bowl of rice automatically
       this.noFood = true;
       if (!this.hellService?.inHell && this.characterService.characterState.money > 0 && this.autoBuyFood) {
-        this.characterService.characterState.updateMoney(-1);
+        this.characterService.characterState.updateMoney(-this.riceCost);
         this.characterService.characterState.status.nourishment.value++;
       }
     }

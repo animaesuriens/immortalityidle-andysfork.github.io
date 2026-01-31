@@ -3,9 +3,10 @@
  * Evaluates conditions and executes 'then' or 'else' effects.
  */
 
-import { EffectHandler, RenderFormat, HandlerRegistry } from './handler.interface';
+import { EffectHandler, HandlerRegistry } from './handler.interface';
 import { ConditionalEffect, Effect } from '../types/effect.types';
 import { EffectContext } from '../types/context.types';
+import { RenderedEffect } from '../types/render.types';
 import { evaluateCondition } from '../conditions/condition-evaluator';
 import { FLAG_DISPLAY_NAMES } from '../utils/render-helpers';
 
@@ -36,14 +37,14 @@ function executeEffect(effect: Effect, context: EffectContext): void {
 }
 
 /**
- * Render a single effect using the registry.
+ * Render a single effect using the registry, returning structured data.
  */
-function renderEffect(effect: Effect, context: EffectContext, format: RenderFormat): string {
+function renderEffect(effect: Effect, context: EffectContext): RenderedEffect | RenderedEffect[] {
   if (!registryRef) {
     throw new Error('Handler registry not initialized');
   }
   const handler = registryRef[effect.kind] as EffectHandler<typeof effect>;
-  return handler.render(effect, context, format);
+  return handler.render(effect, context);
 }
 
 /**
@@ -75,6 +76,13 @@ function renderCondition(condition: ConditionalEffect['condition']): string {
 }
 
 /**
+ * Flatten a RenderedEffect or array of RenderedEffect into an array.
+ */
+function flattenEffects(effect: RenderedEffect | RenderedEffect[]): RenderedEffect[] {
+  return Array.isArray(effect) ? effect : [effect];
+}
+
+/**
  * Handler for ConditionalEffect.
  * Evaluates the condition and executes 'then' effects if true,
  * 'else' effects if false (when provided).
@@ -94,50 +102,42 @@ export const conditionalHandler: EffectHandler<ConditionalEffect> = {
     }
   },
 
-  render(effect: ConditionalEffect, context: EffectContext, format: RenderFormat): string {
+  render(effect: ConditionalEffect, context: EffectContext): RenderedEffect[] {
     const conditionMet = evaluateCondition(effect.condition, context);
-    const conditionStr = renderCondition(effect.condition);
+    const conditionStr = `if ${renderCondition(effect.condition)}`;
 
-    switch (format) {
-      case 'short': {
-        // Short format: Only show effects if condition is met, hide otherwise
-        if (conditionMet) {
-          const thenParts = effect.then.map(e => renderEffect(e, context, 'short')).filter(s => s);
-          return thenParts.join(', ');
-        } else if (effect.else && effect.else.length > 0) {
-          const elseParts = effect.else.map(e => renderEffect(e, context, 'short')).filter(s => s);
-          return elseParts.join(', ');
-        }
-        return ''; // Hide when condition not met and no else branch
-      }
-      case 'long': {
-        // Long format: Append condition hint inside the formula parentheses
-        // e.g., "(Fixed: 1)</span>" becomes "(Fixed: 1; if Yin/Yang unlocked)</span>"
-        const conditionHint = `if ${conditionStr}`;
-        const thenParts = effect.then.map(e => {
-          const rendered = renderEffect(e, context, 'long');
-          // Find the pattern ")</span>" at the end and insert before the ")"
-          const endPattern = ')</span>';
-          const endIdx = rendered.lastIndexOf(endPattern);
-          if (endIdx !== -1) {
-            return rendered.slice(0, endIdx) + `; ${conditionHint}` + rendered.slice(endIdx);
-          }
-          return rendered + ` <span class="effect-formula">(${conditionHint})</span>`;
-        }).filter(s => s);
+    const results: RenderedEffect[] = [];
 
-        let result = thenParts.join(' ');
-        if (effect.else && effect.else.length > 0) {
-          const elseParts = effect.else.map(e => renderEffect(e, context, 'long')).filter(s => s);
-          if (elseParts.length > 0) {
-            result += ` Otherwise: ${elseParts.join(' ')}`;
-          }
-        }
-        return result;
-      }
-      case 'formula': {
-        const thenParts = effect.then.map(e => renderEffect(e, context, 'formula')).filter(s => s);
-        return `if(${conditionStr}) { ${thenParts.join('; ')} }`;
+    // Render 'then' branch effects
+    for (const nested of effect.then) {
+      const rendered = flattenEffects(renderEffect(nested, context));
+      for (const r of rendered) {
+        results.push({
+          ...r,
+          // Show effect only if condition is met
+          visible: conditionMet && r.visible,
+          // Add condition hint
+          condition: conditionStr,
+        });
       }
     }
+
+    // Render 'else' branch effects if present
+    if (effect.else && effect.else.length > 0) {
+      const elseConditionStr = `if not ${renderCondition(effect.condition)}`;
+      for (const nested of effect.else) {
+        const rendered = flattenEffects(renderEffect(nested, context));
+        for (const r of rendered) {
+          results.push({
+            ...r,
+            // Show effect only if condition is NOT met
+            visible: !conditionMet && r.visible,
+            condition: elseConditionStr,
+          });
+        }
+      }
+    }
+
+    return results;
   },
 };

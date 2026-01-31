@@ -3,9 +3,10 @@
  * Stub implementation - Phase 4.
  */
 
-import { EffectHandler, RenderFormat } from './handler.interface';
+import { EffectHandler } from './handler.interface';
 import { ItemGenerateEffect } from '../types/effect.types';
 import { EffectContext } from '../types/context.types';
+import { RenderedEffect } from '../types/render.types';
 
 /**
  * Handler for ItemGenerateEffect.
@@ -15,7 +16,7 @@ export const itemGenerateHandler: EffectHandler<ItemGenerateEffect> = {
   execute(_effect: ItemGenerateEffect, _context: EffectContext): void {
     throw new Error('ItemGenerateHandler not implemented - Phase 4');
   },
-  render(_effect: ItemGenerateEffect, _context: EffectContext, _format: RenderFormat): string {
+  render(_effect: ItemGenerateEffect, _context: EffectContext): RenderedEffect {
     throw new Error('ItemGenerateHandler not implemented - Phase 4');
   },
 };

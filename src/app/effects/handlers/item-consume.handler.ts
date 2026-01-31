@@ -3,9 +3,10 @@
  * Stub implementation - Phase 4.
  */
 
-import { EffectHandler, RenderFormat } from './handler.interface';
+import { EffectHandler } from './handler.interface';
 import { ItemConsumeEffect } from '../types/effect.types';
 import { EffectContext } from '../types/context.types';
+import { RenderedEffect } from '../types/render.types';
 
 /**
  * Handler for ItemConsumeEffect.
@@ -15,7 +16,7 @@ export const itemConsumeHandler: EffectHandler<ItemConsumeEffect> = {
   execute(_effect: ItemConsumeEffect, _context: EffectContext): void {
     throw new Error('ItemConsumeHandler not implemented - Phase 4');
   },
-  render(_effect: ItemConsumeEffect, _context: EffectContext, _format: RenderFormat): string {
+  render(_effect: ItemConsumeEffect, _context: EffectContext): RenderedEffect {
     throw new Error('ItemConsumeHandler not implemented - Phase 4');
   },
 };

@@ -3,10 +3,10 @@
  * Modifies yin/yang values or balances them.
  */
 
-import { EffectHandler, RenderFormat } from './handler.interface';
+import { EffectHandler } from './handler.interface';
 import { YinYangEffect } from '../types/effect.types';
 import { EffectContext } from '../types/context.types';
-import { renderFormulaLong } from '../utils/render-helpers';
+import { RenderedEffect } from '../types/render.types';
 
 /**
  * Handler for YinYangEffect.
@@ -37,35 +37,64 @@ export const yinyangHandler: EffectHandler<YinYangEffect> = {
     }
   },
 
-  render(effect: YinYangEffect, context: EffectContext, format: RenderFormat): string {
+  render(effect: YinYangEffect, context: EffectContext): RenderedEffect {
     const amount = effect.amount ?? 1;
-    const sign = amount >= 0 ? '+' : '';
-    // YinYang effects currently only support fixed amounts
-    const formulaStr = renderFormulaLong(amount, {} as any);
+    const positive = amount >= 0;
 
-    switch (format) {
-      case 'short':
-        switch (effect.modify) {
-          case 'yin':
-            return `${sign}${amount} Yin`;
-          case 'yang':
-            return `${sign}${amount} Yang`;
-          case 'balance':
-            return `Balance Yin/Yang`;
-        }
-        break;
-      case 'long':
-        switch (effect.modify) {
-          case 'yin':
-            return `<span class="effect-positive">Increases Yin by ${Math.abs(amount)}.</span> <span class="effect-formula">(${formulaStr})</span>`;
-          case 'yang':
-            return `<span class="effect-positive">Increases Yang by ${Math.abs(amount)}.</span> <span class="effect-formula">(${formulaStr})</span>`;
-          case 'balance':
-            return `<span class="effect-positive">Balances Yin and Yang (increases the lower value).</span> <span class="effect-formula">(${formulaStr})</span>`;
-        }
-        break;
-      case 'formula':
-        return String(amount);
+    switch (effect.modify) {
+      case 'yin':
+        return {
+          kind: 'yinyang',
+          visible: true,
+          positive,
+          short: {
+            sign: positive ? '+' : '',
+            amount: Math.abs(amount),
+            label: 'Yin',
+          },
+          long: {
+            verb: 'Increases',
+            amount: Math.abs(amount),
+            name: 'Yin',
+          },
+          formula: { type: 'fixed', base: amount },
+        };
+
+      case 'yang':
+        return {
+          kind: 'yinyang',
+          visible: true,
+          positive,
+          short: {
+            sign: positive ? '+' : '',
+            amount: Math.abs(amount),
+            label: 'Yang',
+          },
+          long: {
+            verb: 'Increases',
+            amount: Math.abs(amount),
+            name: 'Yang',
+          },
+          formula: { type: 'fixed', base: amount },
+        };
+
+      case 'balance':
+        return {
+          kind: 'yinyang',
+          visible: true,
+          positive: true,
+          short: {
+            sign: '',
+            amount: amount,
+            label: 'Balance Yin/Yang',
+          },
+          long: {
+            verb: 'Balances',
+            amount: amount,
+            name: 'Yin and Yang (increases the lower value)',
+          },
+          formula: { type: 'fixed', base: amount },
+        };
     }
   },
 };

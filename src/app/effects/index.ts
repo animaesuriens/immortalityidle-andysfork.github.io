@@ -6,13 +6,13 @@
  *
  * 1. Define effects declaratively using typed structures
  * 2. Execute effects using registered handlers
- * 3. Render effects to display strings using the same handlers
+ * 3. Render effects to structured data using the same handlers
  *
  * This achieves "single source of truth" - change the definition once,
  * both execution and display update automatically.
  *
  * @example
- * import { Effect, attr, mult, EffectHandler, EffectContext } from './effects';
+ * import { Effect, attr, mult, EffectHandler, EffectContext, RenderedEffect } from './effects';
  *
  * // Define an effect
  * const effect: Effect = {
@@ -24,8 +24,8 @@
  * // Execute it
  * handler.execute(effect, context);
  *
- * // Render it for display
- * const text = handler.render(effect, context, 'short');  // "+10 Str"
+ * // Render it for display (returns RenderedEffect with short/long data)
+ * const rendered = handler.render(effect, context);  // RenderedEffect
  */
 
 // =============================================================================
@@ -44,6 +44,9 @@ export * from './types/formula.types';
 // Effect execution context and toFormulaContext helper
 export * from './types/context.types';
 
+// Rendered effect types for structured display data
+export * from './types/render.types';
+
 // =============================================================================
 // FORMULA BUILDERS
 // =============================================================================
@@ -55,7 +58,7 @@ export * from './formulas/formula.builders';
 // HANDLER INTERFACE AND REGISTRY
 // =============================================================================
 
-// EffectHandler interface, RenderFormat, HandlerRegistry
+// EffectHandler interface, HandlerRegistry
 export * from './handlers/handler.interface';
 
 // Handler registry (all 14 handlers)

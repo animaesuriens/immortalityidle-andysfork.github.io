@@ -9,7 +9,8 @@ import { TextPanelComponent } from '../text-panel/text-panel.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ImpossibleTaskService } from '../game-state/impossibleTask.service';
 import { MainLoopService } from '../game-state/main-loop.service';
-import { EffectExecutorService, EffectShortPipe, EffectLongPipe } from '../effects';
+import { EffectExecutorService, EffectShortPipe, EffectLongPipe, RenderedEffect } from '../effects';
+import { BigNumberPipe } from '../app.component';
 
 @Component({
   selector: 'app-portal-panel',
@@ -33,7 +34,8 @@ export class PortalPanelComponent {
     public hellService: HellService,
     public impossibleTaskService: ImpossibleTaskService,
     public dialog: MatDialog,
-    public mainLoopService: MainLoopService
+    public mainLoopService: MainLoopService,
+    private bigNumberPipe: BigNumberPipe
   ) {
     this.Math = Math;
     this.character = characterService.characterState;
@@ -54,7 +56,8 @@ export class PortalPanelComponent {
     let effectsText: string;
     if (isDeclarativeActivity(activity)) {
       const effects = activity.effects[activity.level] ?? [];
-      effectsText = this.effectLongPipe.transform(effects);
+      const rendered = this.effectLongPipe.transform(effects);
+      effectsText = this.formatEffectsLong(rendered);
     } else {
       effectsText = activity.consequenceDescription[activity.level];
     }
@@ -70,5 +73,39 @@ export class PortalPanelComponent {
       data: dialogProperties,
       autoFocus: false,
     });
+  }
+
+  /**
+   * Format RenderedEffect[] to HTML string for long format display.
+   */
+  formatEffectsLong(effects: RenderedEffect[]): string {
+    return effects
+      .filter(e => e.visible)
+      .map(e => {
+        const cssClass = e.positive ? 'effect-positive' : 'effect-negative';
+        const suffix = e.long.suffix ? ` ${e.long.suffix}` : '';
+        let text = `<span class="${cssClass}">${e.long.verb} ${e.long.name}${suffix} by ${this.bigNumberPipe.transform(e.long.amount)}.</span>`;
+
+        // Add formula breakdown
+        if (e.formula) {
+          let formulaText: string;
+          if (e.formula.type === 'fixed') {
+            formulaText = e.formula.expression ?? `Fixed: ${e.formula.base}`;
+          } else {
+            // Multiplied formula
+            const base = e.formula.expression ?? String(e.formula.base);
+            formulaText = `${base} × ${e.formula.multiplierName} = ${base} × ${this.bigNumberPipe.transform(e.formula.multiplier ?? 1)} = ${this.bigNumberPipe.transform(e.formula.result ?? 0)}`;
+          }
+          if (e.condition) {
+            formulaText += `; ${e.condition}`;
+          }
+          text += ` <span class="effect-formula">(${formulaText})</span>`;
+        } else if (e.condition) {
+          text += ` <span class="effect-formula">(${e.condition})</span>`;
+        }
+
+        return `• ${text}`;
+      })
+      .join('<br>');
   }
 }

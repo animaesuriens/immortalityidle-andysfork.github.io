@@ -11,7 +11,6 @@
 import { Injectable, inject } from '@angular/core';
 import { CharacterService } from '../../game-state/character.service';
 import { InventoryService } from '../../game-state/inventory.service';
-import { BigNumberPipe } from '../../app.component';
 import { GameContext } from '../context/game-context';
 import { handlerRegistry } from '../handlers/handler-registry';
 import { Effect } from '../types/effect.types';
@@ -23,7 +22,6 @@ import { EffectContext } from '../types/context.types';
 export class EffectExecutorService {
   private readonly characterService = inject(CharacterService);
   private readonly inventoryService = inject(InventoryService);
-  private readonly bigNumberPipe = inject(BigNumberPipe);
 
   /**
    * Execute all effects for an activity at its current level.
@@ -64,6 +62,6 @@ export class EffectExecutorService {
    * Create a fresh GameContext for this execution.
    */
   private createContext(): GameContext {
-    return new GameContext(this.characterService, this.inventoryService, this.bigNumberPipe);
+    return new GameContext(this.characterService, this.inventoryService);
   }
 }

@@ -1,9 +1,44 @@
 @import (reference) "../../styles.less";
 
 .furnitureModal {
-  overflow-x: hidden;
-  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
   max-height: 600px;
+}
+
+.modalHeader {
+  flex-shrink: 0;
+
+  h3 {
+    margin: 0;
+  }
+
+  hr {
+    margin: 8px 0 0 0;
+  }
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.navArrow {
+  cursor: pointer;
+  opacity: 0.7;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.modalContent {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: 8px;
 }
 
 .itemSlot {

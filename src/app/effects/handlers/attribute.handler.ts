@@ -3,14 +3,14 @@
  * Modifies character attributes (strength, intelligence, etc.).
  */
 
-import { EffectHandler, RenderFormat } from './handler.interface';
+import { EffectHandler } from './handler.interface';
 import { AttributeEffect } from '../types/effect.types';
 import { EffectContext, toFormulaContext } from '../types/context.types';
+import { RenderedEffect, FormulaBreakdown } from '../types/render.types';
 import { ABBREVIATIONS } from '../utils/abbreviations';
 import {
   evaluateAmount,
-  renderFormulaLong,
-  renderGainMultiplierFormula,
+  renderFormulaOnly,
   getAttributeDisplayName,
 } from '../utils/render-helpers';
 
@@ -30,36 +30,59 @@ export const attributeHandler: EffectHandler<AttributeEffect> = {
     }
   },
 
-  render(effect: AttributeEffect, context: EffectContext, format: RenderFormat): string {
+  render(effect: AttributeEffect, context: EffectContext): RenderedEffect {
     const formulaContext = toFormulaContext(context);
     const amount = evaluateAmount(effect.amount, formulaContext);
-    const sign = amount >= 0 ? '+' : '';
+    const positive = amount >= 0;
     const abbrev = ABBREVIATIONS.attributes[effect.attribute];
     const aptSuffix = effect.aptitude ? ' Apt' : '';
+    const name = getAttributeDisplayName(effect.attribute);
 
-    switch (format) {
-      case 'short':
-        return `${sign}${context.formatNumber(amount)} ${abbrev}${aptSuffix}`;
-      case 'long': {
-        const verb = amount >= 0 ? 'Increases' : 'Decreases';
-        const name = getAttributeDisplayName(effect.attribute);
-        const aptWord = effect.aptitude ? ' aptitude' : '';
-        let formulaStr: string;
-        if (effect.aptitude) {
-          // Aptitude changes are not multiplied
-          formulaStr = renderFormulaLong(effect.amount, formulaContext);
-        } else {
-          // Attribute gains are multiplied by gain multiplier
-          const gainMult = context.attributes[effect.attribute].aptitudeMult;
-          formulaStr = renderGainMultiplierFormula(effect.amount, name, gainMult, formulaContext, v => context.formatNumber(v));
-        }
-        const cssClass = amount >= 0 ? 'effect-positive' : 'effect-negative';
-        return `<span class="${cssClass}">${verb} ${name}${aptWord} by ${context.formatNumber(Math.abs(amount))}.</span> <span class="effect-formula">(${formulaStr})</span>`;
+    // Build formula breakdown
+    let formula: FormulaBreakdown;
+    if (effect.aptitude) {
+      // Aptitude changes are not multiplied
+      if (typeof effect.amount === 'number') {
+        formula = { type: 'fixed', base: effect.amount };
+      } else {
+        formula = {
+          type: 'fixed',
+          expression: effect.amount.render(formulaContext, 'both'),
+        };
       }
-      case 'formula':
-        return typeof effect.amount === 'number'
-          ? String(effect.amount)
-          : effect.amount.render(formulaContext, 'formula');
+    } else {
+      // Attribute gains are multiplied by gain multiplier
+      const gainMult = context.attributes[effect.attribute].aptitudeMult;
+      const baseAmount = evaluateAmount(effect.amount, formulaContext);
+      const baseStr = renderFormulaOnly(effect.amount, formulaContext);
+      const result = baseAmount * gainMult;
+
+      formula = {
+        type: 'multiplied',
+        base: baseAmount,
+        multiplierName: `${name} Gain Multiplier`,
+        multiplier: gainMult,
+        result,
+        expression: baseStr,
+      };
     }
+
+    return {
+      kind: 'attribute',
+      visible: true,
+      positive,
+      short: {
+        sign: positive ? '+' : '',
+        amount: Math.abs(amount),
+        label: `${abbrev}${aptSuffix}`,
+      },
+      long: {
+        verb: positive ? 'Increases' : 'Decreases',
+        amount: Math.abs(amount),
+        name,
+        suffix: effect.aptitude ? 'aptitude' : undefined,
+      },
+      formula,
+    };
   },
 };

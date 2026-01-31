@@ -1,16 +1,17 @@
 /**
- * EffectLongPipe - Thin pipe for long format effect rendering.
+ * EffectLongPipe - Pipe for rendering effects to structured data.
  *
  * Usage in templates:
- *   {{ effects | effectLong }}
+ *   @for (effect of (effects | effectLong); track $index) { ... }
  *
- * Delegates to EffectRendererService with 'long' format.
+ * Returns RenderedEffect[] for template iteration with long format display.
  * Impure because effects array reference may not change but level does.
  */
 
 import { Pipe, PipeTransform, inject } from '@angular/core';
 import { EffectRendererService } from '../renderer/effect-renderer.service';
 import { Effect } from '../types/effect.types';
+import { RenderedEffect } from '../types/render.types';
 
 @Pipe({
   name: 'effectLong',
@@ -20,10 +21,10 @@ import { Effect } from '../types/effect.types';
 export class EffectLongPipe implements PipeTransform {
   private readonly renderer = inject(EffectRendererService);
 
-  transform(effects: Effect[] | undefined): string {
+  transform(effects: Effect[] | undefined): RenderedEffect[] {
     if (!effects || effects.length === 0) {
-      return '';
+      return [];
     }
-    return this.renderer.renderEffects(effects, 'long');
+    return this.renderer.renderEffects(effects);
   }
 }
