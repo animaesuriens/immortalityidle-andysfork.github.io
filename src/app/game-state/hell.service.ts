@@ -97,7 +97,7 @@ export class HellService {
     duration: 1,
     description: ['Burn mortal realm money to receive hell money.'],
     consequenceDescription: ['Uses a huge pile of mortal money (one million). Gives you some hell money.'],
-    effects: ['+Hell Money, -1M Taels'],
+    effectsLegacy: ['+Hell Money, -1M Taels'],
     consequence: [
       () => {
         if (this.characterService.characterState.money < 1e6) {
@@ -134,7 +134,7 @@ export class HellService {
     duration: 1,
     description: ['Look for followers willing to help you.'],
     consequenceDescription: ['Uses 100 Stamina and 1000 hell money. Gives you a small chance of finding a follower.'],
-    effects: ['+Damned Follower (1%), -1000 Hell Money'],
+    effectsLegacy: ['+Damned Follower (1%), -1000 Hell Money'],
     consequence: [
       () => {
         if (this.characterService.characterState.attributes.charisma.value < 1e6) {
@@ -188,7 +188,7 @@ export class HellService {
     consequenceDescription: [
       'Uses 100 Stamina and 10 hell money as bait. Breaks a troublemaker out of their basket and picks a fight with them.',
     ],
-    effects: ['Spawn Troublemaker (respawns doubled on defeat)'],
+    effectsLegacy: ['Spawn Troublemaker (respawns doubled on defeat)'],
     consequence: [
       () => {
         this.characterService.characterState.status.stamina.value -= 100;
@@ -225,7 +225,7 @@ export class HellService {
       'You look around and realize that you have many family members and ancestors here. You should probably give them some credit for what they have done for you. And some money.',
     ],
     consequenceDescription: ['Uses 1 hell money.'],
-    effects: ['+Token of Gratitude, -1 Hell Money'],
+    effectsLegacy: ['+Token of Gratitude, -1 Hell Money'],
     consequence: [
       () => {
         if (this.characterService.characterState.hellMoney < 1) {
@@ -259,7 +259,7 @@ export class HellService {
       "The copper pillars here look like they're made of a decent grade of copper. It looks like you have enough slack in your chains to turn and break off some pieces.",
     ],
     consequenceDescription: ['Uses 100,000 stamina and produces one copper bar.'],
-    effects: ['+Copper Bar (requires 1Y Str)'],
+    effectsLegacy: ['+Copper Bar (requires 1Y Str)'],
     consequence: [
       () => {
         if (this.characterService.characterState.attributes.strength.value < 1e24) {
@@ -290,7 +290,7 @@ export class HellService {
       'Shape a bar of copper into a hammer using your bare hands. This would be so much easier with an anvil and tools.',
     ],
     consequenceDescription: ['Uses 100,000 stamina and produces the worst hammer in the world.'],
-    effects: ['+Copper Hammer (from Metal Bar, requires 1Y Str)'],
+    effectsLegacy: ['+Copper Hammer (from Metal Bar, requires 1Y Str)'],
     consequence: [
       () => {
         if (this.characterService.characterState.attributes.strength.value < 1e24) {
@@ -341,7 +341,7 @@ export class HellService {
       "Take another step up the mountain. The path before you seems exceptionally jagged. Maybe you shouldn't have killed so very many little spiders.",
     ],
     consequenceDescription: ['Uses 1000 stamina and works off some of that murderous karma you have built up.'],
-    effects: ['+Mountain Progress'],
+    effectsLegacy: ['+Mountain Progress'],
     consequence: [
       () => {
         if (
@@ -383,7 +383,7 @@ export class HellService {
       "The murderers on this mountain look pretty distracted. It wouldn't be hard to knock them down to the bottom.",
     ],
     consequenceDescription: ['Knock a climber off the mountain.'],
-    effects: ['Reset your mountain progress (evil)'],
+    effectsLegacy: ['Reset your mountain progress (evil)'],
     consequence: [
       () => {
         this.mountainSteps = 0;
@@ -405,7 +405,7 @@ export class HellService {
       "The mountain is far to slippery climb. The only way you're getting to the top is to bring the top down to you.",
     ],
     consequenceDescription: ['Focus your connection to fire and melt that sucker down.'],
-    effects: ['Spawn Ice Golems (drop Ice Core)'],
+    effectsLegacy: ['Spawn Ice Golems (drop Ice Core)'],
     consequence: [
       () => {
         if (this.characterService.characterState.attributes.fireLore.value < 1e16) {
@@ -442,7 +442,7 @@ export class HellService {
     duration: 1,
     description: ['Swimming in lava is less fun that it seemed like it would be.'],
     consequenceDescription: ['Focus your connection to water and turn that lava back to stone.'],
-    effects: ['Spawn Lava Golems (drop Fire Core)'],
+    effectsLegacy: ['Spawn Lava Golems (drop Fire Core)'],
     consequence: [
       () => {
         if (this.characterService.characterState.attributes.waterLore.value < 1e16) {
@@ -480,7 +480,7 @@ export class HellService {
       'You notice that not all the animals here are frenzied killers. Some of them are sick, wounded, and miserable. You resolve to do what good you can here.',
     ],
     consequenceDescription: ['Uses 10,000 mana and 10,000 stamina. Heals an animal.'],
-    effects: ['+Animals Healed'],
+    effectsLegacy: ['+Animals Healed'],
     consequence: [
       () => {
         this.characterService.characterState.status.stamina.value -= 10000;
@@ -507,7 +507,7 @@ export class HellService {
     duration: 1,
     description: ['The boulder is heavy, but you are strong. See how high you can lift it.'],
     consequenceDescription: ['Uses 100,000 stamina.'],
-    effects: ['+Boulder Height'],
+    effectsLegacy: ['+Boulder Height'],
     consequence: [
       () => {
         this.characterService.characterState.status.stamina.value -= 100000;
@@ -533,7 +533,7 @@ export class HellService {
     duration: 1,
     description: ['Swim down further into the crimson depths.'],
     consequenceDescription: ['Uses 2000 Stamina. Reduce health by 1000.'],
-    effects: ['-1000 HP, +Swim Depth'],
+    effectsLegacy: ['-1000 HP, +Swim Depth'],
     consequence: [
       () => {
         this.characterService.characterState.status.stamina.value -= 2000;
@@ -561,7 +561,7 @@ export class HellService {
       "The lost souls here are searching for a way out, and they can't seem to see the portal you came in on. You could help them search for the exit they're seeking.",
     ],
     consequenceDescription: ['Uses 200,000 Stamina.'],
-    effects: ['Find Exit (chance, requires 1Y Int)'],
+    effectsLegacy: ['Find Exit (chance, requires 1Y Int)'],
     consequence: [
       () => {
         this.characterService.characterState.status.stamina.value -= 200000;
@@ -602,7 +602,7 @@ export class HellService {
     duration: 1,
     description: ['Teach the other damned souls here the way out.'],
     consequenceDescription: ['Uses 200,000 Stamina.'],
-    effects: ['+Souls Escaped (requires 1Y Cha)'],
+    effectsLegacy: ['+Souls Escaped (requires 1Y Cha)'],
     consequence: [
       () => {
         this.characterService.characterState.status.stamina.value -= 200000;
@@ -637,7 +637,7 @@ export class HellService {
       'Find out where the tomb looters here hid their stolen treasures. You might be able to reverse some of the damage they have done.',
     ],
     consequenceDescription: ['Uses 1000 Stamina.'],
-    effects: ['+Treasure Map (chance, requires 1Y Cha)'],
+    effectsLegacy: ['+Treasure Map (chance, requires 1Y Cha)'],
     consequence: [
       () => {
         this.characterService.characterState.status.stamina.value -= 1000;
@@ -676,7 +676,7 @@ export class HellService {
       "Recover a stolen relic. You'll need all your wits to find it even if you have one the sketchy maps the damned can provide.",
     ],
     consequenceDescription: ['Uses 1000 Stamina.'],
-    effects: ['+Stolen Relic (from Map, chance, requires 1Y Int)'],
+    effectsLegacy: ['+Stolen Relic (from Map, chance, requires 1Y Int)'],
     consequence: [
       () => {
         this.characterService.characterState.status.stamina.value -= 1000;
@@ -721,7 +721,7 @@ export class HellService {
       "Return a stolen relic to the tomb where it came from. You'll need to be quick to avoid the tomb's traps.",
     ],
     consequenceDescription: ['Uses 1000 Stamina.'],
-    effects: ['+Relics Returned (from Relic, chance, requires 1Y Spd)'],
+    effectsLegacy: ['+Relics Returned (from Relic, chance, requires 1Y Spd)'],
     consequence: [
       () => {
         this.characterService.characterState.status.stamina.value -= 1000;
@@ -762,7 +762,7 @@ export class HellService {
       "Trapped under the millstone like this, there's not much you can do but endure the punishment. Fortunately, you probably never went out looking for tiny spiders to squash, right?",
     ],
     consequenceDescription: ['Uses 1000 stamina. Try not to give up. You can do this!'],
-    effects: ['-HP (scales with Toughness), +Times Crushed'],
+    effectsLegacy: ['-HP (scales with Toughness), +Times Crushed'],
     consequence: [
       () => {
         this.characterService.characterState.status.stamina.value -= 1000;
@@ -796,7 +796,7 @@ export class HellService {
       "As if the saw-weilding demons weren't bad enough, this place is a haven for fiendish bureaucrats. Huge piles of paper containing the contracts, covenants, bylaws, stipulations, regulations, and heretofor unspecified legal nonsense for this hell. Maybe if you go through them carefully, you can find a loophole to get yourself an audience with the boss.",
     ],
     consequenceDescription: ['Uses 500,000 stamina because hellish legalese is so incredibly boring.'],
-    effects: ['+Contracts Examined (chance, requires 1Y Int)'],
+    effectsLegacy: ['+Contracts Examined (chance, requires 1Y Int)'],
     consequence: [
       () => {
         this.characterService.characterState.status.stamina.value -= 500000;
