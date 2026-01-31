@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.22.0', description: 'Internal: Update effect system type discriminators (type->kind), field names (value/change->amount), condition naming (HasFlag, CompareAttribute, etc.), add CompareValues condition, and implement formula builders (Phase 3 plan 1).' },
   { version: '1.21.0', description: 'Internal: Add effect system types, formula builders, handler interface, utilities, and barrel export for declarative effects module (Phase 2 complete).' },
   { version: '1.20.3', description: 'Internal: Remove deprecated ::ng-deep CSS selector.' },
   { version: '1.20.2', description: 'Internal: Migrate remaining panels to modern Angular @for syntax.' },

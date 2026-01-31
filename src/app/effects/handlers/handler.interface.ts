@@ -3,7 +3,7 @@
  * Each effect type has exactly one handler that implements execute() and render().
  */
 
-import { Effect, EffectType } from '../types/effect.types';
+import { Effect, EffectKind } from '../types/effect.types';
 import { EffectContext } from '../types/context.types';
 
 /**
@@ -95,5 +95,5 @@ export interface EffectHandler<T extends Effect = Effect> {
  * };
  */
 export type HandlerRegistry = {
-  [K in EffectType]: EffectHandler<Extract<Effect, { type: K }>>;
+  [K in EffectKind]: EffectHandler<Extract<Effect, { kind: K }>>;
 };

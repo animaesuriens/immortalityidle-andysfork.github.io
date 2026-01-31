@@ -19,9 +19,9 @@ interface BaseEffect {
  * Attribute modification effect.
  */
 export interface AttributeEffect extends BaseEffect {
-  readonly type: 'attribute';
+  readonly kind: 'attribute';
   readonly attribute: AttributeType;
-  readonly value: number | Formula;
+  readonly amount: number | Formula;
   /** If true, modifies aptitude instead of value */
   readonly aptitude?: boolean;
 }
@@ -30,9 +30,9 @@ export interface AttributeEffect extends BaseEffect {
  * Status modification effect (health, stamina, mana, nourishment).
  */
 export interface StatusEffect extends BaseEffect {
-  readonly type: 'status';
+  readonly kind: 'status';
   readonly status: StatusType;
-  readonly change: number | Formula;
+  readonly amount: number | Formula;
   /** If true, modifies max instead of current value */
   readonly modifyMax?: boolean;
 }
@@ -41,7 +41,7 @@ export interface StatusEffect extends BaseEffect {
  * Money effect.
  */
 export interface MoneyEffect extends BaseEffect {
-  readonly type: 'money';
+  readonly kind: 'money';
   readonly amount: number | Formula;
 }
 
@@ -49,7 +49,7 @@ export interface MoneyEffect extends BaseEffect {
  * Add item to inventory effect.
  */
 export interface ItemAddEffect extends BaseEffect {
-  readonly type: 'item.add';
+  readonly kind: 'item.add';
   readonly itemId: string;
   readonly quantity?: number | Formula;
 }
@@ -58,7 +58,7 @@ export interface ItemAddEffect extends BaseEffect {
  * Consume item from inventory effect.
  */
 export interface ItemConsumeEffect extends BaseEffect {
-  readonly type: 'item.consume';
+  readonly kind: 'item.consume';
   readonly itemType: string;
   readonly minGrade?: number;
   /** Variable name to store consumed item's grade */
@@ -69,7 +69,7 @@ export interface ItemConsumeEffect extends BaseEffect {
  * Generate equipment or consumable effect.
  */
 export interface ItemGenerateEffect extends BaseEffect {
-  readonly type: 'item.generate';
+  readonly kind: 'item.generate';
   readonly category: 'weapon' | 'armor' | 'potion' | 'pill';
   readonly grade: number | Formula;
   readonly material?: string;
@@ -79,7 +79,7 @@ export interface ItemGenerateEffect extends BaseEffect {
  * Conditional effect - executes effects based on condition.
  */
 export interface ConditionalEffect extends BaseEffect {
-  readonly type: 'conditional';
+  readonly kind: 'conditional';
   readonly condition: Condition;
   readonly then: Effect[];
   readonly else?: Effect[];
@@ -89,7 +89,7 @@ export interface ConditionalEffect extends BaseEffect {
  * Probability effect - executes effects based on chance.
  */
 export interface ChanceEffect extends BaseEffect {
-  readonly type: 'chance';
+  readonly kind: 'chance';
   readonly probability: number | Formula;
   readonly effects: Effect[];
 }
@@ -98,7 +98,7 @@ export interface ChanceEffect extends BaseEffect {
  * Progress counter effect.
  */
 export interface ProgressEffect extends BaseEffect {
-  readonly type: 'progress';
+  readonly kind: 'progress';
   /** Matches ImpossibleTaskType or field work identifier */
   readonly progressType: string;
   readonly amount?: number | Formula;
@@ -120,7 +120,7 @@ export interface EnemyConfig {
  * Spawn enemy effect.
  */
 export interface SpawnEnemyEffect extends BaseEffect {
-  readonly type: 'spawn.enemy';
+  readonly kind: 'spawn.enemy';
   readonly enemyConfig: EnemyConfig;
 }
 
@@ -128,14 +128,14 @@ export interface SpawnEnemyEffect extends BaseEffect {
  * Spawn follower effect.
  */
 export interface SpawnFollowerEffect extends BaseEffect {
-  readonly type: 'spawn.follower';
+  readonly kind: 'spawn.follower';
 }
 
 /**
  * Yin/Yang modification effect.
  */
 export interface YinYangEffect extends BaseEffect {
-  readonly type: 'yinyang';
+  readonly kind: 'yinyang';
   readonly modify: 'yin' | 'yang' | 'balance';
   readonly amount?: number;
 }
@@ -144,14 +144,14 @@ export interface YinYangEffect extends BaseEffect {
  * Trigger battle effect.
  */
 export interface TriggerBattleEffect extends BaseEffect {
-  readonly type: 'trigger.battle';
+  readonly kind: 'trigger.battle';
 }
 
 /**
  * Lifespan modification effect.
  */
 export interface LifespanEffect extends BaseEffect {
-  readonly type: 'lifespan';
+  readonly kind: 'lifespan';
   readonly amount: number | Formula;
   readonly cap?: number;
 }
@@ -177,6 +177,6 @@ export type Effect =
   | LifespanEffect;
 
 /**
- * Extract effect type literals for registry typing.
+ * Extract effect kind literals for registry typing.
  */
-export type EffectType = Effect['type'];
+export type EffectKind = Effect['kind'];
