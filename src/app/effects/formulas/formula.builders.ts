@@ -1,0 +1,315 @@
+/**
+ * Formula builder function signatures.
+ * These are stubs for Phase 2 - implementations will be added in Phase 3.
+ *
+ * Formula builders provide a DSL for constructing formulas that can be
+ * both evaluated (to a number) and rendered (to a display string).
+ *
+ * @example
+ * // Express: log2(Charisma) + Water Lore x 5
+ * const formula = add(log2(attr('charisma')), mult(attr('waterLore'), 5));
+ *
+ * // Later, evaluate and render from the same definition:
+ * const value = formula.evaluate(context);  // e.g., 127
+ * const text = formula.render(context, 'formula');  // "log2(Cha) + Water Lore x 5"
+ */
+
+import { AttributeType, StatusType } from '../../game-state/character';
+import { Formula } from '../types/formula.types';
+
+// ============================================================
+// VALUE REFERENCES
+// ============================================================
+
+/**
+ * Reference an attribute value.
+ *
+ * Evaluates to: context.attributes[attribute]
+ * Renders to: "Str", "Cha", "Metal Lore", etc.
+ *
+ * @param attribute The attribute type to reference
+ * @returns A formula that evaluates to the attribute's current value
+ *
+ * @example
+ * attr('strength')  // Evaluates to strength value, renders as "Str"
+ */
+export function attr(attribute: AttributeType): Formula {
+  throw new Error('Not implemented - Phase 2 interface only');
+}
+
+/**
+ * Reference a status value.
+ *
+ * Evaluates to: context.status[status].value
+ * Renders to: "HP", "Sta", "Mana", etc.
+ *
+ * @param status The status type to reference
+ * @returns A formula that evaluates to the status's current value
+ *
+ * @example
+ * status('health')  // Evaluates to current health, renders as "HP"
+ */
+export function status(status: StatusType): Formula {
+  throw new Error('Not implemented - Phase 2 interface only');
+}
+
+/**
+ * Reference a status max value.
+ *
+ * Evaluates to: context.status[status].max
+ * Renders to: "Max HP", "Max Sta", etc.
+ *
+ * @param status The status type to reference
+ * @returns A formula that evaluates to the status's maximum value
+ *
+ * @example
+ * statusMax('health')  // Evaluates to max health, renders as "Max HP"
+ */
+export function statusMax(status: StatusType): Formula {
+  throw new Error('Not implemented - Phase 2 interface only');
+}
+
+/**
+ * A fixed numeric constant.
+ *
+ * Evaluates to: value
+ * Renders to: "5", "0.1", etc.
+ *
+ * @param value The constant value
+ * @returns A formula that always evaluates to the given value
+ *
+ * @example
+ * fixed(5)  // Evaluates to 5, renders as "5"
+ */
+export function fixed(value: number): Formula {
+  throw new Error('Not implemented - Phase 2 interface only');
+}
+
+/**
+ * Reference a runtime variable (set during effect execution).
+ *
+ * Evaluates to: context.variables[name]
+ * Renders to: variable name or descriptive text like "Grade"
+ *
+ * Variables are set during execution, e.g., when consuming an item
+ * the consumed item's grade can be stored and referenced.
+ *
+ * @param name The variable name to reference
+ * @returns A formula that evaluates to the variable's value
+ *
+ * @example
+ * // In an effect that consumes an item and stores its grade:
+ * variable('consumedGrade')  // Evaluates to stored grade, renders as "Grade"
+ */
+export function variable(name: string): Formula {
+  throw new Error('Not implemented - Phase 2 interface only');
+}
+
+// ============================================================
+// ARITHMETIC OPERATIONS
+// ============================================================
+
+/**
+ * Add operands together.
+ *
+ * Evaluates to: sum of all operands
+ * Renders to: "a + b + c"
+ *
+ * @param operands The values to add (formulas or numbers)
+ * @returns A formula that evaluates to the sum
+ *
+ * @example
+ * add(attr('strength'), 5)  // Str + 5
+ * add(1, 2, 3)  // 1 + 2 + 3 = 6
+ */
+export function add(...operands: (Formula | number)[]): Formula {
+  throw new Error('Not implemented - Phase 2 interface only');
+}
+
+/**
+ * Subtract right from left.
+ *
+ * Evaluates to: left - right
+ * Renders to: "a - b"
+ *
+ * @param left The value to subtract from
+ * @param right The value to subtract
+ * @returns A formula that evaluates to the difference
+ *
+ * @example
+ * sub(attr('health'), 10)  // HP - 10
+ */
+export function sub(left: Formula | number, right: Formula | number): Formula {
+  throw new Error('Not implemented - Phase 2 interface only');
+}
+
+/**
+ * Multiply operands together.
+ *
+ * Evaluates to: product of all operands
+ * Renders to: "a x b x c"
+ *
+ * @param operands The values to multiply (formulas or numbers)
+ * @returns A formula that evaluates to the product
+ *
+ * @example
+ * mult(attr('waterLore'), 5)  // Water Lore x 5
+ * mult(2, 3, 4)  // 2 x 3 x 4 = 24
+ */
+export function mult(...operands: (Formula | number)[]): Formula {
+  throw new Error('Not implemented - Phase 2 interface only');
+}
+
+/**
+ * Divide left by right.
+ *
+ * Evaluates to: left / right
+ * Renders to: "a / b"
+ *
+ * @param left The dividend
+ * @param right The divisor
+ * @returns A formula that evaluates to the quotient
+ *
+ * @example
+ * div(attr('intelligence'), 10)  // Int / 10
+ */
+export function div(left: Formula | number, right: Formula | number): Formula {
+  throw new Error('Not implemented - Phase 2 interface only');
+}
+
+// ============================================================
+// MATHEMATICAL FUNCTIONS
+// ============================================================
+
+/**
+ * Logarithm base 2.
+ *
+ * Evaluates to: Math.log2(operand)
+ * Renders to: "log2(operand)"
+ *
+ * @param operand The value to take the log of
+ * @returns A formula that evaluates to log base 2
+ *
+ * @example
+ * log2(attr('charisma'))  // log2(Cha)
+ */
+export function log2(operand: Formula | number): Formula {
+  throw new Error('Not implemented - Phase 2 interface only');
+}
+
+/**
+ * Natural logarithm (base e).
+ *
+ * Evaluates to: Math.log(operand)
+ * Renders to: "ln(operand)"
+ *
+ * @param operand The value to take the log of
+ * @returns A formula that evaluates to natural log
+ *
+ * @example
+ * ln(attr('spirituality'))  // ln(Spi)
+ */
+export function ln(operand: Formula | number): Formula {
+  throw new Error('Not implemented - Phase 2 interface only');
+}
+
+/**
+ * Square root.
+ *
+ * Evaluates to: Math.sqrt(operand)
+ * Renders to: "sqrt(operand)"
+ *
+ * @param operand The value to take the square root of
+ * @returns A formula that evaluates to square root
+ *
+ * @example
+ * sqrt(attr('strength'))  // sqrt(Str)
+ */
+export function sqrt(operand: Formula | number): Formula {
+  throw new Error('Not implemented - Phase 2 interface only');
+}
+
+/**
+ * Floor (round down).
+ *
+ * Evaluates to: Math.floor(operand)
+ * Renders to: "floor(operand)"
+ *
+ * @param operand The value to floor
+ * @returns A formula that evaluates to the floored value
+ *
+ * @example
+ * floor(div(attr('intelligence'), 10))  // floor(Int / 10)
+ */
+export function floor(operand: Formula | number): Formula {
+  throw new Error('Not implemented - Phase 2 interface only');
+}
+
+/**
+ * Power (exponentiation).
+ *
+ * Evaluates to: Math.pow(base, exponent)
+ * Renders to: "base^exponent"
+ *
+ * @param base The base value
+ * @param exponent The exponent value
+ * @returns A formula that evaluates to base raised to exponent
+ *
+ * @example
+ * pow(2, attr('magicMastery'))  // 2^Magic Mastery
+ */
+export function pow(base: Formula | number, exponent: Formula | number): Formula {
+  throw new Error('Not implemented - Phase 2 interface only');
+}
+
+/**
+ * Exponential (e raised to power).
+ *
+ * Evaluates to: Math.exp(operand)
+ * Renders to: "e^operand"
+ *
+ * @param operand The exponent value
+ * @returns A formula that evaluates to e^operand
+ *
+ * @example
+ * exp(attr('spirituality'))  // e^Spi
+ */
+export function exp(operand: Formula | number): Formula {
+  throw new Error('Not implemented - Phase 2 interface only');
+}
+
+// ============================================================
+// COMPARISON / CONDITIONAL
+// ============================================================
+
+/**
+ * Minimum of operands.
+ *
+ * Evaluates to: Math.min(...operands)
+ * Renders to: "min(a, b, ...)"
+ *
+ * @param operands The values to find minimum of
+ * @returns A formula that evaluates to the minimum value
+ *
+ * @example
+ * min(attr('strength'), 100)  // min(Str, 100) - caps at 100
+ */
+export function min(...operands: (Formula | number)[]): Formula {
+  throw new Error('Not implemented - Phase 2 interface only');
+}
+
+/**
+ * Maximum of operands.
+ *
+ * Evaluates to: Math.max(...operands)
+ * Renders to: "max(a, b, ...)"
+ *
+ * @param operands The values to find maximum of
+ * @returns A formula that evaluates to the maximum value
+ *
+ * @example
+ * max(attr('health'), 0)  // max(HP, 0) - ensures non-negative
+ */
+export function max(...operands: (Formula | number)[]): Formula {
+  throw new Error('Not implemented - Phase 2 interface only');
+}

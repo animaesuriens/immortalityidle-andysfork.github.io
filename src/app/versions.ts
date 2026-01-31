@@ -5,7 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
-  { version: '1.21.0', description: 'Internal: Add type definitions for declarative effects system (foundation for unified effect handling).' },
+  { version: '1.21.0', description: 'Internal: Add type definitions, formula builders, and handler interface for declarative effects system (foundation for unified effect handling).' },
   { version: '1.20.3', description: 'Internal: Remove deprecated ::ng-deep CSS selector.' },
   { version: '1.20.2', description: 'Internal: Migrate remaining panels to modern Angular @for syntax.' },
   { version: '1.20.1', description: 'Fix: Activity card clicks now work correctly (fixed nested loop click event issue).' },
