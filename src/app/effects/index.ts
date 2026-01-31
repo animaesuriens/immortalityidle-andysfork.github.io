@@ -16,9 +16,9 @@
  *
  * // Define an effect
  * const effect: Effect = {
- *   type: 'attribute',
+ *   kind: 'attribute',
  *   attribute: 'strength',
- *   value: mult(attr('intelligence'), 0.1)  // Str += Int * 0.1
+ *   amount: mult(attr('intelligence'), 0.1)  // Str += Int * 0.1
  * };
  *
  * // Execute it
@@ -35,7 +35,7 @@
 // Effect types (14 variants)
 export * from './types/effect.types';
 
-// Condition types (8 variants)
+// Condition types (9 variants)
 export * from './types/condition.types';
 
 // Formula interface and context
@@ -64,3 +64,6 @@ export * from './handlers/handler.interface';
 
 // Exhaustive type checking helper
 export * from './utils/exhaustive';
+
+// Abbreviations for attribute and status rendering
+export * from './utils/abbreviations';
