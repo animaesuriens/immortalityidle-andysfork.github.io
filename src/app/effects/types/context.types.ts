@@ -46,14 +46,14 @@ export interface EffectContext {
   /** Character attributes (strength, charisma, etc.) */
   readonly attributes: Readonly<Record<AttributeType, AttributeValue>>;
 
-  /** Character status (health, stamina, mana, nourishment) */
+  /** Character status (health, stamina, qi, nourishment) */
   readonly status: Readonly<Record<StatusType, StatusValue>>;
 
   /** Current money */
   readonly money: number;
 
   /** Feature unlock flags */
-  readonly manaUnlocked: boolean;
+  readonly qiUnlocked: boolean;
   readonly yinYangUnlocked: boolean;
   readonly immortal: boolean;
   readonly god: boolean;
@@ -87,7 +87,7 @@ export interface EffectContext {
   updateMoney(amount: number): void;
 
   /**
-   * Modify a status value (health, stamina, mana, nourishment).
+   * Modify a status value (health, stamina, qi, nourishment).
    */
   modifyStatus(status: StatusType, change: number): void;
 
@@ -222,14 +222,6 @@ export interface EffectContext {
    */
   logInjury(topic: LogTopic, message: string): void;
 
-  // ============================================================
-  // FORMATTING
-  // ============================================================
-
-  /**
-   * Format a number for display (uses BigNumberPipe).
-   */
-  formatNumber(value: number): string;
 }
 
 /**
@@ -243,7 +235,7 @@ export function toFormulaContext(ctx: EffectContext): FormulaContext {
   }
 
   const status: Record<string, { value: number; max: number }> = {};
-  for (const key of ['health', 'stamina', 'mana', 'nourishment'] as StatusType[]) {
+  for (const key of ['health', 'stamina', 'qi', 'nourishment'] as StatusType[]) {
     status[key] = { value: ctx.status[key].value, max: ctx.status[key].max };
   }
 

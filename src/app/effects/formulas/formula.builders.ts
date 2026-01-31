@@ -82,7 +82,7 @@ export function attr(attribute: AttributeType): Formula {
  * Reference a status value.
  *
  * Evaluates to: context.status[status].value
- * Renders to: "HP", "Sta", "Mana", etc.
+ * Renders to: "HP", "Sta", "Qi", etc.
  *
  * @param statusType The status type to reference
  * @returns A formula that evaluates to the status's current value

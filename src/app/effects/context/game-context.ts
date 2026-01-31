@@ -18,7 +18,6 @@ import { InventoryService, Equipment, Pill } from '../../game-state/inventory.se
 import { AttributeType, StatusType, EquipmentPosition } from '../../game-state/character';
 import { LogTopic } from '../../game-state/log.service';
 import { EnemyConfig } from '../types/effect.types';
-import { BigNumberPipe } from '../../app.component';
 
 /**
  * Concrete implementation of EffectContext that bridges effect handlers to Angular services.
@@ -32,7 +31,6 @@ export class GameContext implements EffectContext {
   constructor(
     private readonly characterService: CharacterService,
     private readonly inventoryService: InventoryService,
-    private readonly bigNumberPipe: BigNumberPipe,
   ) {}
 
   // ============================================================
@@ -57,7 +55,7 @@ export class GameContext implements EffectContext {
     return {
       health: { value: state.status.health.value, max: state.status.health.max },
       stamina: { value: state.status.stamina.value, max: state.status.stamina.max },
-      mana: { value: state.status.mana.value, max: state.status.mana.max },
+      qi: { value: state.status.qi.value, max: state.status.qi.max },
       nourishment: { value: state.status.nourishment.value, max: state.status.nourishment.max },
     };
   }
@@ -66,8 +64,8 @@ export class GameContext implements EffectContext {
     return this.characterService.characterState.money;
   }
 
-  get manaUnlocked(): boolean {
-    return this.characterService.characterState.manaUnlocked;
+  get qiUnlocked(): boolean {
+    return this.characterService.characterState.qiUnlocked;
   }
 
   get yinYangUnlocked(): boolean {
@@ -265,13 +263,5 @@ export class GameContext implements EffectContext {
   logInjury(topic: LogTopic, message: string): void {
     // TODO: Wire up LogService when needed
     console.warn(`[${topic}] INJURY: ${message}`);
-  }
-
-  // ============================================================
-  // FORMATTING
-  // ============================================================
-
-  formatNumber(value: number): string {
-    return this.bigNumberPipe.transform(value);
   }
 }

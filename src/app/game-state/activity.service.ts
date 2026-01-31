@@ -254,7 +254,7 @@ export class ActivityService {
         }
         this.executeActivity(activity);
         this.checkExhaustion();
-        this.checkManaOveruse();
+        this.checkQiOveruse();
         // check for activity death
         this.activityDeath = false;
         if (this.characterService.characterState.status.health.value <= 0) {
@@ -311,7 +311,7 @@ export class ActivityService {
           console.log('Invalid activity, skipping activity for the day');
         }
         this.checkExhaustion();
-        this.checkManaOveruse();
+        this.checkQiOveruse();
         // check for activity death
         this.activityDeath = false;
         if (this.characterService.characterState.status.health.value <= 0) {
@@ -392,14 +392,14 @@ export class ActivityService {
     }
   }
 
-  checkManaOveruse() {
-    if (this.characterService.characterState.status.mana.value < 0) {
+  checkQiOveruse() {
+    if (this.characterService.characterState.status.qi.value < 0) {
       this.logService.injury(
         LogTopic.EVENT,
-        'You overextend your mana and damage your mana channels. It takes you 10 days to recover.'
+        'You overextend your qi and damage your qi channels. It takes you 10 days to recover.'
       );
-      if (this.characterService.characterState.status.mana.max > 1) {
-        this.characterService.characterState.status.mana.max -= 1;
+      if (this.characterService.characterState.status.qi.max > 1) {
+        this.characterService.characterState.status.qi.max -= 1;
       }
       this.exhaustionDays = 10;
       this.characterService.characterState.status.health.value -=
@@ -412,14 +412,14 @@ export class ActivityService {
       return '';
     }
     if (spirit) {
-      if (!activity.resourceUse[activity.level]['mana']) {
-        activity.resourceUse[activity.level]['mana'] = 0;
+      if (!activity.resourceUse[activity.level]['qi']) {
+        activity.resourceUse[activity.level]['qi'] = 0;
       }
       if (
-        this.characterService.characterState.status['mana'].value <
-        (activity.resourceUse[activity.level]?.['mana'] ?? 0) + 5
+        this.characterService.characterState.status['qi'].value <
+        (activity.resourceUse[activity.level]?.['qi'] ?? 0) + 5
       ) {
-        return 'mana';
+        return 'qi';
       }
     }
     for (const key in activity.resourceUse[activity.level]) {
@@ -434,13 +434,13 @@ export class ActivityService {
   }
 
   handleSpiritActivity() {
-    if (this.spiritActivity !== null && this.characterService.characterState.status.mana.value >= 5) {
+    if (this.spiritActivity !== null && this.characterService.characterState.status.qi.value >= 5) {
       this.spiritActivityProgress = true;
       const activity = this.getActivityByType(this.spiritActivity);
       // if we don't have the resources for spirit activities, just don't do them
       if (activity !== null && this.checkResourceUse(activity, true) === '' && activity.unlocked) {
         this.executeActivity(activity);
-        this.characterService.characterState.status.mana.value -= 5;
+        this.characterService.characterState.status.qi.value -= 5;
       } else {
         this.spiritActivityProgress = false;
       }
@@ -808,7 +808,7 @@ export class ActivityService {
     newList.push(this.BodyCultivation);
     newList.push(this.MindCultivation);
     newList.push(this.BalanceChi);
-    if (this.characterService.characterState.manaUnlocked) {
+    if (this.characterService.characterState.qiUnlocked) {
       newList.push(this.CoreCultivation);
       newList.push(this.InfuseEquipment);
       newList.push(this.InfuseBody);
@@ -1322,23 +1322,23 @@ export class ActivityService {
       duration: 1,
       description: ['Delve deep into wind lore to understand how the neverending storm can be controlled.'],
       consequenceDescription: [
-        'Uses 100 Stamina and Mana. Compile your research and if you have done enough you may produce a Tome of Wind Control.',
+        'Uses 100 Stamina and Qi. Compile your research and if you have done enough you may produce a Tome of Wind Control.',
       ],
       effectsLegacy: ['+Wind Tome (1% chance)'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 100;
-          this.characterService.characterState.status.mana.value -= 100;
+          this.characterService.characterState.status.qi.value -= 100;
           if (
             this.characterService.characterState.status.stamina.value < 0 ||
-            this.characterService.characterState.status.mana.value < 0
+            this.characterService.characterState.status.qi.value < 0
           ) {
             this.logService.log(LogTopic.EVENT, "You try to research, but you just don't have the energy.");
             return;
           }
           if (
             this.characterService.characterState.status.stamina.value >= 0 &&
-            this.characterService.characterState.status.mana.value >= 0
+            this.characterService.characterState.status.qi.value >= 0
           ) {
             if (Math.random() < 0.01) {
               this.logService.log(LogTopic.CRAFTING, 'Research breakthrough! You produce a tome!.');
@@ -1350,7 +1350,7 @@ export class ActivityService {
       resourceUse: [
         {
           stamina: 100,
-          mana: 100,
+          qi: 100,
         },
       ],
       requirements: [{}],
@@ -1714,15 +1714,15 @@ export class ActivityService {
       activityType: ActivityType.MoveStars,
       duration: 1,
       description: ['Extend your vast magical powers into the heavens and force the stars into alignment.'],
-      consequenceDescription: ['Uses 1000 Stamina and Mana.'],
+      consequenceDescription: ['Uses 1000 Stamina and Qi.'],
       effectsLegacy: ['+Star Progress'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 1000;
-          this.characterService.characterState.status.mana.value -= 1000;
+          this.characterService.characterState.status.qi.value -= 1000;
           if (
             this.characterService.characterState.status.stamina.value >= 0 &&
-            this.characterService.characterState.status.mana.value >= 0
+            this.characterService.characterState.status.qi.value >= 0
           ) {
             this.impossibleTaskService.taskProgress[ImpossibleTaskType.RearrangeTheStars].progress++;
             this.impossibleTaskService.checkCompletion();
@@ -1738,7 +1738,7 @@ export class ActivityService {
       resourceUse: [
         {
           stamina: 1000,
-          mana: 1000,
+          qi: 1000,
         },
       ],
       requirements: [{}],
@@ -1818,8 +1818,8 @@ export class ActivityService {
           { kind: 'attribute', attribute: 'spirituality', amount: 0.001 },
           {
             kind: 'conditional',
-            condition: { kind: 'HasFlag', flag: 'manaUnlocked' },
-            then: [{ kind: 'status', status: 'mana', amount: 1 }],
+            condition: { kind: 'HasFlag', flag: 'qiUnlocked' },
+            then: [{ kind: 'status', status: 'qi', amount: 1 }],
           },
           {
             kind: 'conditional',
@@ -1830,7 +1830,7 @@ export class ActivityService {
         2: [
           { kind: 'status', status: 'stamina', amount: 200 },
           { kind: 'status', status: 'health', amount: 20 },
-          { kind: 'status', status: 'mana', amount: 10 },
+          { kind: 'status', status: 'qi', amount: 10 },
           { kind: 'attribute', attribute: 'spirituality', amount: 0.5 },
           {
             kind: 'conditional',
@@ -1841,7 +1841,7 @@ export class ActivityService {
         3: [
           { kind: 'status', status: 'stamina', amount: 300 },
           { kind: 'status', status: 'health', amount: 30 },
-          { kind: 'status', status: 'mana', amount: 20 },
+          { kind: 'status', status: 'qi', amount: 20 },
           { kind: 'attribute', attribute: 'spirituality', amount: 1 },
           {
             kind: 'conditional',
@@ -3126,7 +3126,7 @@ export class ActivityService {
             }
           }
           let value = 0.01;
-          if (this.characterService.characterState.manaUnlocked || this.characterService.characterState.easyMode) {
+          if (this.characterService.characterState.qiUnlocked || this.characterService.characterState.easyMode) {
             value = 0.1;
           }
           this.characterService.characterState.increaseAttribute(lowStat, value);
@@ -3259,16 +3259,16 @@ export class ActivityService {
       duration: 1,
       description: ['Focus on the development of your soul core.'],
       consequenceDescription: [
-        'Uses 200 Stamina. A very advanced cultivation technique. Make sure you have achieved a deep understanding of elemental balance before attempting this. Gives you a small chance of increasing your mana capabilities.',
+        'Uses 200 Stamina. A very advanced cultivation technique. Make sure you have achieved a deep understanding of elemental balance before attempting this. Gives you a small chance of increasing your qi capabilities.',
       ],
-      effectsLegacy: ['+Max Mana (1% chance)'],
+      effectsLegacy: ['+Max Qi (1% chance)'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 200;
-          if (this.characterService.characterState.manaUnlocked) {
+          if (this.characterService.characterState.qiUnlocked) {
             if (Math.random() < 0.01) {
-              this.characterService.characterState.status.mana.max++;
-              this.characterService.characterState.status.mana.value++;
+              this.characterService.characterState.status.qi.max++;
+              this.characterService.characterState.status.qi.value++;
             }
           }
           if (this.characterService.characterState.yinYangUnlocked) {
@@ -3306,7 +3306,7 @@ export class ActivityService {
       consequenceDescription: [
         "Uses 1000 health. An immortal's cultivation technique. Balance your attributes and your lore, and improve yourself in every way.",
       ],
-      effectsLegacy: ['+Weakest Lore, +Weakest Stat, +Spirituality, +Max HP/Sta/Mana'],
+      effectsLegacy: ['+Weakest Lore, +Weakest Stat, +Spirituality, +Max HP/Sta/Qi'],
       consequence: [
         () => {
           this.characterService.characterState.status.health.value -= 1000;
@@ -3335,7 +3335,7 @@ export class ActivityService {
 
           this.characterService.characterState.healthBonusSoul++;
           this.characterService.characterState.status.stamina.max++;
-          this.characterService.characterState.status.mana.max++;
+          this.characterService.characterState.status.qi.max++;
           this.characterService.characterState.checkOverage();
           if (this.characterService.characterState.yinYangUnlocked) {
             if (this.characterService.characterState.yin > this.characterService.characterState.yang) {
@@ -3368,17 +3368,17 @@ export class ActivityService {
       activityType: ActivityType.InfuseEquipment,
       duration: 1,
       description: ['Infuse the power of a gem into your equipment.'],
-      consequenceDescription: ['Uses 200 Stamina and 10 mana. An advanced magical technique.'],
+      consequenceDescription: ['Uses 200 Stamina and 10 qi. An advanced magical technique.'],
       effectsLegacy: ['+Equipment Power (uses Spirit Gem)'],
       consequence: [
         () => {
-          if (!this.characterService.characterState.manaUnlocked) {
+          if (!this.characterService.characterState.qiUnlocked) {
             return;
           }
           this.characterService.characterState.status.stamina.value -= 200;
-          this.characterService.characterState.status.mana.value -= 10;
+          this.characterService.characterState.status.qi.value -= 10;
           const gemValue = this.inventoryService.consume('spiritGem', 1, this.inventoryService.useCheapestSpiritGem);
-          if (gemValue > 0 && this.characterService.characterState.status.mana.value >= 0) {
+          if (gemValue > 0 && this.characterService.characterState.status.qi.value >= 0) {
             this.inventoryService.upgradeEquppedEquipment(Math.floor(Math.pow(gemValue / 10, 2.4)));
           }
           if (this.characterService.characterState.yinYangUnlocked) {
@@ -3390,7 +3390,7 @@ export class ActivityService {
       resourceUse: [
         {
           stamina: 200,
-          mana: 10,
+          qi: 10,
         },
       ],
       requirements: [
@@ -3415,17 +3415,17 @@ export class ActivityService {
         'Direct your magical energy into reinforcing your physical body, making it healthier and more able to sustain damage without falling.',
       ],
       consequenceDescription: [
-        'Uses 10 Mana and 200 Stamina. Make sure you have enough magical power before attempting this.',
+        'Uses 10 Qi and 200 Stamina. Make sure you have enough magical power before attempting this.',
       ],
       effectsLegacy: ['+Max HP'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 200;
           if (
-            this.characterService.characterState.manaUnlocked &&
-            this.characterService.characterState.status.mana.value >= 10
+            this.characterService.characterState.qiUnlocked &&
+            this.characterService.characterState.status.qi.value >= 10
           ) {
-            this.characterService.characterState.status.mana.value -= 10;
+            this.characterService.characterState.status.qi.value -= 10;
             this.characterService.characterState.healthBonusMagic++;
           }
           if (this.characterService.characterState.yinYangUnlocked) {
@@ -3437,7 +3437,7 @@ export class ActivityService {
       resourceUse: [
         {
           stamina: 200,
-          mana: 10,
+          qi: 10,
         },
       ],
       requirements: [
@@ -3462,17 +3462,17 @@ export class ActivityService {
       duration: 1,
       description: ['Direct your magical energy into extending your lifespan, making you live longer.'],
       consequenceDescription: [
-        'Uses 20 Mana and 400 Stamina. Make sure you have enough magical power before attempting this.',
+        'Uses 20 Qi and 400 Stamina. Make sure you have enough magical power before attempting this.',
       ],
       effectsLegacy: ['+10 Lifespan (up to 100 years)'],
       consequence: [
         () => {
           this.characterService.characterState.status.stamina.value -= 400;
           if (
-            this.characterService.characterState.manaUnlocked &&
-            this.characterService.characterState.status.mana.value >= 20
+            this.characterService.characterState.qiUnlocked &&
+            this.characterService.characterState.status.qi.value >= 20
           ) {
-            this.characterService.characterState.status.mana.value -= 20;
+            this.characterService.characterState.status.qi.value -= 20;
             if (this.characterService.characterState.magicLifespan < 36500) {
               this.characterService.characterState.magicLifespan += 10;
             }
@@ -3486,7 +3486,7 @@ export class ActivityService {
       resourceUse: [
         {
           stamina: 400,
-          mana: 20,
+          qi: 20,
         },
       ],
       requirements: [

@@ -79,15 +79,15 @@ Current Bonus: {{(characterService.characterState.baseLifespan - 30 * 365) / 365
           </span>
         </div>
       </div>
-      <span class="statusLabel" matTooltip="{{characterService.characterState.status.mana.description}}">Mana</span>
-      <div class="mana">
-        <div class="progress-bar" [ngClass]="flashMana ? 'flash' : ''"
-          [attr.value]="Math.floor(characterService.characterState.status.mana.value) | bigNumber"
-          [attr.max]="Math.floor(characterService.characterState.status.mana.max) | bigNumber">
+      <span class="statusLabel" matTooltip="{{characterService.characterState.status.qi.description}}">Qi</span>
+      <div class="qi">
+        <div class="progress-bar" [ngClass]="flashQi ? 'flash' : ''"
+          [attr.value]="Math.floor(characterService.characterState.status.qi.value) | bigNumber"
+          [attr.max]="Math.floor(characterService.characterState.status.qi.max) | bigNumber">
           <span
             [style.width.%]="100 *
-            Math.floor(characterService.characterState.status.mana.value) /
-            Math.floor(characterService.characterState.status.mana.max)">
+            Math.floor(characterService.characterState.status.qi.value) /
+            Math.floor(characterService.characterState.status.qi.max)">
           </span>
         </div>
       </div>

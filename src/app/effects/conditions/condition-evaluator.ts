@@ -44,13 +44,13 @@ function compare(left: number, operator: ComparisonOperator, right: number): boo
 
 /**
  * Evaluate a HasFlag condition.
- * Checks context boolean flags (manaUnlocked, yinYangUnlocked, immortal, god).
+ * Checks context boolean flags (qiUnlocked, yinYangUnlocked, immortal, god).
  */
 function evaluateHasFlag(condition: HasFlag, context: EffectContext): boolean {
   let result: boolean;
   switch (condition.flag) {
-    case 'manaUnlocked':
-      result = context.manaUnlocked;
+    case 'qiUnlocked':
+      result = context.qiUnlocked;
       break;
     case 'yinYangUnlocked':
       result = context.yinYangUnlocked;
@@ -71,7 +71,7 @@ function evaluateHasFlag(condition: HasFlag, context: EffectContext): boolean {
  * Get a game value by name.
  */
 function getGameValue(
-  name: 'yin' | 'yang' | 'health' | 'stamina' | 'mana' | 'nourishment',
+  name: 'yin' | 'yang' | 'health' | 'stamina' | 'qi' | 'nourishment',
   context: EffectContext
 ): number {
   switch (name) {
@@ -83,8 +83,8 @@ function getGameValue(
       return context.status.health.value;
     case 'stamina':
       return context.status.stamina.value;
-    case 'mana':
-      return context.status.mana.value;
+    case 'qi':
+      return context.status.qi.value;
     case 'nourishment':
       return context.status.nourishment.value;
     default:

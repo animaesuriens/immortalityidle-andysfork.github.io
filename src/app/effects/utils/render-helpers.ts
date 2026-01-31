@@ -40,29 +40,10 @@ export function evaluateAmount(amount: number | Formula, context: FormulaContext
 }
 
 /**
- * Render a gain multiplier formula for attribute effects.
- * Format: "base × {Attribute} Gain Multiplier = base × mult = result"
- *
- * @param formatNumber Function to format numbers (use context.formatNumber)
- */
-export function renderGainMultiplierFormula(
-  amount: number | Formula,
-  attributeName: string,
-  gainMultiplier: number,
-  context: FormulaContext,
-  formatNumber: (value: number) => string
-): string {
-  const baseAmount = evaluateAmount(amount, context);
-  const baseStr = renderFormulaOnly(amount, context);
-  const result = baseAmount * gainMultiplier;
-  return `${baseStr} × ${attributeName} Gain Multiplier = ${baseStr} × ${formatNumber(gainMultiplier)} = ${formatNumber(result)}`;
-}
-
-/**
  * Human-readable names for condition flags.
  */
 export const FLAG_DISPLAY_NAMES: Record<string, string> = {
-  manaUnlocked: 'Mana unlocked',
+  qiUnlocked: 'Qi unlocked',
   yinYangUnlocked: 'Yin/Yang unlocked',
   immortal: 'Immortal',
   god: 'God',
@@ -98,7 +79,7 @@ export function getStatusDisplayName(status: string): string {
   const names: Record<string, string> = {
     health: 'Health',
     stamina: 'Stamina',
-    mana: 'Mana',
+    qi: 'Qi',
     nourishment: 'Nourishment',
   };
   return names[status] ?? status;

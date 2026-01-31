@@ -11,7 +11,7 @@ import { Formula } from './formula.types';
  */
 export interface HasFlag {
   readonly kind: 'HasFlag';
-  readonly flag: 'manaUnlocked' | 'yinYangUnlocked' | 'immortal' | 'god';
+  readonly flag: 'qiUnlocked' | 'yinYangUnlocked' | 'immortal' | 'god';
   readonly negate?: boolean;
 }
 
@@ -40,9 +40,9 @@ export interface CompareStatus {
  */
 export interface CompareValues {
   readonly kind: 'CompareValues';
-  readonly left: 'yin' | 'yang' | 'health' | 'stamina' | 'mana' | 'nourishment';
+  readonly left: 'yin' | 'yang' | 'health' | 'stamina' | 'qi' | 'nourishment';
   readonly operator: '>' | '<' | '>=' | '<=' | '==' | '!=';
-  readonly right: 'yin' | 'yang' | 'health' | 'stamina' | 'mana' | 'nourishment' | number;
+  readonly right: 'yin' | 'yang' | 'health' | 'stamina' | 'qi' | 'nourishment' | number;
 }
 
 /**

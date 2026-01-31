@@ -61,15 +61,15 @@
     <h6>
       <input type="checkbox" (change)="useSavedTicks($event)" id="useSavedTicks"
         [checked]="mainLoopService.useBankedTicks"/>
-      <label for="useSavedTicks">Use banked time to accelerate reality (10x). {{mainLoopService.bankedTicks | number: '1.0-0'}} time ticks left.</label>
+      <label for="useSavedTicks">Use banked time to accelerate reality (10x). {{mainLoopService.bankedTicks | bigNumber}} time ticks left.</label>
     </h6>
   </h3>
   <div class="overflow" cdkDropList cdkDropListSortingDisabled>
-    @if (characterService.characterState.manaUnlocked) {
+    @if (characterService.characterState.qiUnlocked) {
       <table class="spiritActivityPanel" id="spiritActivity"
         (drop)="spiritActivityDrop($event)">
         <tr>
-          <td class="spiritProjectionLabel" matTooltip="You can project your spiritual self to take on a second activity while your physical body continues its work. Whatever activity you drop here will be completed each day as long as you have enough mana to support the effort. Requires 5 mana in addition to the regular requirements of the activity.">
+          <td class="spiritProjectionLabel" matTooltip="You can project your spiritual self to take on a second activity while your physical body continues its work. Whatever activity you drop here will be completed each day as long as you have enough qi to support the effort. Requires 5 qi in addition to the regular requirements of the activity.">
             Spiritual Projection
           </td>
         </tr>

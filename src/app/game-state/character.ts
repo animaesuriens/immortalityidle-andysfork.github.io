@@ -58,7 +58,7 @@ export type EquipmentPosition = 'head' | 'feet' | 'body' | 'legs' | 'leftHand' |
 
 export type EquipmentSlots = { [key in EquipmentPosition]: Equipment | null };
 
-export type StatusType = 'health' | 'stamina' | 'mana' | 'nourishment';
+export type StatusType = 'health' | 'stamina' | 'qi' | 'nourishment';
 type CharacterStatus = { [key in StatusType]: { description: string; value: number; max: number } };
 
 export interface CharacterProperties {
@@ -82,7 +82,7 @@ export interface CharacterProperties {
   condenseSoulCoreCost: number;
   reinforceMeridiansCost: number;
   bloodlineRank: number;
-  manaUnlocked: boolean;
+  qiUnlocked: boolean;
   totalLives: number;
   healthBonusFood: number;
   healthBonusBath: number;
@@ -163,7 +163,7 @@ export class Character {
   reinforceMeridiansOriginalCost = 1000;
   bloodlineCost = 1000;
   bloodlineRank = 0;
-  manaUnlocked = false;
+  qiUnlocked = false;
   accuracy = 1;
   attackPower = 0;
   defense = 0;
@@ -320,7 +320,7 @@ export class Character {
       value: 100,
       max: 100,
     },
-    mana: {
+    qi: {
       description: 'Magical energy required for mysterious spiritual activities.',
       value: 0,
       max: 0,
@@ -431,12 +431,12 @@ export class Character {
     this.status.stamina.max = 100;
     this.status.nourishment.value = 7;
     this.status.nourishment.max = 14;
-    if (this.manaUnlocked) {
-      this.status.mana.max = 1;
-      this.status.mana.value = 1;
+    if (this.qiUnlocked) {
+      this.status.qi.max = 1;
+      this.status.qi.value = 1;
     } else {
-      this.status.mana.max = 0;
-      this.status.mana.value = 0;
+      this.status.qi.max = 0;
+      this.status.qi.value = 0;
     }
 
     this.healthBonusFood = 0;
@@ -737,8 +737,8 @@ export class Character {
     if (this.status.stamina.max > 1000000) {
       this.status.stamina.max = 1000000;
     }
-    if (this.status.mana.max > 1000000) {
-      this.status.mana.max = 1000000;
+    if (this.status.qi.max > 1000000) {
+      this.status.qi.max = 1000000;
     }
     if (this.status.nourishment.max > 1000) {
       this.status.nourishment.max = 1000;
@@ -752,8 +752,8 @@ export class Character {
     if (this.status.nourishment.value > this.status.nourishment.max) {
       this.status.nourishment.value = this.status.nourishment.max;
     }
-    if (this.status.mana.value > this.status.mana.max) {
-      this.status.mana.value = this.status.mana.max;
+    if (this.status.qi.value > this.status.qi.max) {
+      this.status.qi.value = this.status.qi.max;
     }
     if (this.money > this.maxMoney) {
       this.money = this.maxMoney;
@@ -785,7 +785,7 @@ export class Character {
       condenseSoulCoreCost: this.condenseSoulCoreCost,
       reinforceMeridiansCost: this.reinforceMeridiansCost,
       bloodlineRank: this.bloodlineRank,
-      manaUnlocked: this.manaUnlocked,
+      qiUnlocked: this.qiUnlocked,
       totalLives: this.totalLives,
       healthBonusFood: this.healthBonusFood,
       healthBonusBath: this.healthBonusBath,
@@ -836,6 +836,11 @@ export class Character {
     };
     this.age = properties.age || INITIAL_AGE;
     this.status = properties.status;
+    // Migration: old saves have 'mana' key, new code uses 'qi'
+    if (!this.status.qi && (this.status as any).mana) {
+      this.status.qi = (this.status as any).mana;
+      delete (this.status as any).mana;
+    }
     this.baseLifespan = properties.baseLifespan;
     this.foodLifespan = properties.foodLifespan || 0;
     this.alchemyLifespan = properties.alchemyLifespan || 0;
@@ -853,7 +858,7 @@ export class Character {
     this.attributeSoftCap = properties.attributeSoftCap;
     this.bloodlineRank = properties.bloodlineRank;
     this.bloodlineCost = 1000 * Math.pow(100, this.bloodlineRank); // This is derived to avoid save issues.
-    this.manaUnlocked = properties.manaUnlocked || false;
+    this.qiUnlocked = properties.qiUnlocked || false;
     this.totalLives = properties.totalLives || 1;
     this.healthBonusFood = properties.healthBonusFood || 0;
     this.healthBonusBath = properties.healthBonusBath || 0;

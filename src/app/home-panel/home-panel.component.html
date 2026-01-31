@@ -16,8 +16,8 @@
   @if ((!hellService.inHell || homeService.hellHome || homeService.hellFood)) {
     <div class="homeContainer">
       <div class="overflow">
-        @if (homeService.home.healthRegen > 0 || homeService.home.staminaRegen > 0 || homeService.home.manaRegen > 0) {
-          <div class="homeInfo"><span>Your home restores {{homeService.home.healthRegen}} health, {{homeService.home.staminaRegen}} stamina{{homeService.home.manaRegen > 0 ? ', ' + homeService.home.manaRegen + ' mana' : ''}} per day.</span></div>
+        @if (homeService.home.healthRegen > 0 || homeService.home.staminaRegen > 0 || homeService.home.qiRegen > 0) {
+          <div class="homeInfo"><span>Your home restores {{homeService.home.healthRegen}} health, {{homeService.home.staminaRegen}} stamina{{homeService.home.qiRegen > 0 ? ', ' + homeService.home.qiRegen + ' qi' : ''}} per day.</span></div>
         }
         @if (!hellService.inHell && !characterService.characterState.god) {
           <div class="homeInfo"><span>It costs {{homeService.home.costPerDay | bigNumber}} {{homeService.home.costPerDay === 1 ? "tael" : "taels"}} per day to maintain your home.</span></div>
@@ -26,30 +26,40 @@
         @if (homeService.fields.length + homeService.extraFields > 0) {
           <div class="homeInfo"><span>Your fields produced an average of {{homeService.averageYield | bigNumber}} food per day over the last year.</span></div>
         }
-          @if (getBasicFurnitureSlots().length > 0 && (!hellService.inHell || homeService.hellHome)) {
+          @if ((getBasicFurnitureSlots().length > 0 || getWorkbenchSlots().length > 0) && (!hellService.inHell || homeService.hellHome)) {
             <div class="furnitureSlots">
-              @for (slot of getBasicFurnitureSlots(); track slot) {
-                <div>
-                  @if (!$any(homeService.furniture)[slot]) {
-                    <div class="itemSlot" matTooltip="You don't own a {{getSlotDisplayName(slot)}}, but your home could hold one." (click)="storeClicked()"></div>
-                  }
-                  @if ($any(homeService.furniture)[slot]) {
-                    <div class="itemSlot textOverflow" [matTooltip]="$any(homeService.furniture)[slot]?.description + '\n\n' + $any(homeService.furniture)[slot]?.effects" (click)="storeClicked()">{{$any(homeService.furniture)[slot]?.name | titlecase}}</div>
-                  }
+              @if (getBasicFurnitureSlots().length > 0) {
+                <div class="furnitureGroup">
+                  <div class="furnitureGroupLabel">Residence</div>
+                  <div class="furnitureGroupSlots">
+                    @for (slot of getBasicFurnitureSlots(); track slot) {
+                      <div>
+                        @if (!$any(homeService.furniture)[slot]) {
+                          <div class="itemSlot" matTooltip="You don't own a {{getSlotDisplayName(slot)}}, but your home could hold one." (click)="storeClicked()"></div>
+                        }
+                        @if ($any(homeService.furniture)[slot]) {
+                          <div class="itemSlot textOverflow" [matTooltip]="$any(homeService.furniture)[slot]?.description + '\n\n' + $any(homeService.furniture)[slot]?.effects" (click)="storeClicked()">{{$any(homeService.furniture)[slot]?.name | titlecase}}</div>
+                        }
+                      </div>
+                    }
+                  </div>
                 </div>
               }
-            </div>
-          }
-          @if (getWorkbenchSlots().length > 0 && (!hellService.inHell || homeService.hellHome)) {
-            <div class="furnitureSlots">
-              @for (slot of getWorkbenchSlots(); track slot) {
-                <div>
-                  @if (!$any(homeService.furniture)[slot]) {
-                    <div class="itemSlot" matTooltip="You don't own a {{getSlotDisplayName(slot)}}, but your home could hold one." (click)="workbenchStoreClicked(slot)"></div>
-                  }
-                  @if ($any(homeService.furniture)[slot]) {
-                    <div class="itemSlot textOverflow" [matTooltip]="$any(homeService.furniture)[slot]?.description + '\n\n' + $any(homeService.furniture)[slot]?.effects" (click)="workbenchStoreClicked(slot)">{{$any(homeService.furniture)[slot]?.name | titlecase}}</div>
-                  }
+              @if (getWorkbenchSlots().length > 0) {
+                <div class="furnitureGroup workshopGroup">
+                  <div class="furnitureGroupLabel">Workshop</div>
+                  <div class="furnitureGroupSlots">
+                    @for (slot of getWorkbenchSlots(); track slot) {
+                      <div>
+                        @if (!$any(homeService.furniture)[slot]) {
+                          <div class="itemSlot" matTooltip="You don't own a {{getSlotDisplayName(slot)}}, but your home could hold one." (click)="workbenchStoreClicked(slot)"></div>
+                        }
+                        @if ($any(homeService.furniture)[slot]) {
+                          <div class="itemSlot textOverflow" [matTooltip]="$any(homeService.furniture)[slot]?.description + '\n\n' + $any(homeService.furniture)[slot]?.effects" (click)="workbenchStoreClicked(slot)">{{$any(homeService.furniture)[slot]?.name | titlecase}}</div>
+                        }
+                      </div>
+                    }
+                  </div>
                 </div>
               }
             </div>
@@ -71,16 +81,13 @@
         <div class="buttons">
           @if (!hellService.inHell || homeService.hellHome) {
             <div class="button-group">
-              <mat-icon  (click)="buyClicked($event)" [matTooltip]="'• Click to buy a plot of land for ' + (homeService.landPrice | bigNumber) + ' taels.\n• Shift-click to buy 10 plots for ' + getLandPrice(10) + ' taels.\n• Ctrl+Shift-click to buy 100 plots for ' + getLandPrice(100) + ' taels.\n• Ctrl-click to buy ' + getHalfAffordableLand() + ' plots (half the land you can afford).'" class="iconButton" aria-label="Buy Land" aria-hidden="false">
-                add
-              </mat-icon>
               @if ((homeService.home.name !== homeService.nextHome.name)) {
                 <mat-icon (click)="homeService.upgradeToNextHome()" class="iconButton" aria-label="Upgrade Home" aria-hidden="false"
                   matTooltip="{{homeService.nextHome.upgradeToTooltip}}">
                   add_business
                 </mat-icon>
               }
-                            @if (homeService.upgrading) {
+              @if (homeService.upgrading) {
                 <div class="progress-bar" style="height:20px;" matTooltip="Upgrading your home."
                   [attr.value]=buildTimeYears()>
                   <span [style.width.%]="100 * homeService.houseBuildingProgress"></span>
@@ -92,13 +99,20 @@
           @if (!hellService.inHell || homeService.hellFood) {
             <div class="button-group">
               <mat-icon matTooltip="View your farm." class="iconButton" (click)="farmClicked()" aria-label="View Farm" aria-hidden="false">grass</mat-icon>
-              <mat-icon  (click)="plowClicked($event)" class="iconButton" aria-label="Plow Field" aria-hidden="false"
+              <mat-icon (click)="buyClicked($event)" [matTooltip]="'• Click to buy a plot of land for ' + (homeService.landPrice | bigNumber) + ' taels.\n• Shift-click to buy 10 plots for ' + getLandPrice(10) + ' taels.\n• Ctrl+Shift-click to buy 100 plots for ' + getLandPrice(100) + ' taels.\n• Ctrl-click to buy ' + getHalfAffordableLand() + ' plots (half the land you can afford).'" class="iconButton" aria-label="Buy Land" aria-hidden="false">
+                add
+              </mat-icon>
+              <mat-icon (click)="plowClicked($event)" class="iconButton" aria-label="Plow Field" aria-hidden="false"
                 [matTooltip]="homeService.plowTooltip">
                 waves
               </mat-icon>
               <mat-icon (click)="clearClicked($event)" class="iconButton" aria-label="Clear Field" aria-hidden="false"
                 [matTooltip]="homeService.clearTooltip">
                 delete_sweep
+              </mat-icon>
+              <mat-icon (click)="resetFieldsClicked($event)" class="iconButton" aria-label="Reset Fields" aria-hidden="false"
+                matTooltip="Reset all fields. Clears all fields and replants the same number with fresh crops.">
+                restart_alt
               </mat-icon>
             </div>
           }

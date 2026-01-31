@@ -16,7 +16,7 @@ import { BigNumberPipe, CamelToTitlePipe } from '../app.component';
 import { MainLoopService } from '../game-state/main-loop.service';
 import { LogService, LogTopic } from '../game-state/log.service';
 import { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
-import { EffectShortPipe, EffectLongPipe } from '../effects';
+import { EffectShortPipe, EffectLongPipe, RenderedEffect } from '../effects';
 
 interface ActivityGroup {
   name: string;
@@ -329,7 +329,7 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
         return 'Spend a day doing this activity';
       } else {
         let projectionString = '';
-        if (this.characterService.characterState.manaUnlocked) {
+        if (this.characterService.characterState.qiUnlocked) {
           projectionString = '\nRight-click to set this as your spriritual projection activity';
         }
         return (
@@ -354,7 +354,8 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
     let effectsText: string;
     if (isDeclarativeActivity(activity)) {
       const effects = activity.effects[activity.level] ?? [];
-      effectsText = this.effectLongPipe.transform(effects);
+      const rendered = this.effectLongPipe.transform(effects);
+      effectsText = this.formatEffectsLong(rendered);
     } else {
       effectsText = activity.consequenceDescription[activity.level];
     }
@@ -376,6 +377,40 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
     });
   }
 
+  /**
+   * Format RenderedEffect[] to HTML string for long format display.
+   */
+  formatEffectsLong(effects: RenderedEffect[]): string {
+    return effects
+      .filter(e => e.visible)
+      .map(e => {
+        const cssClass = e.positive ? 'effect-positive' : 'effect-negative';
+        const suffix = e.long.suffix ? ` ${e.long.suffix}` : '';
+        let text = `<span class="${cssClass}">${e.long.verb} ${e.long.name}${suffix} by ${this.bigNumberPipe.transform(e.long.amount)}.</span>`;
+
+        // Add formula breakdown
+        if (e.formula) {
+          let formulaText: string;
+          if (e.formula.type === 'fixed') {
+            formulaText = e.formula.expression ?? `Fixed: ${e.formula.base}`;
+          } else {
+            // Multiplied formula
+            const base = e.formula.expression ?? String(e.formula.base);
+            formulaText = `${base} × ${e.formula.multiplierName} = ${base} × ${this.bigNumberPipe.transform(e.formula.multiplier ?? 1)} = ${this.bigNumberPipe.transform(e.formula.result ?? 0)}`;
+          }
+          if (e.condition) {
+            formulaText += `; ${e.condition}`;
+          }
+          text += ` <span class="effect-formula">(${formulaText})</span>`;
+        } else if (e.condition) {
+          text += ` <span class="effect-formula">(${e.condition})</span>`;
+        }
+
+        return `• ${text}`;
+      })
+      .join('<br>');
+  }
+
   getActivityCost(activity: Activity): string {
     const resourceUse = activity.resourceUse?.[activity.level];
     if (!resourceUse) return '';
@@ -384,7 +419,7 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
     const resourceNames: Record<string, string> = {
       health: 'HP',
       stamina: 'Sta',
-      mana: 'Mana',
+      qi: 'Qi',
       nourishment: 'Food'
     };
 
@@ -398,14 +433,34 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
     return costs.length > 0 ? costs.join(', ') : '';
   }
 
-  getActivityEffects(activity: Activity): string {
-    // Use declarative effects if available
+  /**
+   * Get structured effect data for an activity.
+   * Returns RenderedEffect[] for declarative activities, null for legacy.
+   */
+  getActivityEffects(activity: Activity): RenderedEffect[] | null {
     if (isDeclarativeActivity(activity)) {
       const effects = activity.effects[activity.level] ?? [];
       return this.effectShortPipe.transform(effects);
     }
+    return null;
+  }
 
-    // Use legacy effectsLegacy string if available
+  /**
+   * Check if an activity has visible effects to display.
+   */
+  hasActivityEffects(activity: Activity): boolean {
+    const effects = this.getActivityEffects(activity);
+    if (effects !== null) {
+      return effects.some(e => e.visible);
+    }
+    // Check legacy effects
+    return !!(activity.effectsLegacy?.[activity.level] || activity.consequenceDescription?.[activity.level]);
+  }
+
+  /**
+   * Get legacy effects string for non-declarative activities.
+   */
+  getLegacyEffects(activity: Activity): string {
     if (activity.effectsLegacy?.[activity.level]) {
       return activity.effectsLegacy[activity.level];
     }
@@ -417,9 +472,20 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
     let effects = description;
 
     // Remove cost mentions (already shown separately)
-    effects = effects.replace(/Uses \d[\d,]* (Stamina|Health|Mana|Nourishment)\.?\s*/gi, '');
+    effects = effects.replace(/Uses \d[\d,]* (Stamina|Health|Qi|Nourishment)\.?\s*/gi, '');
     effects = effects.replace(/Reduce health by \d[\d,]*\.?\s*/gi, '');
 
     return effects.trim();
+  }
+
+  /**
+   * Format short effect for display.
+   */
+  formatEffectShort(effect: RenderedEffect): string {
+    // Special case for balance effects
+    if (effect.short.label === 'Balance Yin/Yang') {
+      return 'Balance Yin/Yang';
+    }
+    return `${effect.short.sign}${this.bigNumberPipe.transform(effect.short.amount)} ${effect.short.label}`;
   }
 }

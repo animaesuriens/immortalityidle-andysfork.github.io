@@ -161,8 +161,8 @@ export class CharacterService {
       if (this.characterState.highestStamina < this.characterState.status.stamina.value) {
         this.characterState.highestStamina = this.characterState.status.stamina.value;
       }
-      if (this.characterState.highestMana < this.characterState.status.mana.value) {
-        this.characterState.highestMana = this.characterState.status.mana.value;
+      if (this.characterState.highestMana < this.characterState.status.qi.value) {
+        this.characterState.highestMana = this.characterState.status.qi.value;
       }
 
       if (this.characterState.dead) {
@@ -244,17 +244,14 @@ export class CharacterService {
 
   yearify(value: number) {
     if (value < 1) {
-      return '0 days';
-    } else if (value < 365) {
-      return Math.floor(value) + ' days';
+      return '0 years';
     }
-    const years = Math.floor(value / 365);
-    const days = Math.floor(value % 365);
-    const yearsStr = this.bigNumberPipe.transform(years) + (years === 1 ? ' year' : ' years');
-    if (days === 0) {
-      return yearsStr;
+    const years = value / 365;
+    // Format with 1 decimal place, use bigNumber for large values
+    if (years >= 1000) {
+      return this.bigNumberPipe.transform(years) + ' years';
     }
-    return yearsStr + ' and ' + days + (days === 1 ? ' day' : ' days');
+    return years.toFixed(1) + ' years';
   }
 
   resetAptitudes() {

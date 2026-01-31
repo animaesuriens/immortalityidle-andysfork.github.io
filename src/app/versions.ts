@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.26.0', description: 'Rename "Mana" to "Qi" throughout the game. Add save migration for old saves.' },
   { version: '1.25.3', description: 'Internal: Add effect rendering colors (green/red/blue), formula display with gain multiplier breakdown, and centralized render-helpers using BigNumberPipe (Phase 3 plan 4 refinements).' },
   { version: '1.25.2', description: 'Internal: Wire effect rendering to activity-panel and portal-panel UI components (Phase 3 plan 4 task 3).' },
   { version: '1.25.1', description: 'Internal: Convert Resting to declarative effects, add executeActivity helper, rename legacy string effects to effectsLegacy (Phase 3 plan 4 task 2).' },
@@ -52,7 +53,7 @@ export const VERSIONS: VersionEntry[] = [
   { version: '1.1.1', description: 'Your spiritual projection can no longer do activities you can\'t do yourself. Reduced the grind required on some hells. Added a Dismiss All Followers button. Bug fixes.' },
   { version: '1.1.0', description: 'Hell Expansion for advanced cultivators who are ready to move beyond simple immortality. Bug fixes.' },
   { version: '1.0.63', description: 'Grandmother still loves you even when you are very powerful. Additional accessibility support. Bug fixes' },
-  { version: '1.0.62', description: 'Screen readers can now read the game\'s icon buttons. Core Cultivation will not show up until mana is unlocked. Balancing Chi is now available earlier but will not work at full strength until mana is unlocked. New achievements. Bug fixes.' },
+  { version: '1.0.62', description: 'Screen readers can now read the game\'s icon buttons. Core Cultivation will not show up until qi is unlocked. Balancing Chi is now available earlier but will not work at full strength until qi is unlocked. New achievements. Bug fixes.' },
   { version: '1.0.61', description: 'A new achievement for managing your followers. Immortality races Season 1 (see the Discord). Bug fixes.' },
   { version: '1.0.60', description: 'Equipment and Home panels can now be collapsed. Bug fixes.' },
   { version: '1.0.59', description: 'Life summary panel. Tips are available for cultivators who don\'t want to figure things out on their own. Automated merging is easier to achieve. Low level crafting produces better items. Balance changes to equipment and boss fights. Game speed hotkeys changed. Bug fixes.' },

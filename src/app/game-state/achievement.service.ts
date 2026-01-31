@@ -851,7 +851,7 @@ export class AchievementService {
     {
       name: "You're a wizard now.",
       description:
-        'Enlightenment! You have achieved a permanent and deep understanding of elemental balance with your high, balanced levels of lore in each of the five elements. Mana is now unlocked for all future lives.',
+        'Enlightenment! You have achieved a permanent and deep understanding of elemental balance with your high, balanced levels of lore in each of the five elements. Qi is now unlocked for all future lives.',
       hint: 'Seek the balance of the dao.',
       requirements: 'Balance all five elemental lores at 1,000+ (within 21% of each other).',
       progress: () => {
@@ -874,10 +874,10 @@ export class AchievementService {
         return lowValue >= 1000 && highValue <= lowValue * 1.21; // 1.1 * 1.1 = 1.21
       },
       effect: () => {
-        this.characterService.characterState.manaUnlocked = true;
-        if (this.characterService.characterState.status.mana.max === 0) {
-          this.characterService.characterState.status.mana.max = 1;
-          this.characterService.characterState.status.mana.value = 1;
+        this.characterService.characterState.qiUnlocked = true;
+        if (this.characterService.characterState.status.qi.max === 0) {
+          this.characterService.characterState.status.qi.max = 1;
+          this.characterService.characterState.status.qi.value = 1;
         }
         this.activityService.reloadActivities();
       },
@@ -952,7 +952,7 @@ export class AchievementService {
     {
       name: 'Harmony of Mind and Body',
       description:
-        'You have balanced your powerful mind and body and unlocked the ability to use your mana to strike down your enemies.',
+        'You have balanced your powerful mind and body and unlocked the ability to use your qi to strike down your enemies.',
       hint: 'The dao embraces all things in perfect harmony.',
       requirements: 'Balance all five basic attributes at 1,000,000+ (within 21% of each other).',
       progress: () => {
@@ -975,14 +975,14 @@ export class AchievementService {
         return lowValue >= 1000000 && highValue <= lowValue * 1.21; // 1.1 * 1.1 = 1.21
       },
       effect: () => {
-        this.battleService.manaAttackUnlocked = true;
+        this.battleService.qiAttackUnlocked = true;
       },
       unlocked: false,
     },
     {
       name: 'Unity of Spirit, Mind, and Body',
       description:
-        'You have balanced your powerful spirit with your mind and body. You unlocked the ability to use your mana to protect yourself.',
+        'You have balanced your powerful spirit with your mind and body. You unlocked the ability to use your qi to protect yourself.',
       hint: 'The dao embraces all things in perfect harmony.',
       requirements: 'Balance all five basic attributes plus Spirituality at 1,000,000+ (within 21% of each other).',
       progress: () => {
@@ -1007,7 +1007,7 @@ export class AchievementService {
         return lowValue >= 1000000 && highValue <= lowValue * 1.21; // 1.1 * 1.1 = 1.21
       },
       effect: () => {
-        this.battleService.manaShieldUnlocked = true;
+        this.battleService.qiShieldUnlocked = true;
       },
       unlocked: false,
     },
