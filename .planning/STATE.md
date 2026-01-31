@@ -49,7 +49,7 @@ Decisions are logged in DECISIONS.md. Key decisions affecting current work:
 
 ### Pending Todos
 
-None.
+1. **Angular modernization refactor** (ui) - Standalone components, inject() function, signal-based inputs/outputs
 
 ### Blockers/Concerns
 
