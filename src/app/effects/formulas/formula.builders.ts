@@ -1,8 +1,7 @@
 /**
- * Formula builder function signatures.
- * These are stubs for Phase 2 - implementations will be added in Phase 3.
+ * Formula builder functions for the declarative effects system.
  *
- * Formula builders provide a DSL for constructing formulas that can be
+ * These builders provide a DSL for constructing formulas that can be
  * both evaluated (to a number) and rendered (to a display string).
  *
  * @example
@@ -11,11 +10,37 @@
  *
  * // Later, evaluate and render from the same definition:
  * const value = formula.evaluate(context);  // e.g., 127
- * const text = formula.render(context, 'formula');  // "log2(Cha) + Water Lore x 5"
+ * const text = formula.render(context, 'formula');  // "log2(Cha) + Water x 5"
  */
 
 import { AttributeType, StatusType } from '../../game-state/character';
-import { Formula } from '../types/formula.types';
+import { Formula, FormulaContext, FormulaRenderFormat } from '../types/formula.types';
+import { ABBREVIATIONS } from '../utils/abbreviations';
+
+// ============================================================
+// HELPER FUNCTIONS
+// ============================================================
+
+/**
+ * Convert a Formula | number to a Formula.
+ */
+function toFormula(value: Formula | number): Formula {
+  return typeof value === 'number' ? fixed(value) : value;
+}
+
+/**
+ * Get attribute abbreviation or capitalize first letter of name.
+ */
+function attrAbbrev(attribute: AttributeType): string {
+  return ABBREVIATIONS.attributes[attribute] ?? attribute;
+}
+
+/**
+ * Get status abbreviation or capitalize first letter of name.
+ */
+function statusAbbrev(statusType: StatusType): string {
+  return ABBREVIATIONS.status[statusType] ?? statusType;
+}
 
 // ============================================================
 // VALUE REFERENCES
@@ -34,7 +59,23 @@ import { Formula } from '../types/formula.types';
  * attr('strength')  // Evaluates to strength value, renders as "Str"
  */
 export function attr(attribute: AttributeType): Formula {
-  throw new Error('Not implemented - Phase 2 interface only');
+  return {
+    evaluate(context: FormulaContext): number {
+      return context.attributes[attribute];
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      const value = context.attributes[attribute];
+      const abbrev = attrAbbrev(attribute);
+      switch (format) {
+        case 'value':
+          return String(value);
+        case 'formula':
+          return abbrev;
+        case 'both':
+          return `${abbrev} (${value})`;
+      }
+    },
+  };
 }
 
 /**
@@ -43,14 +84,30 @@ export function attr(attribute: AttributeType): Formula {
  * Evaluates to: context.status[status].value
  * Renders to: "HP", "Sta", "Mana", etc.
  *
- * @param status The status type to reference
+ * @param statusType The status type to reference
  * @returns A formula that evaluates to the status's current value
  *
  * @example
  * status('health')  // Evaluates to current health, renders as "HP"
  */
-export function status(status: StatusType): Formula {
-  throw new Error('Not implemented - Phase 2 interface only');
+export function status(statusType: StatusType): Formula {
+  return {
+    evaluate(context: FormulaContext): number {
+      return context.status[statusType].value;
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      const value = context.status[statusType].value;
+      const abbrev = statusAbbrev(statusType);
+      switch (format) {
+        case 'value':
+          return String(value);
+        case 'formula':
+          return abbrev;
+        case 'both':
+          return `${abbrev} (${value})`;
+      }
+    },
+  };
 }
 
 /**
@@ -59,14 +116,30 @@ export function status(status: StatusType): Formula {
  * Evaluates to: context.status[status].max
  * Renders to: "Max HP", "Max Sta", etc.
  *
- * @param status The status type to reference
+ * @param statusType The status type to reference
  * @returns A formula that evaluates to the status's maximum value
  *
  * @example
  * statusMax('health')  // Evaluates to max health, renders as "Max HP"
  */
-export function statusMax(status: StatusType): Formula {
-  throw new Error('Not implemented - Phase 2 interface only');
+export function statusMax(statusType: StatusType): Formula {
+  return {
+    evaluate(context: FormulaContext): number {
+      return context.status[statusType].max;
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      const value = context.status[statusType].max;
+      const abbrev = `Max ${statusAbbrev(statusType)}`;
+      switch (format) {
+        case 'value':
+          return String(value);
+        case 'formula':
+          return abbrev;
+        case 'both':
+          return `${abbrev} (${value})`;
+      }
+    },
+  };
 }
 
 /**
@@ -82,7 +155,14 @@ export function statusMax(status: StatusType): Formula {
  * fixed(5)  // Evaluates to 5, renders as "5"
  */
 export function fixed(value: number): Formula {
-  throw new Error('Not implemented - Phase 2 interface only');
+  return {
+    evaluate(): number {
+      return value;
+    },
+    render(_context: FormulaContext, _format: FormulaRenderFormat): string {
+      return String(value);
+    },
+  };
 }
 
 /**
@@ -102,7 +182,24 @@ export function fixed(value: number): Formula {
  * variable('consumedGrade')  // Evaluates to stored grade, renders as "Grade"
  */
 export function variable(name: string): Formula {
-  throw new Error('Not implemented - Phase 2 interface only');
+  return {
+    evaluate(context: FormulaContext): number {
+      return context.variables[name] ?? 0;
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      const value = context.variables[name] ?? 0;
+      // Display name: capitalize and remove "consumed" prefix if present
+      const displayName = name.replace(/^consumed/, '').replace(/^./, c => c.toUpperCase());
+      switch (format) {
+        case 'value':
+          return String(value);
+        case 'formula':
+          return displayName;
+        case 'both':
+          return `${displayName} (${value})`;
+      }
+    },
+  };
 }
 
 // ============================================================
@@ -123,7 +220,23 @@ export function variable(name: string): Formula {
  * add(1, 2, 3)  // 1 + 2 + 3 = 6
  */
 export function add(...operands: (Formula | number)[]): Formula {
-  throw new Error('Not implemented - Phase 2 interface only');
+  const formulas = operands.map(toFormula);
+  return {
+    evaluate(context: FormulaContext): number {
+      return formulas.reduce((sum, f) => sum + f.evaluate(context), 0);
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      if (format === 'value') {
+        return String(this.evaluate(context));
+      }
+      const parts = formulas.map(f => f.render(context, format));
+      const expr = parts.join(' + ');
+      if (format === 'both') {
+        return `${this.evaluate(context)} (${expr})`;
+      }
+      return expr;
+    },
+  };
 }
 
 /**
@@ -140,7 +253,25 @@ export function add(...operands: (Formula | number)[]): Formula {
  * sub(attr('health'), 10)  // HP - 10
  */
 export function sub(left: Formula | number, right: Formula | number): Formula {
-  throw new Error('Not implemented - Phase 2 interface only');
+  const leftFormula = toFormula(left);
+  const rightFormula = toFormula(right);
+  return {
+    evaluate(context: FormulaContext): number {
+      return leftFormula.evaluate(context) - rightFormula.evaluate(context);
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      if (format === 'value') {
+        return String(this.evaluate(context));
+      }
+      const leftStr = leftFormula.render(context, format);
+      const rightStr = rightFormula.render(context, format);
+      const expr = `${leftStr} - ${rightStr}`;
+      if (format === 'both') {
+        return `${this.evaluate(context)} (${expr})`;
+      }
+      return expr;
+    },
+  };
 }
 
 /**
@@ -157,7 +288,23 @@ export function sub(left: Formula | number, right: Formula | number): Formula {
  * mult(2, 3, 4)  // 2 x 3 x 4 = 24
  */
 export function mult(...operands: (Formula | number)[]): Formula {
-  throw new Error('Not implemented - Phase 2 interface only');
+  const formulas = operands.map(toFormula);
+  return {
+    evaluate(context: FormulaContext): number {
+      return formulas.reduce((product, f) => product * f.evaluate(context), 1);
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      if (format === 'value') {
+        return String(this.evaluate(context));
+      }
+      const parts = formulas.map(f => f.render(context, format));
+      const expr = parts.join(' x ');
+      if (format === 'both') {
+        return `${this.evaluate(context)} (${expr})`;
+      }
+      return expr;
+    },
+  };
 }
 
 /**
@@ -169,12 +316,35 @@ export function mult(...operands: (Formula | number)[]): Formula {
  * @param left The dividend
  * @param right The divisor
  * @returns A formula that evaluates to the quotient
+ * @throws Error if divisor evaluates to 0
  *
  * @example
  * div(attr('intelligence'), 10)  // Int / 10
  */
 export function div(left: Formula | number, right: Formula | number): Formula {
-  throw new Error('Not implemented - Phase 2 interface only');
+  const leftFormula = toFormula(left);
+  const rightFormula = toFormula(right);
+  return {
+    evaluate(context: FormulaContext): number {
+      const divisor = rightFormula.evaluate(context);
+      if (divisor === 0) {
+        throw new Error('Division by zero');
+      }
+      return leftFormula.evaluate(context) / divisor;
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      if (format === 'value') {
+        return String(this.evaluate(context));
+      }
+      const leftStr = leftFormula.render(context, format);
+      const rightStr = rightFormula.render(context, format);
+      const expr = `${leftStr} / ${rightStr}`;
+      if (format === 'both') {
+        return `${this.evaluate(context)} (${expr})`;
+      }
+      return expr;
+    },
+  };
 }
 
 // ============================================================
@@ -194,7 +364,23 @@ export function div(left: Formula | number, right: Formula | number): Formula {
  * log2(attr('charisma'))  // log2(Cha)
  */
 export function log2(operand: Formula | number): Formula {
-  throw new Error('Not implemented - Phase 2 interface only');
+  const formula = toFormula(operand);
+  return {
+    evaluate(context: FormulaContext): number {
+      return Math.log2(formula.evaluate(context));
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      if (format === 'value') {
+        return String(this.evaluate(context));
+      }
+      const inner = formula.render(context, format);
+      const expr = `log2(${inner})`;
+      if (format === 'both') {
+        return `${this.evaluate(context)} (${expr})`;
+      }
+      return expr;
+    },
+  };
 }
 
 /**
@@ -210,7 +396,23 @@ export function log2(operand: Formula | number): Formula {
  * ln(attr('spirituality'))  // ln(Spi)
  */
 export function ln(operand: Formula | number): Formula {
-  throw new Error('Not implemented - Phase 2 interface only');
+  const formula = toFormula(operand);
+  return {
+    evaluate(context: FormulaContext): number {
+      return Math.log(formula.evaluate(context));
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      if (format === 'value') {
+        return String(this.evaluate(context));
+      }
+      const inner = formula.render(context, format);
+      const expr = `ln(${inner})`;
+      if (format === 'both') {
+        return `${this.evaluate(context)} (${expr})`;
+      }
+      return expr;
+    },
+  };
 }
 
 /**
@@ -226,7 +428,23 @@ export function ln(operand: Formula | number): Formula {
  * sqrt(attr('strength'))  // sqrt(Str)
  */
 export function sqrt(operand: Formula | number): Formula {
-  throw new Error('Not implemented - Phase 2 interface only');
+  const formula = toFormula(operand);
+  return {
+    evaluate(context: FormulaContext): number {
+      return Math.sqrt(formula.evaluate(context));
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      if (format === 'value') {
+        return String(this.evaluate(context));
+      }
+      const inner = formula.render(context, format);
+      const expr = `sqrt(${inner})`;
+      if (format === 'both') {
+        return `${this.evaluate(context)} (${expr})`;
+      }
+      return expr;
+    },
+  };
 }
 
 /**
@@ -242,7 +460,23 @@ export function sqrt(operand: Formula | number): Formula {
  * floor(div(attr('intelligence'), 10))  // floor(Int / 10)
  */
 export function floor(operand: Formula | number): Formula {
-  throw new Error('Not implemented - Phase 2 interface only');
+  const formula = toFormula(operand);
+  return {
+    evaluate(context: FormulaContext): number {
+      return Math.floor(formula.evaluate(context));
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      if (format === 'value') {
+        return String(this.evaluate(context));
+      }
+      const inner = formula.render(context, format);
+      const expr = `floor(${inner})`;
+      if (format === 'both') {
+        return `${this.evaluate(context)} (${expr})`;
+      }
+      return expr;
+    },
+  };
 }
 
 /**
@@ -259,7 +493,25 @@ export function floor(operand: Formula | number): Formula {
  * pow(2, attr('magicMastery'))  // 2^Magic Mastery
  */
 export function pow(base: Formula | number, exponent: Formula | number): Formula {
-  throw new Error('Not implemented - Phase 2 interface only');
+  const baseFormula = toFormula(base);
+  const expFormula = toFormula(exponent);
+  return {
+    evaluate(context: FormulaContext): number {
+      return Math.pow(baseFormula.evaluate(context), expFormula.evaluate(context));
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      if (format === 'value') {
+        return String(this.evaluate(context));
+      }
+      const baseStr = baseFormula.render(context, format);
+      const expStr = expFormula.render(context, format);
+      const expr = `${baseStr}^${expStr}`;
+      if (format === 'both') {
+        return `${this.evaluate(context)} (${expr})`;
+      }
+      return expr;
+    },
+  };
 }
 
 /**
@@ -275,7 +527,23 @@ export function pow(base: Formula | number, exponent: Formula | number): Formula
  * exp(attr('spirituality'))  // e^Spi
  */
 export function exp(operand: Formula | number): Formula {
-  throw new Error('Not implemented - Phase 2 interface only');
+  const formula = toFormula(operand);
+  return {
+    evaluate(context: FormulaContext): number {
+      return Math.exp(formula.evaluate(context));
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      if (format === 'value') {
+        return String(this.evaluate(context));
+      }
+      const inner = formula.render(context, format);
+      const expr = `e^${inner}`;
+      if (format === 'both') {
+        return `${this.evaluate(context)} (${expr})`;
+      }
+      return expr;
+    },
+  };
 }
 
 // ============================================================
@@ -295,7 +563,24 @@ export function exp(operand: Formula | number): Formula {
  * min(attr('strength'), 100)  // min(Str, 100) - caps at 100
  */
 export function min(...operands: (Formula | number)[]): Formula {
-  throw new Error('Not implemented - Phase 2 interface only');
+  const formulas = operands.map(toFormula);
+  return {
+    evaluate(context: FormulaContext): number {
+      const values = formulas.map(f => f.evaluate(context));
+      return Math.min(...values);
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      if (format === 'value') {
+        return String(this.evaluate(context));
+      }
+      const parts = formulas.map(f => f.render(context, format));
+      const expr = `min(${parts.join(', ')})`;
+      if (format === 'both') {
+        return `${this.evaluate(context)} (${expr})`;
+      }
+      return expr;
+    },
+  };
 }
 
 /**
@@ -311,5 +596,22 @@ export function min(...operands: (Formula | number)[]): Formula {
  * max(attr('health'), 0)  // max(HP, 0) - ensures non-negative
  */
 export function max(...operands: (Formula | number)[]): Formula {
-  throw new Error('Not implemented - Phase 2 interface only');
+  const formulas = operands.map(toFormula);
+  return {
+    evaluate(context: FormulaContext): number {
+      const values = formulas.map(f => f.evaluate(context));
+      return Math.max(...values);
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      if (format === 'value') {
+        return String(this.evaluate(context));
+      }
+      const parts = formulas.map(f => f.render(context, format));
+      const expr = `max(${parts.join(', ')})`;
+      if (format === 'both') {
+        return `${this.evaluate(context)} (${expr})`;
+      }
+      return expr;
+    },
+  };
 }
