@@ -80,6 +80,13 @@
             shield
           </mat-icon>
         }
+        @if (inventoryService.favoritesUnlocked && instanceOfEquipment(inventoryService.selectedItem.item)) {
+          <mat-icon (click)="toggleFavorite()" class="iconButton" aria-label="Favorite" aria-hidden="false"
+            [ngClass]="{'favoriteActive': inventoryService.isFavorite(inventoryService.selectedItem.item)}"
+            matTooltip="{{inventoryService.isFavorite(inventoryService.selectedItem.item) ? 'Remove from favorites' : 'Add to favorites'}} - Favorited equipment is protected from being used as auto-merge material">
+            {{inventoryService.isFavorite(inventoryService.selectedItem.item) ? 'star' : 'star_border'}}
+          </mat-icon>
+        }
         @if ((inventoryService.selectedItem.item.type === 'spiritGem')) {
           <mat-icon (click)="mergeSpiritGem()"  class="iconButton" aria-label="Merge Gem" aria-hidden="false"
             [matTooltip]="tooltips.mergeSpiritGem">
@@ -149,7 +156,7 @@
               [matTooltip]="itemStack?.item | itemTooltip" matTooltipPosition='left'>
               <div class="itemName textOverflow">
                 @if (itemStack?.item?.imageFile){
-                  <img src="assets/images/items/{{itemStack?.item?.imageFile}}.png" class="itemImage" 
+                  <img src="assets/images/items/{{itemStack?.item?.imageFile}}.png" class="itemImage"
                     [style]="getStyle(itemStack)"
                     width="48" height="48"  alt="{{itemStack?.item?.name | titlecase}}"/>
                 }
@@ -157,6 +164,9 @@
                   {{itemStack?.item?.name | titlecase}}
                 }
               </div>
+              @if (isItemFavorited(itemStack)) {
+                <mat-icon class="favoriteIndicator">star</mat-icon>
+              }
               @if ((itemStack?.quantity || 0) > 1) {
                 <div class="itemQuantity">x{{itemStack?.quantity}}</div>
               }

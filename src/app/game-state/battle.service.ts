@@ -431,7 +431,7 @@ export class BattleService {
           this.characterService.characterState.checkOverage();
         }
         if (this.characterService.characterState.equipment.leftHand.weaponStats.durability <= 0) {
-          if (!this.inventoryService.isSlotLocked('leftHand')) {
+          if (!this.inventoryService.isFavorite(this.characterService.characterState.equipment.leftHand)) {
             this.inventoryService.addItem(this.characterService.characterState.equipment.leftHand);
             this.characterService.characterState.equipment.leftHand = null;
           }
@@ -477,7 +477,7 @@ export class BattleService {
           this.characterService.characterState.checkOverage();
         }
         if (this.characterService.characterState.equipment.rightHand.weaponStats.durability <= 0) {
-          if (!this.inventoryService.isSlotLocked('rightHand')) {
+          if (!this.inventoryService.isFavorite(this.characterService.characterState.equipment.rightHand)) {
             this.inventoryService.addItem(this.characterService.characterState.equipment.rightHand);
             this.characterService.characterState.equipment.rightHand = null;
           }
@@ -653,8 +653,8 @@ export class BattleService {
         this.characterService.characterState.checkOverage();
       }
       if (armor.armorStats.durability <= 0) {
-        // it broke, unequip it (unless slot is locked)
-        if (!this.inventoryService.isSlotLocked(armor.slot)) {
+        // it broke, unequip it (unless it's favorited)
+        if (!this.inventoryService.isFavorite(armor)) {
           this.inventoryService.addItem(armor);
           this.characterService.characterState.equipment[armor.slot] = null;
         }

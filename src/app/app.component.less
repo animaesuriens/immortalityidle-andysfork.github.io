@@ -20,9 +20,17 @@
 }
 
 .gameTitle {
-    font-size: x-large;
+    font-family: 'Nanum Brush Script', cursive;
+    font-size: 2.5rem;
     margin: 0 4px;
     line-height: 1;
+}
+
+.topBarLeftButtons {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 2px;
 }
 
 .discordLink {
@@ -73,6 +81,7 @@ ktd-grid {
     padding: 2px 4px;
     display: flex;
     align-items: center;
+    gap: 4px;
 }
 
 .panelHelp {
@@ -120,6 +129,11 @@ mat-icon {
     font-size: 16px;
 }
 
+.topBarSaveGroup {
+    display: flex;
+    align-items: center;
+}
+
 .saveSlotGroup {
     display: flex;
     flex-direction: column;
@@ -160,9 +174,26 @@ mat-icon {
 }
 
 .versionNumber {
+    font-family: 'Roboto', sans-serif;
     font-size: x-small;
     text-decoration: underline;
     cursor: pointer;
+}
+
+.top-line button {
+    padding: 3px 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.buttonIcon {
+    height: 1em !important;
+    width: 1em !important;
+    font-size: 1em !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    vertical-align: middle;
 }
 
 .highlighted {

@@ -849,6 +849,56 @@ export class AchievementService {
       unlocked: false,
     },
     {
+      name: 'Treasured Masterwork',
+      description:
+        "You've elevated a treasured piece of equipment to extraordinary heights and unlocked the " +
+        this.itemRepoService.items['favoritePriorityManual'].name + '!',
+      hint: 'Dedicate yourself to perfecting your most prized possession.',
+      requirements: 'Have a favorited item reach Tier 12 (value >= 2,782,559,402).',
+      progress: () => {
+        let highestFavoriteValue = 0;
+        // Check equipped items
+        for (const slot of ['head', 'body', 'leftHand', 'rightHand', 'legs', 'feet'] as const) {
+          const item = this.characterService.characterState.equipment[slot];
+          if (item?.favorite && item.value > highestFavoriteValue) {
+            highestFavoriteValue = item.value;
+          }
+        }
+        // Check inventory items
+        for (const stack of this.inventoryService.itemStacks) {
+          if (stack?.item && 'favorite' in stack.item && (stack.item as { favorite?: boolean }).favorite) {
+            if (stack.item.value > highestFavoriteValue) {
+              highestFavoriteValue = stack.item.value;
+            }
+          }
+        }
+        return `Highest favorited item value: ${this.bigNumberPipe.transform(highestFavoriteValue)} / 2.78B`;
+      },
+      check: () => {
+        const threshold = 2782559402;
+        // Check equipped items
+        for (const slot of ['head', 'body', 'leftHand', 'rightHand', 'legs', 'feet'] as const) {
+          const item = this.characterService.characterState.equipment[slot];
+          if (item?.favorite && item.value >= threshold) {
+            return true;
+          }
+        }
+        // Check inventory items
+        for (const stack of this.inventoryService.itemStacks) {
+          if (stack?.item && 'favorite' in stack.item && (stack.item as { favorite?: boolean }).favorite) {
+            if (stack.item.value >= threshold) {
+              return true;
+            }
+          }
+        }
+        return false;
+      },
+      effect: () => {
+        this.storeService.unlockManual(this.itemRepoService.items['favoritePriorityManual']);
+      },
+      unlocked: false,
+    },
+    {
       name: "You're a wizard now.",
       description:
         'Enlightenment! You have achieved a permanent and deep understanding of elemental balance with your high, balanced levels of lore in each of the five elements. Qi is now unlocked for all future lives.',

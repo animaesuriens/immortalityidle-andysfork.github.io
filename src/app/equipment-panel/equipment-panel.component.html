@@ -10,15 +10,15 @@
 
 <div class="equipmentScrollWrapper">
 <div class="equipmentContainer" cdkDropList cdkDropListSortingDisabled>
-    <div style="grid-area: head;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'head', 'lockedSlot': inventoryService.isSlotLocked('head'), 'brokenItem': isBroken('head')}" [class]="getEffectClass('head')"
+    <div style="grid-area: head;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'head', 'brokenItem': isBroken('head')}" [class]="getEffectClass('head')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
       [cdkDragData]="character.equipment.head" [cdkDragDisabled]="!character.equipment.head"
       (dblclick)="slotDoubleClicked('head', $event)" tabindex="0"
       id="equipmentSlothead"
       [matTooltip]="character.equipment.head | itemTooltip">
-      @if (inventoryService.slotLockingUnlocked) {
-        <mat-icon class="slotLock" (click)="inventoryService.toggleSlotLock('head'); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isSlotLocked('head') ? 'unlock' : 'lock'}} this slot">
-          {{inventoryService.isSlotLocked('head') ? 'lock' : 'lock_open'}}
+      @if (inventoryService.favoritesUnlocked && character.equipment.head) {
+        <mat-icon class="favoriteIcon" [ngClass]="{'favorited': inventoryService.isFavorite(character.equipment.head)}" (click)="inventoryService.toggleFavorite(character.equipment.head); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isFavorite(character.equipment.head) ? 'unfavorite' : 'favorite'}} this equipment">
+          {{inventoryService.isFavorite(character.equipment.head) ? 'star' : 'star_border'}}
         </mat-icon>
       }
       @if (character.equipment.head?.imageFile){
@@ -35,15 +35,15 @@
       }
     </div>
     <div style="grid-area: right;" class="itemSlot textOverflow"
-      [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'rightHand', 'lockedSlot': inventoryService.isSlotLocked('rightHand'), 'brokenItem': isBroken('rightHand')}" [class]="getEffectClass('rightHand')"
+      [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'rightHand', 'brokenItem': isBroken('rightHand')}" [class]="getEffectClass('rightHand')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
       [cdkDragData]="character.equipment.rightHand" [cdkDragDisabled]="!character.equipment.rightHand"
       (dblclick)="slotDoubleClicked('rightHand', $event)" tabindex="0"
       id="equipmentSlotrightHand"
       [matTooltip]="character.equipment.rightHand | itemTooltip">
-      @if (inventoryService.slotLockingUnlocked) {
-        <mat-icon class="slotLock" (click)="inventoryService.toggleSlotLock('rightHand'); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isSlotLocked('rightHand') ? 'unlock' : 'lock'}} this slot">
-          {{inventoryService.isSlotLocked('rightHand') ? 'lock' : 'lock_open'}}
+      @if (inventoryService.favoritesUnlocked && character.equipment.rightHand) {
+        <mat-icon class="favoriteIcon" [ngClass]="{'favorited': inventoryService.isFavorite(character.equipment.rightHand)}" (click)="inventoryService.toggleFavorite(character.equipment.rightHand); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isFavorite(character.equipment.rightHand) ? 'unfavorite' : 'favorite'}} this equipment">
+          {{inventoryService.isFavorite(character.equipment.rightHand) ? 'star' : 'star_border'}}
         </mat-icon>
       }
       @if (character.equipment.rightHand?.imageFile){
@@ -59,15 +59,15 @@
         <div class="itemTier" [ngStyle]="getTierStyle(character.equipment.rightHand)">{{tierInfo.prefix}}{{tierInfo.tier}}</div>
       }
     </div>
-    <div style="grid-area: body;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'body', 'lockedSlot': inventoryService.isSlotLocked('body'), 'brokenItem': isBroken('body')}" [class]="getEffectClass('body')"
+    <div style="grid-area: body;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'body', 'brokenItem': isBroken('body')}" [class]="getEffectClass('body')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
       [cdkDragData]="character.equipment.body" [cdkDragDisabled]="!character.equipment.body"
       (dblclick)="slotDoubleClicked('body', $event)" tabindex="0"
       id="equipmentSlotbody"
       [matTooltip]="character.equipment.body | itemTooltip">
-      @if (inventoryService.slotLockingUnlocked) {
-        <mat-icon class="slotLock" (click)="inventoryService.toggleSlotLock('body'); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isSlotLocked('body') ? 'unlock' : 'lock'}} this slot">
-          {{inventoryService.isSlotLocked('body') ? 'lock' : 'lock_open'}}
+      @if (inventoryService.favoritesUnlocked && character.equipment.body) {
+        <mat-icon class="favoriteIcon" [ngClass]="{'favorited': inventoryService.isFavorite(character.equipment.body)}" (click)="inventoryService.toggleFavorite(character.equipment.body); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isFavorite(character.equipment.body) ? 'unfavorite' : 'favorite'}} this equipment">
+          {{inventoryService.isFavorite(character.equipment.body) ? 'star' : 'star_border'}}
         </mat-icon>
       }
       @if (character.equipment.body?.imageFile){
@@ -83,15 +83,15 @@
         <div class="itemTier" [ngStyle]="getTierStyle(character.equipment.body)">{{tierInfo.prefix}}{{tierInfo.tier}}</div>
       }
     </div>
-    <div style="grid-area: left;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'leftHand', 'lockedSlot': inventoryService.isSlotLocked('leftHand'), 'brokenItem': isBroken('leftHand')}" [class]="getEffectClass('leftHand')"
+    <div style="grid-area: left;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'leftHand', 'brokenItem': isBroken('leftHand')}" [class]="getEffectClass('leftHand')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
       [cdkDragData]="character.equipment.leftHand" [cdkDragDisabled]="!character.equipment.leftHand"
       (dblclick)="slotDoubleClicked('leftHand', $event)" tabindex="0"
       id="equipmentSlotleftHand"
       [matTooltip]="character.equipment.leftHand | itemTooltip">
-      @if (inventoryService.slotLockingUnlocked) {
-        <mat-icon class="slotLock" (click)="inventoryService.toggleSlotLock('leftHand'); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isSlotLocked('leftHand') ? 'unlock' : 'lock'}} this slot">
-          {{inventoryService.isSlotLocked('leftHand') ? 'lock' : 'lock_open'}}
+      @if (inventoryService.favoritesUnlocked && character.equipment.leftHand) {
+        <mat-icon class="favoriteIcon" [ngClass]="{'favorited': inventoryService.isFavorite(character.equipment.leftHand)}" (click)="inventoryService.toggleFavorite(character.equipment.leftHand); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isFavorite(character.equipment.leftHand) ? 'unfavorite' : 'favorite'}} this equipment">
+          {{inventoryService.isFavorite(character.equipment.leftHand) ? 'star' : 'star_border'}}
         </mat-icon>
       }
       @if (character.equipment.leftHand?.imageFile){
@@ -108,21 +108,21 @@
       }
     </div>
     <div style="grid-area: stats;">
-      <span tabindex="0" [matTooltip]="tooltips.combat.accuracyFull"><mat-icon>manage_accounts</mat-icon>{{character.accuracy | percent}}</span>
+      <span tabindex="0" [matTooltip]="getAccuracyTooltip()" matTooltipClass="multiline-tooltip"><mat-icon>manage_accounts</mat-icon>{{character.accuracy | percent}}</span>
       <br/>
-      <span tabindex="0" [ngClass]="{'highlightSpan': character.righteousWrathUnlocked}" [matTooltip]="tooltips.combat.attackPowerFull + (character.righteousWrathUnlocked ? tooltips.combat.righteousWrathSuffix : '')"><mat-icon>flare</mat-icon>{{character.attackPower | bigNumber}}</span>
+      <span tabindex="0" [ngClass]="{'highlightSpan': character.righteousWrathUnlocked}" [matTooltip]="getAttackPowerTooltip()" matTooltipClass="multiline-tooltip"><mat-icon>flare</mat-icon>{{character.attackPower | bigNumber}}</span>
       <br/>
-      <span tabindex="0" [ngClass]="{'highlightSpan': character.righteousWrathUnlocked}" [matTooltip]="tooltips.combat.defenseFull + (character.righteousWrathUnlocked ? tooltips.combat.righteousWrathSuffix : '')"><mat-icon>shield</mat-icon>{{character.defense | bigNumber}}</span>
+      <span tabindex="0" [ngClass]="{'highlightSpan': character.righteousWrathUnlocked}" [matTooltip]="getDefenseTooltip()" matTooltipClass="multiline-tooltip"><mat-icon>shield</mat-icon>{{character.defense | bigNumber}}</span>
     </div>
-    <div style="grid-area: legs;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'legs', 'lockedSlot': inventoryService.isSlotLocked('legs'), 'brokenItem': isBroken('legs')}" [class]="getEffectClass('legs')"
+    <div style="grid-area: legs;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'legs', 'brokenItem': isBroken('legs')}" [class]="getEffectClass('legs')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
       [cdkDragData]="character.equipment.legs" [cdkDragDisabled]="!character.equipment.legs"
       (dblclick)="slotDoubleClicked('legs', $event)" tabindex="0"
       id="equipmentSlotlegs"
       [matTooltip]="character.equipment.legs | itemTooltip">
-      @if (inventoryService.slotLockingUnlocked) {
-        <mat-icon class="slotLock" (click)="inventoryService.toggleSlotLock('legs'); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isSlotLocked('legs') ? 'unlock' : 'lock'}} this slot">
-          {{inventoryService.isSlotLocked('legs') ? 'lock' : 'lock_open'}}
+      @if (inventoryService.favoritesUnlocked && character.equipment.legs) {
+        <mat-icon class="favoriteIcon" [ngClass]="{'favorited': inventoryService.isFavorite(character.equipment.legs)}" (click)="inventoryService.toggleFavorite(character.equipment.legs); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isFavorite(character.equipment.legs) ? 'unfavorite' : 'favorite'}} this equipment">
+          {{inventoryService.isFavorite(character.equipment.legs) ? 'star' : 'star_border'}}
         </mat-icon>
       }
       @if (character.equipment.legs?.imageFile){
@@ -138,15 +138,15 @@
         <div class="itemTier" [ngStyle]="getTierStyle(character.equipment.legs)">{{tierInfo.prefix}}{{tierInfo.tier}}</div>
       }
     </div>
-    <div style="grid-area: feet;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'feet', 'lockedSlot': inventoryService.isSlotLocked('feet'), 'brokenItem': isBroken('feet')}" [class]="getEffectClass('feet')"
+    <div style="grid-area: feet;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'feet', 'brokenItem': isBroken('feet')}" [class]="getEffectClass('feet')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
       [cdkDragData]="character.equipment.feet" [cdkDragDisabled]="!character.equipment.feet"
       (dblclick)="slotDoubleClicked('feet', $event)" tabindex="0"
       id="equipmentSlotfeet"
       [matTooltip]="character.equipment.feet | itemTooltip">
-      @if (inventoryService.slotLockingUnlocked) {
-        <mat-icon class="slotLock" (click)="inventoryService.toggleSlotLock('feet'); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isSlotLocked('feet') ? 'unlock' : 'lock'}} this slot">
-          {{inventoryService.isSlotLocked('feet') ? 'lock' : 'lock_open'}}
+      @if (inventoryService.favoritesUnlocked && character.equipment.feet) {
+        <mat-icon class="favoriteIcon" [ngClass]="{'favorited': inventoryService.isFavorite(character.equipment.feet)}" (click)="inventoryService.toggleFavorite(character.equipment.feet); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isFavorite(character.equipment.feet) ? 'unfavorite' : 'favorite'}} this equipment">
+          {{inventoryService.isFavorite(character.equipment.feet) ? 'star' : 'star_border'}}
         </mat-icon>
       }
       @if (character.equipment.feet?.imageFile){

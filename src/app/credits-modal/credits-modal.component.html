@@ -1,5 +1,11 @@
 <div class="darkMode creditsModal">
-    <h2>Credits</h2>
+    <div class="creditsHeader">
+        <h2>Credits</h2>
+        <span class="headerRight">
+            <span class="versionNumber" (click)="changelogClicked()">{{gameStateService.isExperimental ? "Experimental" : "v" + applicationVersion}}</span>
+            <a href="https://discord.gg/Na7Qmwy3XK" target="_blank" rel="noopener noreferrer" class="discordLink">Discord</a>
+        </span>
+    </div>
     <hr />
     <div class="creditsContainer">
         <div class="creditSection">

@@ -20,13 +20,15 @@
 }
 
 .itemSlot {
-  width: 125px;
+  width: 133px;
   height: 65px;
   line-height: 12px;
   display: flex;
   flex-direction: row;
   align-items: center;
   position: relative;
+  padding-left: 8px;
+  box-sizing: border-box;
 }
 
 .equipmentImage {
@@ -61,27 +63,24 @@
   background-color: var(--itemSlotHighlight);
 }
 
-.lockedSlot {
-  border: 2px solid var(--primaryColor);
-}
-
-.lockedSlot.brokenItem {
-  border: 2px dashed var(--primaryColor);
-  filter: brightness(85%);
-}
-
-.slotLock {
+.favoriteIcon {
   position: absolute;
   top: 0;
   left: 0;
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
+  font-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
   cursor: pointer;
-  opacity: 0.7;
+  opacity: 0.5;
   z-index: 2;
+  color: var(--bodyText);
 
   &:hover {
+    opacity: 1;
+  }
+
+  &.favorited {
+    color: gold;
     opacity: 1;
   }
 }

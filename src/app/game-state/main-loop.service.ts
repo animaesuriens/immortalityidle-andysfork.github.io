@@ -278,6 +278,9 @@ export class MainLoopService {
           this.bankedTicks -= bankedPassed;
           ticksPassed *= 11; // Include the normal tick
           usedBanked = true;
+        } else if (!this.useBankedTicks) {
+          // Accrue banked time when running but not using banked ticks
+          this.bankedTicks += ticksPassed / this.offlineDivider;
         }
         ticksPassed *= currentTPS;
 

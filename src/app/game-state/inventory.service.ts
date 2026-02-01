@@ -60,6 +60,7 @@ export interface Equipment extends Item {
   slot: EquipmentPosition;
   weaponStats?: WeaponStats;
   armorStats?: ArmorStats;
+  favorite?: boolean;
 }
 
 export interface Potion extends Item {
@@ -136,8 +137,9 @@ export interface InventoryProperties {
   divinePeachesUnlocked: boolean;
   equipmentUnlocked: boolean;
   equipmentCreated: number;
-  slotLockingUnlocked: boolean;
-  lockedSlots: { [key: string]: boolean };
+  favoritesUnlocked: boolean;
+  favoritePriorityUnlocked: boolean;
+  slotLockingUnlocked?: boolean; // Legacy field for save migration
   lifetimeUsedItems: number;
   lifetimeSoldItems: number;
   lifetimePotionsUsed: number;
@@ -220,15 +222,8 @@ export class InventoryService {
   divinePeachesUnlocked = false;
   equipmentUnlocked = false;
   equipmentCreated = 0;
-  slotLockingUnlocked = false;
-  lockedSlots: { [key: string]: boolean } = {
-    head: false,
-    body: false,
-    leftHand: false,
-    rightHand: false,
-    legs: false,
-    feet: false,
-  };
+  favoritesUnlocked = false;
+  favoritePriorityUnlocked = false;
   durabilityDisclaimer =
     "\nThe durability and value of equipment degrades with use. Be careful when merging powerful items that have seen a lot of wear, the product may be even lower quality than the original if the item's value is low.";
 
@@ -236,7 +231,7 @@ export class InventoryService {
     private injector: Injector,
     private logService: LogService,
     private characterService: CharacterService,
-    mainLoopService: MainLoopService,
+    private mainLoopService: MainLoopService,
     reincarnationService: ReincarnationService,
     private itemRepoService: ItemRepoService,
     private titleCasePipe: TitleCasePipe
@@ -279,7 +274,7 @@ export class InventoryService {
     }
 
     mainLoopService.tickSubject.subscribe(() => {
-      if (this.characterService.characterState.dead) {
+      if (this.characterService.characterState.dead || this.mainLoopService.pause) {
         return;
       }
       this.eatFood();
@@ -296,6 +291,9 @@ export class InventoryService {
       }
     });
     mainLoopService.longTickSubject.subscribe(() => {
+      if (this.mainLoopService.pause) {
+        return;
+      }
       //if autoequip is unlocked, but automerge isn't, equip best
       //automerge will merge into equipped if both are unlocked
       if (this.autoequipBestWeapon && this.autoWeaponMergeUnlocked && this.autoequipBestEnabled) {
@@ -382,8 +380,8 @@ export class InventoryService {
       divinePeachesUnlocked: this.divinePeachesUnlocked,
       equipmentUnlocked: this.equipmentUnlocked,
       equipmentCreated: this.equipmentCreated,
-      slotLockingUnlocked: this.slotLockingUnlocked,
-      lockedSlots: this.lockedSlots,
+      favoritesUnlocked: this.favoritesUnlocked,
+      favoritePriorityUnlocked: this.favoritePriorityUnlocked,
       lifetimeUsedItems: this.lifetimeUsedItems,
       lifetimeSoldItems: this.lifetimeSoldItems,
       lifetimePotionsUsed: this.lifetimePotionsUsed,
@@ -404,7 +402,7 @@ export class InventoryService {
     this.autoUseUnlocked = properties.autoUseUnlocked || false;
     this.autoUseEntries = properties.autoUseEntries || [];
     this.autoBalanceUnlocked = properties.autoBalanceUnlocked || false;
-    this.autoBalanceItems = properties.autoBalanceItems;
+    this.autoBalanceItems = properties.autoBalanceItems || [];
     this.autoPotionUnlocked = properties.autoPotionUnlocked || false;
     this.autoPillUnlocked = properties.autoPillUnlocked || false;
     this.autoPotionEnabled = properties.autoPotionUnlocked || this.autoPotionUnlocked;
@@ -448,15 +446,8 @@ export class InventoryService {
     }
     this.equipmentUnlocked = properties.equipmentUnlocked || false;
     this.equipmentCreated = properties.equipmentCreated || 0;
-    this.slotLockingUnlocked = properties.slotLockingUnlocked || false;
-    this.lockedSlots = properties.lockedSlots || {
-      head: false,
-      body: false,
-      leftHand: false,
-      rightHand: false,
-      legs: false,
-      feet: false,
-    };
+    this.favoritesUnlocked = properties.favoritesUnlocked || properties.slotLockingUnlocked || false;
+    this.favoritePriorityUnlocked = properties.favoritePriorityUnlocked || false;
     this.lifetimeUsedItems = properties.lifetimeUsedItems || 0;
     this.lifetimeSoldItems = properties.lifetimeSoldItems || 0;
     this.lifetimePotionsUsed = properties.lifetimePotionsUsed || 0;
@@ -1212,7 +1203,9 @@ export class InventoryService {
       quantity = 1; //handle potential 0 and negatives just in case
     }
 
-    for (const balanceItem of this.autoBalanceItems) {
+    // Skip all auto-consume, auto-sell, auto-use, auto-balance when paused
+    if (!this.mainLoopService.pause) {
+      for (const balanceItem of this.autoBalanceItems) {
       if (balanceItem.name === item.name) {
         // can't sell in hell, use it all
         if (this.hellService?.inHell) {
@@ -1328,6 +1321,7 @@ export class InventoryService {
         }
       }
     }
+    } // end of pause check for auto functions
 
     let firstStack = -1;
     if (item.type !== 'equipment') {
@@ -1607,14 +1601,14 @@ export class InventoryService {
     }
   }
 
-  toggleSlotLock(slot: string): void {
-    if (this.slotLockingUnlocked) {
-      this.lockedSlots[slot] = !this.lockedSlots[slot];
+  toggleFavorite(item: Equipment): void {
+    if (this.favoritesUnlocked) {
+      item.favorite = !item.favorite;
     }
   }
 
-  isSlotLocked(slot: string): boolean {
-    return this.slotLockingUnlocked && this.lockedSlots[slot];
+  isFavorite(item: Equipment | null | undefined): boolean {
+    return this.favoritesUnlocked && !!item?.favorite;
   }
 
   consume(consumeType: string, quantity = 1, cheapest = false): number {
@@ -1760,35 +1754,52 @@ export class InventoryService {
     return openSlots;
   }
 
+  /**
+   * Check if a manual merge between two equipment items is allowed.
+   * Prevents merging a favorite item into a non-favorite item.
+   * @param sourceItem The item being dragged (will be consumed)
+   * @param destItem The item being merged into (will receive the upgrade)
+   * @returns true if merge is allowed, false otherwise
+   */
+  canManualMerge(sourceItem: Equipment, destItem: Equipment): boolean {
+    // If source is favorite and dest is not favorite, block the merge
+    if (sourceItem.favorite && !destItem.favorite) {
+      return false;
+    }
+    return true;
+  }
+
   /** Create a new piece of equipment based on the two provided. Caller needs to do the destroying of the old items. */
   mergeEquipment(item1: Equipment, item2: Equipment, destinationInventoryIndex: number) {
     if (item1.slot !== item2.slot) {
       // not the same slot, bail out
       return;
     }
+    let newItem: Equipment;
     let inventoryIndex = 0;
     if (item1.slot === 'rightHand' || item1.slot === 'leftHand') {
-      inventoryIndex = this.addItem(
-        this.generateWeapon(
-          item1.value + item2.value,
-          item1.weaponStats?.material + '',
-          false,
-          item1.weaponStats?.baseName,
-          item1.weaponStats?.effect
-        )
+      newItem = this.generateWeapon(
+        item1.value + item2.value,
+        item1.weaponStats?.material + '',
+        false,
+        item1.weaponStats?.baseName,
+        item1.weaponStats?.effect
       );
     } else {
-      inventoryIndex = this.addItem(
-        this.generateArmor(
-          item1.value + item2.value,
-          item1.armorStats?.material + '',
-          item1.slot,
-          false,
-          item1.armorStats?.baseName,
-          item1.armorStats?.effect
-        )
+      newItem = this.generateArmor(
+        item1.value + item2.value,
+        item1.armorStats?.material + '',
+        item1.slot,
+        false,
+        item1.armorStats?.baseName,
+        item1.armorStats?.effect
       );
     }
+    // Preserve the favorite flag from the destination item (item1)
+    if (item1.favorite) {
+      newItem.favorite = true;
+    }
+    inventoryIndex = this.addItem(newItem);
     // if we can, move the new item to the desired destination index
     if (inventoryIndex !== destinationInventoryIndex && !this.itemStacks[destinationInventoryIndex]) {
       this.itemStacks[destinationInventoryIndex] = this.itemStacks[inventoryIndex];
@@ -1842,11 +1853,53 @@ export class InventoryService {
       if (item) {
         if (instanceOfEquipment(item)) {
           if (item.slot === slot) {
+            // If favoritePriorityUnlocked is true and this item is favorited, it takes priority as destination
+            if (this.favoritePriorityUnlocked && item.favorite) {
+              if (mergeDestinationIndex === -1) {
+                // No destination yet, make this the destination
+                mergeDestinationIndex = i;
+                lastdestinationIndex = i;
+                destinationItem = item;
+              } else if (!destinationItem?.favorite || item.value > destinationItem.value) {
+                // Current destination is not favorited, OR this favorited item is more valuable
+                // Swap: old destination becomes source, this item becomes destination
+                sourceItem = destinationItem;
+                const oldDestIndex = mergeDestinationIndex;
+                mergeDestinationIndex = i;
+                lastdestinationIndex = i;
+                destinationItem = item;
+                // Merge the old destination into this favorited item
+                if (sourceItem) {
+                  if (
+                    this.selectedItem === this.itemStacks[oldDestIndex] ||
+                    this.selectedItem === this.itemStacks[i]
+                  ) {
+                    this.selectedItem = null;
+                  }
+                  this.itemStacks[oldDestIndex] = null;
+                  this.itemStacks[i] = null;
+                  this.mergeEquipment(destinationItem, sourceItem, mergeDestinationIndex);
+                  item = this.itemStacks[mergeDestinationIndex]?.item;
+                  if (item && instanceOfEquipment(item) && item.slot === slot) {
+                    destinationItem = item;
+                  } else {
+                    mergeDestinationIndex = -1;
+                    destinationItem = null;
+                  }
+                }
+              }
+              // If both are favorited and current destination is more valuable, skip this one
+              continue;
+            }
             if (mergeDestinationIndex === -1) {
               mergeDestinationIndex = i;
               lastdestinationIndex = i;
               destinationItem = item;
             } else {
+              // Skip favorited items as source materials
+              if (item.favorite) {
+                continue;
+              }
               sourceItem = item;
               if (destinationItem) {
                 if (
@@ -1876,7 +1929,8 @@ export class InventoryService {
     }
     if (this.automergeEquipped) {
       // finally, merge the last item with that slot into the equipped item if present and autoEquipBest is enabled(and corresponding autoequip is unlocked)
-      if (destinationItem && this.autoequipBestEnabled && (this.autoequipBestWeapon || this.autoequipBestArmor)) {
+      // Skip if the destination item is favorited (don't use it as material for equipped item)
+      if (destinationItem && !destinationItem.favorite && this.autoequipBestEnabled && (this.autoequipBestWeapon || this.autoequipBestArmor)) {
         if (
           ((slot === 'rightHand' || slot === 'leftHand') && this.autoequipBestWeapon) ||
           (slot !== 'rightHand' && slot !== 'leftHand' && this.autoequipBestArmor)
@@ -1899,7 +1953,7 @@ export class InventoryService {
     if (!instanceOfEquipment(itemToMerge)) {
       return;
     }
-    let newItem;
+    let newItem: Equipment;
     if (!equippedItem) {
       this.characterService.characterState.equipment[slot] = itemToMerge;
       this.itemStacks[sourceItemIndex] = null;
@@ -1922,6 +1976,10 @@ export class InventoryService {
         equippedItem.armorStats?.baseName,
         equippedItem.armorStats?.effect
       );
+    }
+    // Preserve the favorite flag from the equipped item
+    if (equippedItem.favorite) {
+      newItem.favorite = true;
     }
     this.characterService.characterState.equipment[slot] = newItem;
     this.itemStacks[sourceItemIndex] = null;

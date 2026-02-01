@@ -126,7 +126,7 @@ button:disabled {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 15px;
+  gap: 2px;
   padding-right: 10px;
 }
 
@@ -134,6 +134,16 @@ button:disabled {
   display: flex;
   align-items: center;
   gap: 4px;
+
+  label {
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+  }
+
+  input[type="checkbox"] {
+    margin: 0;
+  }
 }
 
 // Wrapper for text buttons in the top bar to ensure consistent styling in both modes

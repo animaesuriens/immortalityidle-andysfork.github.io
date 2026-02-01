@@ -3,7 +3,7 @@ import { TitleCasePipe } from '@angular/common';
 import { trigger, state, style, transition, animate, keyframes } from '@angular/animations';
 import { CharacterService } from '../game-state/character.service';
 import { EquipmentPosition } from '../game-state/character';
-import { InventoryService, ItemStack, Item, instanceOfEquipment } from '../game-state/inventory.service';
+import { InventoryService, ItemStack, Item, instanceOfEquipment, Equipment } from '../game-state/inventory.service';
 import { HellService } from '../game-state/hell.service';
 import { MainLoopService } from '../game-state/main-loop.service';
 import { GameStateService } from '../game-state/game-state.service';
@@ -257,6 +257,11 @@ export class InventoryPanelComponent {
           this.inventoryService.selectedItem = null;
         } else {
           if (!instanceOfEquipment(itemStack.item) || itemStack.item.slot === slot) {
+            const equippedItem = this.characterService.characterState.equipment[slot];
+            // Check if manual merge is allowed (prevents favorite -> non-favorite)
+            if (instanceOfEquipment(itemStack.item) && equippedItem && !this.inventoryService.canManualMerge(itemStack.item, equippedItem)) {
+              return;
+            }
             this.inventoryService.mergeEquippedSlot(slot, itemStack.item, sourceItemIndex);
             this.inventoryService.selectedItem = null;
           }
@@ -274,6 +279,10 @@ export class InventoryPanelComponent {
       if (sourceItem && destItem) {
         if (instanceOfEquipment(sourceItem) && instanceOfEquipment(destItem)) {
           if (sourceItem.slot === destItem.slot) {
+            // Check if manual merge is allowed (prevents favorite -> non-favorite)
+            if (!this.inventoryService.canManualMerge(sourceItem, destItem)) {
+              return;
+            }
             this.inventoryService.itemStacks[destIndex] = null;
             this.inventoryService.itemStacks[sourceIndex] = null;
             this.inventoryService.selectedItem = null;
@@ -302,6 +311,18 @@ export class InventoryPanelComponent {
     if (this.inventoryService.selectedItem) {
       this.inventoryService.removeItemStack(this.inventoryService.selectedItem);
     }
+  }
+
+  toggleFavorite() {
+    if (this.inventoryService.selectedItem && instanceOfEquipment(this.inventoryService.selectedItem.item)) {
+      this.inventoryService.toggleFavorite(this.inventoryService.selectedItem.item as Equipment);
+    }
+  }
+
+  isItemFavorited(itemStack: ItemStack | null): boolean {
+    if (!itemStack?.item) return false;
+    if (!instanceOfEquipment(itemStack.item)) return false;
+    return this.inventoryService.isFavorite(itemStack.item as Equipment);
   }
 
   animationDoneEvent() {

@@ -1,15 +1,21 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { AchievementService } from '../game-state/achievement.service';
 import { ActivityService } from '../game-state/activity.service';
 import { AutoBuyerService, AutoBuyerSetting } from '../game-state/autoBuyer.service';
+import { BattleService } from '../game-state/battle.service';
 import { CharacterService } from '../game-state/character.service';
 import { FollowersService } from '../game-state/followers.service';
 import { GameStateService } from '../game-state/game-state.service';
 import { HomeService } from '../game-state/home.service';
 import { InventoryService, BalanceItem, AutoItemEntry } from '../game-state/inventory.service';
 import { MainLoopService } from '../game-state/main-loop.service';
+import { StatisticsService } from '../game-state/statistics.service';
+import { StoreService } from '../game-state/store.service';
 import { LifeSummaryComponent } from '../life-summary/life-summary.component';
+import { ChangelogPanelComponent } from '../changelog-panel/changelog-panel.component';
 import { environment } from '../../environments/environment';
+import { CURRENT_VERSION, VERSIONS, VersionEntry } from '../versions';
 
 @Component({
   selector: 'app-options-modal',
@@ -17,6 +23,11 @@ import { environment } from '../../environments/environment';
   styleUrls: ['./options-modal.component.less'],
 })
 export class OptionsModalComponent {
+  applicationVersion = CURRENT_VERSION;
+  versions: VersionEntry[] = VERSIONS;
+  tutorialTabDirection: 'up' | 'down' = 'down';
+  previousTutorialTabIndex = 0;
+
   constructor(
     public homeService: HomeService,
     public characterService: CharacterService,
@@ -25,7 +36,11 @@ export class OptionsModalComponent {
     public followerService: FollowersService,
     public autoBuyerService: AutoBuyerService,
     public mainLoopService: MainLoopService,
-    private activityService: ActivityService,
+    public activityService: ActivityService,
+    public battleService: BattleService,
+    public achievementService: AchievementService,
+    public statisticsService: StatisticsService,
+    public storeService: StoreService,
     public dialog: MatDialog
   ) {}
 
@@ -332,5 +347,18 @@ export class OptionsModalComponent {
     );
     const event = new MouseEvent('click');
     element.dispatchEvent(event);
+  }
+
+  changelogClicked() {
+    this.dialog.open(ChangelogPanelComponent, {
+      width: '700px',
+      data: { someField: 'foo' },
+      autoFocus: false,
+    });
+  }
+
+  onTutorialTabChange(index: number) {
+    this.tutorialTabDirection = index > this.previousTutorialTabIndex ? 'down' : 'up';
+    this.previousTutorialTabIndex = index;
   }
 }

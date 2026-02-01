@@ -43,6 +43,20 @@
   box-sizing: border-box;
 }
 
+// Pagination arrow styling
+:host ::ng-deep .mat-mdc-tab-header-pagination {
+  --mat-tab-header-pagination-icon-color: white;
+}
+
+:host ::ng-deep .mat-mdc-tab-header-pagination svg {
+  fill: white;
+}
+
+.lockedMessage {
+  color: var(--disabledText);
+  font-style: italic;
+}
+
 .inputBox {
 width: 70px;
 }
@@ -52,7 +66,8 @@ margin-top: 2px;
 }
 
 button {
-margin-top: 2px;
+  margin-top: 2px;
+  padding: 3px 8px;
 }
 
 .scrollingDiv {
@@ -61,6 +76,18 @@ margin-top: 2px;
 }
 
 .warning {
+    color: red;
+}
+
+h1 {
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 1;
+    margin: 12px 0 0 0;
+    color: var(--bodyText);
+}
+
+h1.dangerZone {
     color: red;
 }
 
@@ -119,10 +146,168 @@ margin-top: 2px;
     color: var(--disabledText);
 }
 
+// Active tab label styling
+:host ::ng-deep .mat-mdc-tab.mdc-tab--active .tab-label {
+    color: white;
+}
+
 #importLayoutFile {
     display: none;
 }
 
 #importGameFile {
     display: none;
+}
+
+.statisticsTab {
+    display: flex;
+    gap: 16px;
+    height: 100%;
+
+    .statisticsColumn {
+        flex: 1;
+        overflow-y: auto;
+        padding-right: 8px;
+    }
+
+    .statisticsSection:first-child h1 {
+        margin-top: 0;
+    }
+
+    h2 {
+        margin: 8px 0 0 0;
+        font-size: 14px;
+        line-height: 1;
+        color: var(--bodyText);
+    }
+
+    table {
+        border-spacing: 4px 2px;
+    }
+
+    td {
+        font-size: 13px;
+        line-height: 1;
+    }
+
+    td:first-child {
+        padding-right: 8px;
+    }
+}
+
+.statisticsSection {
+    margin-bottom: 8px;
+}
+
+.statisticsSubsection {
+    margin-left: 12px;
+}
+
+.tutorialTab {
+    .tutorialSection {
+        padding: 12px;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+}
+
+// Vertical tabs for tutorial
+:host ::ng-deep .tutorialTab .mat-mdc-tab-group {
+    flex-direction: row;
+}
+
+:host ::ng-deep .tutorialTab .mat-mdc-tab-header {
+    border-bottom: none;
+}
+
+:host ::ng-deep .tutorialTab .mat-mdc-tab-header-pagination {
+    display: none !important;
+}
+
+:host ::ng-deep .tutorialTab .mat-mdc-tab-labels {
+    flex-direction: column;
+}
+
+:host ::ng-deep .tutorialTab .mat-mdc-tab-label-container {
+    flex-grow: 0;
+}
+
+:host ::ng-deep .tutorialTab .mat-mdc-tab-body-wrapper {
+    flex: 1 1 auto;
+    overflow: hidden;
+    position: relative;
+}
+
+:host ::ng-deep .tutorialTab .mat-mdc-tab-body {
+    overflow: hidden;
+    top: 0;
+}
+
+// Vertical slide animations for tutorial tabs
+:host ::ng-deep .tutorialTab.slide-down .mat-mdc-tab-body-content {
+    animation: slideFromTop 0.35s ease-out;
+}
+
+:host ::ng-deep .tutorialTab.slide-up .mat-mdc-tab-body-content {
+    animation: slideFromBottom 0.35s ease-out;
+}
+
+@keyframes slideFromTop {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideFromBottom {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.creditSection {
+    margin-bottom: 16px;
+
+    h1 {
+        margin: 0 0 4px 0;
+    }
+
+    span {
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    a {
+        color: #6db3f2;
+    }
+}
+
+.creditSection:first-of-type h1 {
+    margin-top: 0;
+}
+
+.changelogTab {
+    table {
+        border-spacing: 4px;
+    }
+
+    td {
+        vertical-align: top;
+    }
+
+    .forkDivider td {
+        padding: 4px 0;
+        color: var(--disabledText);
+        font-style: italic;
+        background: linear-gradient(to right, rgba(0, 128, 0, 0.3), transparent);
+    }
 }

@@ -18,7 +18,7 @@ import {
 // =============================================================================
 
 export const PANEL_HELP = {
-  health: `Maintaining your health is an important part of becoming immortal.
+  status: `Maintaining your health is an important part of becoming immortal.
 
 If your health reaches 0, you will die and need to try for immortality once you are reincarnated in your next life.`,
 
@@ -274,7 +274,7 @@ You will spend ${cost} tael per day on a bowl of rice to avoid starvation.`,
 // =============================================================================
 
 export const EQUIPMENT = {
-  slotLock: (isLocked: boolean) => `Click to ${isLocked ? 'unlock' : 'lock'} this slot`,
+  favorite: (isFavorite: boolean) => `Click to ${isFavorite ? 'unfavorite' : 'favorite'} this equipment`,
 };
 
 // =============================================================================

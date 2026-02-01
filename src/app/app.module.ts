@@ -8,7 +8,7 @@ import { TimePanelComponent } from './time-panel/time-panel.component';
 import { AttributesPanelComponent } from './attributes-panel/attributes-panel.component';
 import { FollowersPanelComponent } from './followers-panel/followers-panel.component';
 import { PetsPanelComponent } from './pets-panel/pets-panel.component';
-import { HealthPanelComponent } from './health-panel/health-panel.component';
+import { StatusPanelComponent } from './status-panel/status-panel.component';
 import { HomePanelComponent } from './home-panel/home-panel.component';
 import { LogPanelComponent } from './log-panel/log-panel.component';
 import { InventoryPanelComponent } from './inventory-panel/inventory-panel.component';
@@ -55,7 +55,7 @@ const materialModules = [MatDialogModule, MatIconModule, MatTabsModule, MatToolt
     AttributesPanelComponent,
     FollowersPanelComponent,
     PetsPanelComponent,
-    HealthPanelComponent,
+    StatusPanelComponent,
     HomePanelComponent,
     LogPanelComponent,
     InventoryPanelComponent,

@@ -2607,19 +2607,19 @@ export class ItemRepoService {
     },
     slotLockingManual: {
       id: 'slotLockingManual',
-      name: 'Manual of Slot Locking',
+      name: 'Manual of Treasured Equipment',
       type: 'manual',
-      description: 'This manual teaches you to lock equipment slots so broken equipment stays equipped instead of being automatically unequipped.',
+      description: 'This manual teaches you to mark equipment as favorites, protecting them from being used as materials in auto-merge while still allowing them to be upgraded.',
       value: 1e12,
       useLabel: 'Read',
-      useDescription: 'Permanently unlock the ability to lock equipment slots to prevent broken equipment from being unequipped.',
+      useDescription: 'Permanently unlock the ability to favorite equipment, protecting it from being consumed by auto-merge.',
       useConsumes: true,
       use: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
         if (!this.inventoryService) {
           this.inventoryService = this.injector.get(InventoryService);
         }
-        this.inventoryService.slotLockingUnlocked = true;
+        this.inventoryService.favoritesUnlocked = true;
         this.logService.log(
           LogTopic.EVENT,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
@@ -2630,7 +2630,35 @@ export class ItemRepoService {
         if (!this.inventoryService) {
           this.inventoryService = this.injector.get(InventoryService);
         }
-        return this.inventoryService.slotLockingUnlocked;
+        return this.inventoryService.favoritesUnlocked;
+      },
+    },
+    favoritePriorityManual: {
+      id: 'favoritePriorityManual',
+      name: 'Manual of Prized Possessions',
+      type: 'manual',
+      description: 'This manual teaches you to focus your crafting efforts on your treasured equipment, ensuring that favorited items are always treated as the best choice for upgrades during auto-merge.',
+      value: 1e13,
+      useLabel: 'Read',
+      useDescription: 'Permanently unlock the ability for favorited items to always be the merge destination during auto-merge, regardless of other items\' values.',
+      useConsumes: true,
+      use: () => {
+        // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
+        if (!this.inventoryService) {
+          this.inventoryService = this.injector.get(InventoryService);
+        }
+        this.inventoryService.favoritePriorityUnlocked = true;
+        this.logService.log(
+          LogTopic.EVENT,
+          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
+        );
+      },
+      owned: () => {
+        // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
+        if (!this.inventoryService) {
+          this.inventoryService = this.injector.get(InventoryService);
+        }
+        return this.inventoryService.favoritePriorityUnlocked;
       },
     },
     betterStorageManual: {

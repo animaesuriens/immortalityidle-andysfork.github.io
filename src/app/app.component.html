@@ -3,125 +3,112 @@
     <div class="top-line">
       <span class="gameTitle">
         Immortality Idle: {{characterService.characterState.god ? "The Divine Cultivator" : hellService.inHell ? "Escape from the Eighteen Hells" : characterService.characterState.immortal ? "You Are Immortal!" : "Can You Become an Immortal?"}} - Andy's Fork
-        <span class="versionNumber" (click)="changelogClicked()">{{gameStateService.isExperimental ? "Experimental" : "v" + applicationVersion}}</span>
       </span>
-      <mat-icon [matTooltip]="tooltips.help" class="iconButton" (click)="tutorialClicked()" aria-label="Tutorial" aria-hidden="false">
-        help
-      </mat-icon>
-      <mat-icon [matTooltip]="tooltips.statistics" class="iconButton" (click)="statisticsClicked()">
-        format_list_numbered_rtl
-      </mat-icon>
-      <span>
+      <span class="topBarLeftButtons">
         <mat-icon [matTooltip]="tooltips.manualStore" class="iconButton" aria-label="Store" aria-hidden="false"
           [ngClass]="{highlighted: storeService.isManualAvailable()}"
           (click)="storeClicked()">
           local_library
         </mat-icon>
-        <mat-icon [matTooltip]="tooltips.options" class="iconButton" aria-label="Options" aria-hidden="false"
-          (click)="storeOptionsClicked()">
-          settings
+        <mat-icon [matTooltip]="tooltips.achievements" class="iconButton" aria-label="Achievements" aria-hidden="false"
+          (click)="achievementsClicked()">
+          military_tech
         </mat-icon>
-      </span>
-      <mat-icon [matTooltip]="tooltips.achievements" class="iconButton" aria-label="Achievements" aria-hidden="false"
-        (click)="achievementsClicked()">
-        military_tech
-      </mat-icon>
-      @if (impossibleTaskService.impossibleTasksUnlocked) {
-        <mat-icon [matTooltip]="tooltips.impossibleTasks" class="iconButton" aria-label="Impossible Tasks" aria-hidden="false"
-          (click)="impossibleTasksClicked()">
-          priority_high
-        </mat-icon>
-      }
-      @if (characterService.characterState.ascensionUnlocked) {
-        <span>
+        @if (impossibleTaskService.impossibleTasksUnlocked) {
+          <mat-icon [matTooltip]="tooltips.impossibleTasks" class="iconButton" aria-label="Impossible Tasks" aria-hidden="false"
+            (click)="impossibleTasksClicked()">
+            priority_high
+          </mat-icon>
+        }
+        @if (characterService.characterState.ascensionUnlocked) {
           <mat-icon [matTooltip]="tooltips.ascension" class="iconButton" aria-label="Ascension" aria-hidden="false"
             (click)="ascensionStoreClicked()">
             keyboard_double_arrow_up
           </mat-icon>
-        </span>
-      }
-      <mat-icon [matTooltip]="tooltips.credits" class="iconButton" aria-label="Credits" aria-hidden="false"
-        (click)="creditsClicked()">
-        contact_page
-      </mat-icon>
-      <mat-icon [matTooltip]="tooltips.reincarnate" class="iconButton" aria-label="Reincarnate" aria-hidden="false"
-        (click)="reincarnateClicked()">
-        person_celebrate
-      </mat-icon>
-      <span class="discordLink">
-        <a href="https://discord.gg/Na7Qmwy3XK" target="_blank" rel="noopener noreferrer" [matTooltip]="tooltips.discord">Discord</a>
+        }
+        <mat-icon [matTooltip]="tooltips.reincarnate" class="iconButton" aria-label="Reincarnate" aria-hidden="false"
+          (click)="reincarnateClicked()">
+          person_celebrate
+        </mat-icon>
       </span>
-      <span class="topBarCenterSpacer"></span>
-      <span class="saveSlotGroup">
-        <span class="saveSlotLabel">Slot 1</span>
-        <span class="saveSlotButtons">
-          <mat-icon [matTooltip]="tooltips.save" class="iconButton topBarSaveButton" aria-label="Save Slot 1" aria-hidden="false"
-            (click)="saveClicked('')">
-            save
-          </mat-icon>
-          <mat-icon [matTooltip]="tooltips.load" class="iconButton topBarSaveButton" aria-label="Load Slot 1" aria-hidden="false"
-            (click)="loadClicked('')">
-            download
-          </mat-icon>
+      <span class="topBarSaveGroup">
+        <span class="saveSlotGroup">
+          <span class="saveSlotLabel">Slot 1</span>
+          <span class="saveSlotButtons">
+            <mat-icon [matTooltip]="tooltips.save" class="iconButton topBarSaveButton" aria-label="Save Slot 1" aria-hidden="false"
+              (click)="saveClicked('')">
+              save
+            </mat-icon>
+            <mat-icon [matTooltip]="tooltips.load" class="iconButton topBarSaveButton" aria-label="Load Slot 1" aria-hidden="false"
+              (click)="loadClicked('')">
+              download
+            </mat-icon>
+          </span>
         </span>
-      </span>
-      <span class="saveSlotGroup">
-        <span class="saveSlotLabel">Slot 2</span>
-        <span class="saveSlotButtons">
-          <mat-icon [matTooltip]="tooltips.save" class="iconButton topBarSaveButton" aria-label="Save Slot 2" aria-hidden="false"
-            (click)="saveClicked('1')">
-            save
-          </mat-icon>
-          <mat-icon [matTooltip]="tooltips.load" class="iconButton topBarSaveButton" aria-label="Load Slot 2" aria-hidden="false"
-            (click)="loadClicked('1')">
-            download
-          </mat-icon>
+        <span class="saveSlotGroup">
+          <span class="saveSlotLabel">Slot 2</span>
+          <span class="saveSlotButtons">
+            <mat-icon [matTooltip]="tooltips.save" class="iconButton topBarSaveButton" aria-label="Save Slot 2" aria-hidden="false"
+              (click)="saveClicked('1')">
+              save
+            </mat-icon>
+            <mat-icon [matTooltip]="tooltips.load" class="iconButton topBarSaveButton" aria-label="Load Slot 2" aria-hidden="false"
+              (click)="loadClicked('1')">
+              download
+            </mat-icon>
+          </span>
         </span>
-      </span>
-      <span class="saveSlotGroup">
-        <span class="saveSlotLabel">Slot 3</span>
-        <span class="saveSlotButtons">
-          <mat-icon [matTooltip]="tooltips.save" class="iconButton topBarSaveButton" aria-label="Save Slot 3" aria-hidden="false"
-            (click)="saveClicked('2')">
-            save
-          </mat-icon>
-          <mat-icon [matTooltip]="tooltips.load" class="iconButton topBarSaveButton" aria-label="Load Slot 3" aria-hidden="false"
-            (click)="loadClicked('2')">
-            download
-          </mat-icon>
+        <span class="saveSlotGroup">
+          <span class="saveSlotLabel">Slot 3</span>
+          <span class="saveSlotButtons">
+            <mat-icon [matTooltip]="tooltips.save" class="iconButton topBarSaveButton" aria-label="Save Slot 3" aria-hidden="false"
+              (click)="saveClicked('2')">
+              save
+            </mat-icon>
+            <mat-icon [matTooltip]="tooltips.load" class="iconButton topBarSaveButton" aria-label="Load Slot 3" aria-hidden="false"
+              (click)="loadClicked('2')">
+              download
+            </mat-icon>
+          </span>
         </span>
-      </span>
-      <span class="saveSlotGroup">
-        <span class="saveSlotLabel">Autosave</span>
-        <span class="saveSlotButtons">
-          <mat-icon [matTooltip]="tooltips.save" class="iconButton topBarSaveButton" aria-label="Save Autosave" aria-hidden="false"
-            (click)="saveClicked('auto')">
-            save
-          </mat-icon>
-          <mat-icon [matTooltip]="tooltips.load" class="iconButton topBarSaveButton" aria-label="Load Autosave" aria-hidden="false"
-            (click)="loadClicked('auto')">
-            download
-          </mat-icon>
+        <span class="saveSlotGroup">
+          <span class="saveSlotLabel">Autosave</span>
+          <span class="saveSlotButtons">
+            <mat-icon [matTooltip]="tooltips.save" class="iconButton topBarSaveButton" aria-label="Save Autosave" aria-hidden="false"
+              (click)="saveClicked('auto')">
+              save
+            </mat-icon>
+            <mat-icon [matTooltip]="tooltips.load" class="iconButton topBarSaveButton" aria-label="Load Autosave" aria-hidden="false"
+              (click)="loadClicked('auto')">
+              download
+            </mat-icon>
+          </span>
         </span>
-      </span>
-      <span class="autosaveControls">
-        <span class="autosaveText">
-          <input type="checkbox" id="autosaveEnabled" [checked]="gameStateService.autosaveEnabled" (change)="autosaveToggle()"/>
-          <label for="autosaveEnabled">Autosave every</label>
-          <input type="number" min="1" max="900" step="1" class="autosaveIntervalInput"
-            [value]="gameStateService.saveInterval" (change)="autosaveIntervalChange($event)"/>
-          <label>seconds.</label>
+        <span class="autosaveControls">
+          <span class="autosaveText">
+            <input type="checkbox" id="autosaveEnabled" [checked]="gameStateService.autosaveEnabled" (change)="autosaveToggle()"/>
+            <label for="autosaveEnabled">Autosave every</label>
+            <input type="number" min="1" max="900" step="1" class="autosaveIntervalInput"
+              [value]="gameStateService.saveInterval" (change)="autosaveIntervalChange($event)"/>
+            <label>seconds.</label>
+          </span>
+          <span class="lastAutosaveText">(Last autosave was {{getLastAutosaveRelativeTime()}} ago.)</span>
         </span>
-        <span class="lastAutosaveText">(Last autosave was {{getLastAutosaveRelativeTime()}} ago.)</span>
       </span>
       <span class="topBarRightGroup">
-        <span class="lockPanelsToggle">
-          <input type="checkbox" id="lockPanels" (change)="lockPanelsToggle()" [checked]="gameStateService.lockPanels"/>
-          <label for="lockPanels">Lock Panels</label>
+        <span class="topBarButtonWrapper">
+          <button (click)="lockPanelsToggle()" matTooltip="Toggle panel locking">
+            <mat-icon class="buttonIcon">{{gameStateService.lockPanels ? 'lock' : 'lock_open'}}</mat-icon>
+            {{gameStateService.lockPanels ? 'Unlock Panels' : 'Lock Panels'}}
+          </button>
         </span>
         <span class="topBarButtonWrapper">
           <button [disabled]="gameStateService.lockPanels" (click)="gameStateService.resetPanels()">Reset Panels</button>
         </span>
+        <mat-icon [matTooltip]="tooltips.options" class="iconButton" aria-label="Options" aria-hidden="false"
+          (click)="storeOptionsClicked()">
+          settings
+        </mat-icon>
       </span>
     </div>
     <div class="grid-container">
@@ -138,7 +125,7 @@
                 @switch (layoutItem.id) {
                   @case ('timePanel') { <app-time-panel class="panelComponent"></app-time-panel> }
                   @case ('attributesPanel') { <app-attributes-panel class="panelComponent"></app-attributes-panel> }
-                  @case ('healthPanel') { <app-health-panel class="panelComponent"></app-health-panel> }
+                  @case ('statusPanel') { <app-status-panel class="panelComponent"></app-status-panel> }
                   @case ('activityPanel') { <app-activity-panel class="panelComponent"></app-activity-panel> }
                   @case ('battlePanel') { <app-battle-panel class="panelComponent"></app-battle-panel> }
                   @case ('equipmentPanel') { <app-equipment-panel class="panelComponent"></app-equipment-panel> }

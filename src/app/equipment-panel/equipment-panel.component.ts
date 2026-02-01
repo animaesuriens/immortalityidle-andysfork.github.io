@@ -5,6 +5,9 @@ import { Equipment, InventoryService, instanceOfEquipment, Item } from '../game-
 import { GameStateService } from '../game-state/game-state.service';
 import { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
 import { ItemRepoService } from '../game-state/item-repo.service';
+import { BattleService } from '../game-state/battle.service';
+import { MainLoopService } from '../game-state/main-loop.service';
+import { BigNumberPipe } from '../app.component';
 import { PANEL_HELP, COMBAT, EQUIPMENT } from '../game-state/tooltips';
 
 @Component({
@@ -18,14 +21,242 @@ export class EquipmentPanelComponent {
   dragPositionY = 0;
   panelHelp = PANEL_HELP.equipment;
   tooltips = { combat: COMBAT, equipment: EQUIPMENT };
+  private bigNumberPipe: BigNumberPipe;
 
   constructor(
     private characterService: CharacterService,
     public inventoryService: InventoryService,
     public gameStateService: GameStateService,
-    public itemRepoService: ItemRepoService
+    public itemRepoService: ItemRepoService,
+    private battleService: BattleService,
+    mainLoopService: MainLoopService
   ) {
     this.character = characterService.characterState;
+    this.bigNumberPipe = new BigNumberPipe(mainLoopService);
+  }
+
+  private fmt(n: number): string {
+    return this.bigNumberPipe.transform(n);
+  }
+
+  getAccuracyTooltip(): string {
+    const state = this.character;
+    const troubleKills = this.battleService.troubleKills;
+    const speed = state.attributes.speed.value;
+    const sqrtSpeed = Math.sqrt(speed);
+
+    const lines: string[] = [
+      COMBAT.accuracy,
+      '',
+      'Your chance to hit monsters when you attack them.',
+      '',
+      'Formula: min((troubleKills + √speed) / troubleKills / 2, 1)',
+      '',
+      `Trouble Kills: ${this.fmt(troubleKills)}`,
+      `Speed: ${this.fmt(speed)}`,
+      `√Speed: ${this.fmt(sqrtSpeed)}`,
+      '',
+      `(${this.fmt(troubleKills)} + ${this.fmt(sqrtSpeed)}) / ${this.fmt(troubleKills)} / 2`,
+      `= ${(state.accuracy * 100).toFixed(1)}%`,
+    ];
+
+    return lines.join('\n');
+  }
+
+  getAttackPowerTooltip(): string {
+    const state = this.character;
+    const leftHand = state.equipment.leftHand?.weaponStats?.baseDamage || 1;
+    const rightHand = state.equipment.rightHand?.weaponStats?.baseDamage || 1;
+    const strength = state.attributes.strength.value;
+    const combatMastery = state.attributes.combatMastery.value;
+    const sqrtStrength = Math.sqrt(strength) || 1;
+    const sqrtWeapons = Math.sqrt(leftHand * rightHand);
+    let baseAttack = Math.floor(sqrtStrength * sqrtWeapons) || 1;
+
+    const lines: string[] = [
+      COMBAT.attackPower,
+      '',
+      'The damage you will do when you hit a monster.',
+      '',
+      'Formula: floor(√strength × √(leftHand × rightHand))',
+    ];
+
+    if (combatMastery > 1) {
+      lines.push('  × log₁₀₀(combatMastery + 100)');
+    }
+    if (state.righteousWrathUnlocked) {
+      lines.push('  × 2 (Righteous Wrath)');
+    }
+
+    lines.push('');
+    lines.push(`Strength: ${this.fmt(strength)}`);
+    lines.push(`Left Hand Damage: ${this.fmt(leftHand)}`);
+    lines.push(`Right Hand Damage: ${this.fmt(rightHand)}`);
+
+    lines.push('');
+    lines.push(`√${this.fmt(strength)} × √(${this.fmt(leftHand)} × ${this.fmt(rightHand)})`);
+    lines.push(`= ${this.fmt(sqrtStrength)} × ${this.fmt(sqrtWeapons)}`);
+    lines.push(`= ${this.fmt(baseAttack)}`);
+
+    if (combatMastery > 1) {
+      const masteryMult = Math.log(combatMastery + 100) / 4.605170185988092;
+      baseAttack *= masteryMult;
+      lines.push(`× ${masteryMult.toFixed(3)} (Combat Mastery: ${this.fmt(combatMastery)})`);
+      lines.push(`= ${this.fmt(Math.floor(baseAttack))}`);
+    }
+
+    if (state.righteousWrathUnlocked) {
+      lines.push(`× 2 (Righteous Wrath)`);
+      lines.push(`= ${this.fmt(state.attackPower)}`);
+    }
+
+    // Show effective damage with active skills
+    const activeSkills: string[] = [];
+    let effectiveDamage = state.attackPower;
+
+    if (this.battleService.enableQiAttack && this.battleService.qiAttackUnlocked) {
+      effectiveDamage *= 2;
+      activeSkills.push('× 2 (Qi Attack)');
+    }
+
+    if (this.battleService.enableMetalFist && this.battleService.metalFistUnlocked) {
+      let metalMult = Math.log(state.attributes.metalLore.value) / Math.log(50);
+      metalMult = Math.max(1, Math.min(100, metalMult));
+      effectiveDamage *= metalMult;
+      activeSkills.push(`× ${metalMult.toFixed(2)} (Metal Fist)`);
+    }
+
+    if (this.battleService.enablePyroclasm && this.battleService.pyroclasmUnlocked) {
+      let fireMult = Math.log(state.attributes.fireLore.value) / Math.log(100);
+      fireMult = Math.max(1, Math.min(10, fireMult));
+      effectiveDamage *= fireMult;
+      activeSkills.push(`× ${fireMult.toFixed(2)} (Pyroclasm)`);
+    }
+
+    if (state.yinYangUnlocked) {
+      const yinYangMult = 1 + state.yinYangBalance;
+      effectiveDamage *= yinYangMult;
+      activeSkills.push(`× ${yinYangMult.toFixed(2)} (Yin/Yang Balance: ${(state.yinYangBalance * 100).toFixed(0)}%)`);
+    }
+
+    // Corruption effects
+    const leftCorruption = state.equipment.leftHand?.weaponStats?.effect === 'corruption';
+    const rightCorruption = state.equipment.rightHand?.weaponStats?.effect === 'corruption';
+    const headCorruption = state.equipment.head?.armorStats?.effect === 'corruption';
+    const bodyCorruption = state.equipment.body?.armorStats?.effect === 'corruption';
+    const legsCorruption = state.equipment.legs?.armorStats?.effect === 'corruption';
+    const feetCorruption = state.equipment.feet?.armorStats?.effect === 'corruption';
+
+    if (leftCorruption) {
+      effectiveDamage *= 10;
+      activeSkills.push('× 10 (Corruption: Left Hand)');
+    }
+    if (rightCorruption) {
+      effectiveDamage *= 10;
+      activeSkills.push('× 10 (Corruption: Right Hand)');
+    }
+    if (headCorruption) {
+      effectiveDamage *= 2;
+      activeSkills.push('× 2 (Corruption: Head)');
+    }
+    if (bodyCorruption) {
+      effectiveDamage *= 2;
+      activeSkills.push('× 2 (Corruption: Body)');
+    }
+    if (legsCorruption) {
+      effectiveDamage *= 2;
+      activeSkills.push('× 2 (Corruption: Legs)');
+    }
+    if (feetCorruption) {
+      effectiveDamage *= 2;
+      activeSkills.push('× 2 (Corruption: Feet)');
+    }
+
+    if (activeSkills.length > 0) {
+      lines.push('');
+      lines.push('With Active Skills:');
+      for (const skill of activeSkills) {
+        lines.push(`  ${skill}`);
+      }
+      lines.push(`  = ${this.fmt(Math.floor(effectiveDamage))} effective damage`);
+    }
+
+    return lines.join('\n');
+  }
+
+  getDefenseTooltip(): string {
+    const state = this.character;
+    const head = state.equipment.head?.armorStats?.defense || 1;
+    const body = state.equipment.body?.armorStats?.defense || 1;
+    const legs = state.equipment.legs?.armorStats?.defense || 1;
+    const feet = state.equipment.feet?.armorStats?.defense || 1;
+    const toughness = state.attributes.toughness.value;
+    const sqrtToughness = Math.sqrt(toughness) || 1;
+    const armorSum = head + body + legs + feet;
+    let baseDefense = Math.floor(sqrtToughness * armorSum) || 1;
+
+    const lines: string[] = [
+      COMBAT.defense,
+      '',
+      'Reduces damage when a monster hits you.',
+      '',
+      'Formula: floor(√toughness × (head + body + legs + feet))',
+    ];
+
+    if (state.righteousWrathUnlocked) {
+      lines.push('  × 2 (Righteous Wrath)');
+    }
+
+    lines.push('');
+    lines.push(`Toughness: ${this.fmt(toughness)}`);
+    lines.push(`Head Armor: ${this.fmt(head)}`);
+    lines.push(`Body Armor: ${this.fmt(body)}`);
+    lines.push(`Legs Armor: ${this.fmt(legs)}`);
+    lines.push(`Feet Armor: ${this.fmt(feet)}`);
+
+    lines.push('');
+    lines.push(`√${this.fmt(toughness)} × (${this.fmt(head)} + ${this.fmt(body)} + ${this.fmt(legs)} + ${this.fmt(feet)})`);
+    lines.push(`= ${this.fmt(sqrtToughness)} × ${this.fmt(armorSum)}`);
+    lines.push(`= ${this.fmt(baseDefense)}`);
+
+    if (state.righteousWrathUnlocked) {
+      lines.push(`× 2 (Righteous Wrath)`);
+      lines.push(`= ${this.fmt(state.defense)}`);
+    }
+
+    // Show damage reduction with active skills
+    const activeSkills: string[] = [];
+    let damageReduction = 1;
+
+    if (this.battleService.enableQiShield && this.battleService.qiShieldUnlocked) {
+      damageReduction *= 0.5;
+      activeSkills.push('÷ 2 (Qi Shield)');
+    }
+
+    if (this.battleService.enableFireShield && this.battleService.fireShieldUnlocked) {
+      let fireDivisor = Math.log(state.attributes.fireLore.value) / Math.log(100);
+      fireDivisor = Math.max(1, Math.min(10, fireDivisor));
+      damageReduction /= fireDivisor;
+      activeSkills.push(`÷ ${fireDivisor.toFixed(2)} (Fire Shield)`);
+    }
+
+    if (this.battleService.enableIceShield && this.battleService.iceShieldUnlocked) {
+      let waterDivisor = Math.log(state.attributes.waterLore.value) / Math.log(100);
+      waterDivisor = Math.max(1, Math.min(10, waterDivisor));
+      damageReduction /= waterDivisor;
+      activeSkills.push(`÷ ${waterDivisor.toFixed(2)} (Ice Shield)`);
+    }
+
+    if (activeSkills.length > 0) {
+      lines.push('');
+      lines.push('Damage Reduction from Active Skills:');
+      for (const skill of activeSkills) {
+        lines.push(`  ${skill}`);
+      }
+      lines.push(`  = ${((1 - damageReduction) * 100).toFixed(1)}% damage reduced`);
+    }
+
+    return lines.join('\n');
   }
 
   slotDoubleClicked(slot: EquipmentPosition, event: MouseEvent): void {
@@ -99,6 +330,10 @@ export class EquipmentPanelComponent {
           if (destinationItemStack) {
             // there's something there, see if we can merge
             if (instanceOfEquipment(destinationItemStack.item) && destinationItemStack.item.slot === sourceItem.slot) {
+              // Check if manual merge is allowed (prevents favorite -> non-favorite)
+              if (!this.inventoryService.canManualMerge(sourceItem, destinationItemStack.item)) {
+                return;
+              }
               // clear out the destination slot and merge
               this.inventoryService.itemStacks[destinationItemIndex] = null;
               this.inventoryService.mergeEquipment(destinationItemStack.item, sourceItem, destinationItemIndex);

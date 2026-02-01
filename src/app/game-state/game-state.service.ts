@@ -102,7 +102,7 @@ export class GameStateService {
   defaultLayout: KtdGridLayout = [
     { id: 'timePanel', x: 0, y: 0, w: 20, h: 15 },
     { id: 'attributesPanel', x: 0, y: 15, w: 20, h: 20 },
-    { id: 'healthPanel', x: 0, y: 35, w: 20, h: 10 },
+    { id: 'statusPanel', x: 0, y: 35, w: 20, h: 10 },
     { id: 'activityPanel', x: 20, y: 0, w: 18, h: 35 },
     { id: 'inventoryPanel', x: 38, y: 0, w: 10, h: 45 },
     { id: 'battlePanel', x: 48, y: 0, w: 25, h: 15 },
@@ -117,7 +117,7 @@ export class GameStateService {
   panels: Panel[] = [
     { id: 'timePanel', name: 'Time', icon: 'timer', panelHelp: 'Control the flow of time.', unlocked: false },
     { id: 'attributesPanel', name: 'Attributes', icon: 'bar_chart', panelHelp: 'Your attributes define your growing immortal characteristics.', unlocked: true },
-    { id: 'healthPanel', name: 'Status', icon: 'favorite', panelHelp: 'Maintaining your health is an important part of becoming immortal.', unlocked: true },
+    { id: 'statusPanel', name: 'Status', icon: 'favorite', panelHelp: 'Maintaining your health is an important part of becoming immortal.', unlocked: true },
     { id: 'activityPanel', name: 'Activities', icon: 'self_improvement', panelHelp: 'Click an activity to spend a day doing it.', unlocked: true },
     { id: 'battlePanel', name: 'Battles', icon: 'fort', panelHelp: 'Battling enemies is an essential part of your quest for immortality.', unlocked: false },
     { id: 'equipmentPanel', name: 'Equipment', icon: 'colorize', panelHelp: 'Arm yourself with weapons and protective gear.', unlocked: false },
@@ -380,8 +380,19 @@ export class GameStateService {
     this.panelSizes = gameState.panelSizes || structuredClone(this.defaultPanelSizes);
     this.lockPanels = gameState.lockPanels || false;
     this.layout = gameState.layout || structuredClone(this.defaultLayout);
+    this.migrateLayout();
     this.updateImportFlagKey();
     this.populateMissingPanelInfo();
+  }
+
+  /** Migrate old layout panel IDs to new names */
+  migrateLayout() {
+    for (const item of this.layout) {
+      // Rename healthPanel to statusPanel
+      if (item.id === 'healthPanel') {
+        item.id = 'statusPanel';
+      }
+    }
   }
 
   getLayoutExport(): string {
