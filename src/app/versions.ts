@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.27.0', description: 'Add credits modal (replaces save modal), centralized tooltips system, health panel status expansion, equipment panel layout improvements, options modal redesign, time panel and tutorial panel UI updates.' },
   { version: '1.26.1', description: 'UI: Money tooltip shows daily costs breakdown. Farm/Home panel icon reordering. Upgrade Home tooltip improvements. Effect handlers return structured data.' },
   { version: '1.26.0', description: 'Rename "Mana" to "Qi" throughout the game. Add save migration for old saves.' },
   { version: '1.25.3', description: 'Internal: Add effect rendering colors (green/red/blue), formula display with gain multiplier breakdown, and centralized render-helpers using BigNumberPipe (Phase 3 plan 4 refinements).' },
