@@ -1307,7 +1307,7 @@ export class AchievementService {
   unlockAchievement(achievement: Achievement, newAchievement: boolean) {
     if (newAchievement) {
       this.unlockedAchievements.push(achievement.name);
-      this.logService.log(LogTopic.STORY, achievement.description);
+      this.logService.log(LogTopic.MILESTONE, achievement.description);
       // check if gameStateService is injected yet, if not, inject it (circular dependency issues)
       if (!this.gameStateService) {
         this.gameStateService = this.injector.get(GameStateService);

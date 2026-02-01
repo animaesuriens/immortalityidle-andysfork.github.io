@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.29.0', description: 'Reorganize log topics from 5 to 10 player-impact categories: MILESTONE, COMBAT, DAMAGE, CRAFTING, FOLLOWER, HOME, INVENTORY, BLOCKED, DEATH, HELL. Default enabled: MILESTONE, BLOCKED, DEATH. Includes save migration for old topics.' },
   { version: '1.28.0', description: 'Rename health-panel to status-panel, enhance equipment panel item management, expand options modal with additional settings, add new achievements, and UI refinements across multiple panels.' },
   { version: '1.27.0', description: 'Add credits modal (replaces save modal), centralized tooltips system, health panel status expansion, equipment panel layout improvements, options modal redesign, time panel and tutorial panel UI updates.' },
   { version: '1.26.1', description: 'UI: Money tooltip shows daily costs breakdown. Farm/Home panel icon reordering. Upgrade Home tooltip improvements. Effect handlers return structured data.' },

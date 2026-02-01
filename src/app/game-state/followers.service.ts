@@ -484,7 +484,7 @@ export class FollowersService {
               ' passed away from old age and was not replaced because of your choices in follower jobs.'
           );
         } else {
-          this.logService.injury(LogTopic.FOLLOWER, 'Your follower ' + follower.name + ' passed away from old age.');
+          this.logService.injury(LogTopic.DEATH, 'Your follower ' + follower.name + ' passed away from old age.');
         }
         this.updateFollowerTotalPower();
       } else if (
@@ -694,7 +694,7 @@ export class FollowersService {
         }
         if (!removedOne) {
           this.logService.injury(
-            LogTopic.FOLLOWER,
+            LogTopic.BLOCKED,
             'A new follower shows up, but you already have all the followers you want.'
           );
           if (pet) {
@@ -706,7 +706,7 @@ export class FollowersService {
         }
       } else {
         this.logService.injury(
-          LogTopic.FOLLOWER,
+          LogTopic.BLOCKED,
           'A new follower shows up, but you already have too many. You are forced to turn them away.'
         );
         if (pet) {
@@ -728,7 +728,7 @@ export class FollowersService {
     }
     if (this.numFollowersOnJob(job, followersList) >= capNumber) {
       this.logService.log(
-        LogTopic.FOLLOWER,
+        LogTopic.BLOCKED,
         'A new follower shows up, but they were a ' +
           this.camelToTitle.transform(job) +
           " and you don't want any more of those."

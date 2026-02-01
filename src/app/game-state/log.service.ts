@@ -23,12 +23,26 @@ export interface LogProperties {
 }
 
 export enum LogTopic {
-  STORY = 'Story',
-  EVENT = 'Event',
+  MILESTONE = 'Milestone',
   COMBAT = 'Combat',
+  DAMAGE = 'Damage',
   CRAFTING = 'Crafting',
   FOLLOWER = 'Follower',
+  HOME = 'Home',
+  INVENTORY = 'Inventory',
+  BLOCKED = 'Blocked',
+  DEATH = 'Death',
+  HELL = 'Hell',
 }
+
+// Migration mapping from old topics to new topics
+const LEGACY_TOPIC_MIGRATION: Record<string, LogTopic> = {
+  STORY: LogTopic.MILESTONE,
+  EVENT: LogTopic.BLOCKED,
+  COMBAT: LogTopic.COMBAT,
+  CRAFTING: LogTopic.CRAFTING,
+  FOLLOWER: LogTopic.FOLLOWER,
+};
 
 export interface TopicProperties {
   enabled: boolean;
@@ -43,7 +57,7 @@ export class LogService {
     (result, topic) => ({
       ...result,
       [topic]: {
-        enabled: [LogTopic.STORY, LogTopic.EVENT].includes(topic),
+        enabled: [LogTopic.MILESTONE, LogTopic.BLOCKED, LogTopic.DEATH].includes(topic),
         hasNewMessages: false,
       },
     }),
@@ -62,18 +76,18 @@ export class LogService {
       this.updateLogTopics();
     });
     this.log(
-      LogTopic.STORY,
+      LogTopic.MILESTONE,
       'Once in a very long while, a soul emerges from the chaos that is destined for immortality. You are such a soul.'
     );
     this.log(
-      LogTopic.STORY,
+      LogTopic.MILESTONE,
       'Your journey to immortality begins as a humble youth leaves home to experience the world. Choose the activities that will help you cultivate the attributes of an immortal.'
     );
     this.log(
-      LogTopic.STORY,
+      LogTopic.MILESTONE,
       'It may take you many reincarnations before you achieve your goals, but with each new life you will rise with greater aptitudes that allow you to learn and grow faster.'
     );
-    this.log(LogTopic.STORY, 'Be careful, the world can be a dangerous place.');
+    this.log(LogTopic.MILESTONE, 'Be careful, the world can be a dangerous place.');
   }
 
   log(topic: LogTopic, message: string): void {
@@ -117,20 +131,29 @@ export class LogService {
         .filter(entry => entry[1].enabled)
         .map(entry => entry[0] as LogTopic)
         .map(topic => topic.toUpperCase() as Uppercase<LogTopic>),
-      storyLog: this.logs[LogTopic.STORY],
+      storyLog: this.logs[LogTopic.MILESTONE],
     };
   }
 
   setProperties(properties: LogProperties) {
-    this.logs[LogTopic.STORY] = properties.storyLog || [];
+    this.logs[LogTopic.MILESTONE] = properties.storyLog || [];
 
     if (properties.logTopics) {
       properties.logTopics.forEach(topic => {
-        this.topicProperties[LogTopic[topic]].enabled = true;
+        // Check if this is a legacy topic that needs migration
+        const legacyTopic = LEGACY_TOPIC_MIGRATION[topic];
+        if (legacyTopic) {
+          this.topicProperties[legacyTopic].enabled = true;
+        } else if (LogTopic[topic as keyof typeof LogTopic]) {
+          // It's a current topic
+          this.topicProperties[LogTopic[topic as keyof typeof LogTopic]].enabled = true;
+        }
       });
     } else {
-      this.topicProperties[LogTopic.STORY].enabled = true;
-      this.topicProperties[LogTopic.EVENT].enabled = true;
+      // Default enabled topics for new games
+      this.topicProperties[LogTopic.MILESTONE].enabled = true;
+      this.topicProperties[LogTopic.BLOCKED].enabled = true;
+      this.topicProperties[LogTopic.DEATH].enabled = true;
     }
 
     this.updateLogTopics();
@@ -143,7 +166,7 @@ export class LogService {
 
   updateLogTopics() {
     Object.values(LogTopic).forEach(topic => {
-      if (topic !== LogTopic.STORY) {
+      if (topic !== LogTopic.MILESTONE) {
         this.logs[topic] = this.logs[topic].slice(-300);
       }
       if (this.topicProperties[topic].enabled) {

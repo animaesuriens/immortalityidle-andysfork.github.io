@@ -232,14 +232,14 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
 
   doActivity(activity: Activity) {
     if (!this.activityService.meetsRequirements(activity)) {
-      this.logService.log(LogTopic.EVENT, activity.name[activity.level] + ' is unavailable now.');
+      this.logService.log(LogTopic.BLOCKED, activity.name[activity.level] + ' is unavailable now.');
       return;
     }
     const failedStatus = this.activityService.checkResourceUse(activity);
     if (failedStatus !== '') {
       this.characterService.characterState.flashStatus(failedStatus);
       this.logService.log(
-        LogTopic.EVENT,
+        LogTopic.BLOCKED,
         "You don't meet the requirements to do " + activity.name[activity.level] + ' right now.'
       );
       return;

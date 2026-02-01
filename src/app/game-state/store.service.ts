@@ -223,18 +223,18 @@ export class StoreService {
 
   condenseSoulCore() {
     if (this.soulCoreRank >= 9) {
-      this.logService.injury(LogTopic.EVENT, "You can't condense your soul core any further.");
+      this.logService.injury(LogTopic.BLOCKED, "You can't condense your soul core any further.");
       return;
     }
     if (
       this.characterService.characterState.attributes.spirituality.value <
       this.characterService.characterState.condenseSoulCoreCost
     ) {
-      this.logService.injury(LogTopic.EVENT, "You don't have the spirituality required to ascend.");
+      this.logService.injury(LogTopic.BLOCKED, "You don't have the spirituality required to ascend.");
       return;
     }
     if (this.inventoryService.checkFor('spiritGem') < (this.soulCoreRank + 12) * 10) {
-      this.logService.injury(LogTopic.EVENT, "You don't have the gem required to ascend.");
+      this.logService.injury(LogTopic.BLOCKED, "You don't have the gem required to ascend.");
       return;
     }
     this.characterService.condenseSoulCore();
@@ -243,18 +243,18 @@ export class StoreService {
 
   reinforceMeridians() {
     if (this.meridianRank >= 9) {
-      this.logService.injury(LogTopic.EVENT, "You can't reinforce your meridians any further.");
+      this.logService.injury(LogTopic.BLOCKED, "You can't reinforce your meridians any further.");
       return;
     }
     if (
       this.characterService.characterState.attributes.spirituality.value <
       this.characterService.characterState.reinforceMeridiansCost
     ) {
-      this.logService.injury(LogTopic.EVENT, "You don't have the spirituality required to ascend.");
+      this.logService.injury(LogTopic.BLOCKED, "You don't have the spirituality required to ascend.");
       return;
     }
     if (this.inventoryService.checkFor('spiritGem') < (this.meridianRank + 16) * 10) {
-      this.logService.injury(LogTopic.EVENT, "You don't have the gem required to ascend.");
+      this.logService.injury(LogTopic.BLOCKED, "You don't have the gem required to ascend.");
       return;
     }
 
@@ -267,15 +267,15 @@ export class StoreService {
       this.characterService.characterState.attributes.spirituality.value <
       this.characterService.characterState.bloodlineCost
     ) {
-      this.logService.injury(LogTopic.EVENT, "You don't have the spirituality required to ascend.");
+      this.logService.injury(LogTopic.BLOCKED, "You don't have the spirituality required to ascend.");
       return;
     }
     if (this.characterService.characterState.bloodlineRank >= 9) {
-      this.logService.injury(LogTopic.EVENT, "You can't enhance your bloodline any further.");
+      this.logService.injury(LogTopic.BLOCKED, "You can't enhance your bloodline any further.");
       return;
     }
     if (this.homeService.home.type < this.bloodLineHomeRequirement.type) {
-      this.logService.injury(LogTopic.EVENT, "You don't have a powerful enough home to ascend.");
+      this.logService.injury(LogTopic.BLOCKED, "You don't have a powerful enough home to ascend.");
       return;
     }
     this.characterService.upgradeBloodline();

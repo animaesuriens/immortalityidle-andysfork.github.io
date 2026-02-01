@@ -1315,18 +1315,18 @@ export class ItemRepoService {
         this.impossibleTaskService.activeTaskIndex = ImpossibleTaskType.OvercomeDeath; // just in case. Don't want this use to fail.
         this.impossibleTaskService.checkCompletion();
         if (this.impossibleTaskService.taskProgress[ImpossibleTaskType.OvercomeDeath].complete) {
-          this.logService.injury(LogTopic.STORY, 'YOU HAVE ACHIEVED IMMORTALITY! YOU WILL LIVE FOREVER!');
+          this.logService.injury(LogTopic.MILESTONE, 'YOU HAVE ACHIEVED IMMORTALITY! YOU WILL LIVE FOREVER!');
           if (!this.gameStateService) {
             this.gameStateService = this.injector.get(GameStateService);
           }
           if (this.gameStateService.easyModeEver) {
             this.logService.log(
-              LogTopic.STORY,
+              LogTopic.MILESTONE,
               'Good work, even if you did take the easy path. For more of a challenge, you could reset and try without using the easy game mode.'
             );
           }
           this.logService.log(
-            LogTopic.STORY,
+            LogTopic.MILESTONE,
             'You started your journey on ' +
               new Date(this.gameStateService.gameStartTimestamp).toDateString() +
               ' and succeeded in your quest on ' +
@@ -1334,7 +1334,7 @@ export class ItemRepoService {
               '.'
           );
           this.logService.log(
-            LogTopic.STORY,
+            LogTopic.MILESTONE,
             'You took ' +
               this.mainLoopService.totalTicks +
               ' days over ' +
@@ -1357,7 +1357,7 @@ export class ItemRepoService {
       useDescription: 'Become a god and win the game (again).',
       useConsumes: true,
       use: () => {
-        this.logService.injury(LogTopic.STORY, 'YOU HAVE ACHIEVED GODHOOD! YOU WILL RULE OVER THE UNIVERSE FOREVER!');
+        this.logService.injury(LogTopic.MILESTONE, 'YOU HAVE ACHIEVED GODHOOD! YOU WILL RULE OVER THE UNIVERSE FOREVER!');
         if (!this.hellService) {
           this.hellService = this.injector.get(HellService);
         }
@@ -1372,7 +1372,7 @@ export class ItemRepoService {
           this.battleService = this.injector.get(BattleService);
         }
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'You started your journey on ' +
             new Date(this.gameStateService.gameStartTimestamp).toDateString() +
             ' and achieved godhood on ' +
@@ -1380,7 +1380,7 @@ export class ItemRepoService {
             '.'
         );
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'You took ' +
             this.mainLoopService.totalTicks +
             ' days over ' +
@@ -1470,7 +1470,7 @@ export class ItemRepoService {
           this.hellService.completedHellBosses.push(HellLevel.TongueRipping);
         }
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'The Crown of Tongue Rippers settles onto your head, then sinks in to become a part of your very soul. You feel that your words carry a new power that can inspire a new kind of follower to worship you as the god you are becoming. Perhaps a trip back to the mortal realm through reincarnation might be worthwhile.'
         );
         this.followerService.unlockJob('prophet');
@@ -1498,11 +1498,11 @@ export class ItemRepoService {
           this.hellService.completedHellBosses.push(HellLevel.Scissors);
         }
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'The Crown of Scissors settles onto your head, then sinks in to become a part of your very soul. You feel a deeper appreciation for marriage and family, and your followers sense it.'
         );
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'From now on, each follower will train a child to replace themselves in your service when they pass away.'
         );
         this.followerService.autoReplaceUnlocked = true;
@@ -1530,7 +1530,7 @@ export class ItemRepoService {
           this.hellService.completedHellBosses.push(HellLevel.TreesOfKnives);
         }
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'The Crown of Knives settles onto your head, then sinks in to become a part of your very soul. You can recruit a new follower specialized in honoring ancestors.'
         );
         this.followerService.unlockJob('moneyBurner');
@@ -1561,7 +1561,7 @@ export class ItemRepoService {
           this.hellService.completedHellBosses.push(HellLevel.Mirrors);
         }
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'The Crown of Mirrors settles onto your head, then sinks in to become a part of your very soul. A deep understanding of combat based on your many battles with yourself reveals itself in a moment of enlightenment.'
         );
         this.characterService.characterState.attributes.combatMastery.value += 1;
@@ -1589,7 +1589,7 @@ export class ItemRepoService {
           this.hellService.completedHellBosses.push(HellLevel.Steamers);
         }
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'The Crown of Steam settles onto your head, then sinks in to become a part of your very soul. You learn to harness the intense heat of the Hell of Steamers in a powerful magical blast.'
         );
         this.battleService.pyroclasmUnlocked = true;
@@ -1616,7 +1616,7 @@ export class ItemRepoService {
           this.hellService.completedHellBosses.push(HellLevel.CopperPillars);
         }
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'The Crown of Pillars settles onto your head, then sinks in to become a part of your very soul. You can now summon a massive metal fist with each of your combat strikes.'
         );
         this.battleService.metalFistUnlocked = true;
@@ -1641,7 +1641,7 @@ export class ItemRepoService {
           this.hellService.completedHellBosses.push(HellLevel.MountainOfKnives);
         }
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'The crown settles onto your head, then sinks in to become a part of your very soul. Having balanced your karmic debt, you begin to see the balance in all the world around you.'
         );
         this.characterService.characterState.yinYangUnlocked = true;
@@ -1668,7 +1668,7 @@ export class ItemRepoService {
           this.battleService = this.injector.get(BattleService);
         }
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'The crown settles onto your head, then sinks in to become a part of your very soul. The deep freezing from the mountain has given you a new idea for how to defend yourself.'
         );
         this.battleService.iceShieldUnlocked = true;
@@ -1693,7 +1693,7 @@ export class ItemRepoService {
           this.hellService.completedHellBosses.push(HellLevel.CauldronsOfOil);
         }
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'The crown settles onto your head, then sinks in to become a part of your very soul. A new resolve awakens in you to protect the defenseless from those that would abuse them.'
         );
         this.characterService.characterState.righteousWrathUnlocked = true;
@@ -1720,7 +1720,7 @@ export class ItemRepoService {
           this.followerService = this.injector.get(FollowersService);
         }
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           "The crown settles onto your head, then sinks in to become a part of your very soul. You find a new and deep connection to animals that you've never felt before."
         );
         this.followerService.unlockElementalPets();
@@ -1744,7 +1744,7 @@ export class ItemRepoService {
           this.hellService.completedHellBosses.push(HellLevel.CrushingBoulder);
         }
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'The crown settles onto your head, then sinks in to become a part of your very soul. Your muscles swell with new power.'
         );
         this.characterService.characterState.bonusMuscles = true;
@@ -1775,7 +1775,7 @@ export class ItemRepoService {
           this.inventoryService = this.injector.get(InventoryService);
         }
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'The crown settles onto your head, then sinks in to become a part of your very soul. You come to a deep appreciation of the value and importance of food.'
         );
         this.homeService.hellFood = true;
@@ -1804,7 +1804,7 @@ export class ItemRepoService {
           this.homeService = this.injector.get(HomeService);
         }
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'The crown settles onto your head, then sinks in to become a part of your very soul. Your bloodline becomes so powerful that the benefits of your ancestral home now apply even when you are no longer in the mortal realm.'
         );
         this.homeService.hellHome = true;
@@ -1829,7 +1829,7 @@ export class ItemRepoService {
           this.hellService.completedHellBosses.push(HellLevel.WrongfulDead);
         }
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'The crown settles onto your head, then sinks in to become a part of your very soul. Your mind suddenly expands with endless new possibilities.'
         );
         this.characterService.characterState.bonusBrains = true;
@@ -1856,7 +1856,7 @@ export class ItemRepoService {
           this.activityService = this.injector.get(ActivityService);
         }
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'The crown settles onto your head, then sinks in to become a part of your very soul. If you are spiritual enough, you can now purify gems to infuse new effects into your weapons.'
         );
         this.activityService.purifyGemsUnlocked = true;
@@ -1884,7 +1884,7 @@ export class ItemRepoService {
           this.battleService = this.injector.get(BattleService);
         }
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'The crown settles onto your head, then sinks in to become a part of your very soul. The intense heat of the volcano has strengthened your inner fire, allowing you to form a barrier to protect you and harm your enemies.'
         );
         this.battleService.fireShieldUnlocked = true;
@@ -1908,7 +1908,7 @@ export class ItemRepoService {
           this.hellService.completedHellBosses.push(HellLevel.Mills);
         }
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'The crown settles onto your head, then sinks in to become a part of your very soul. The intense pressure of the mill has strengthened your skin and bones allowing you to increase your total health dramatically.'
         );
         this.characterService.characterState.bonusHealth = true;
@@ -1936,7 +1936,7 @@ export class ItemRepoService {
         }
 
         this.logService.log(
-          LogTopic.STORY,
+          LogTopic.MILESTONE,
           'The crown settles onto your head, then sinks in to become a part of your very soul. You can now recruit followers that put their swindling and cheating to good use.'
         );
         this.followerService.unlockJob('banker');
@@ -1955,7 +1955,7 @@ export class ItemRepoService {
         this.mainLoopService.unlockFastSpeed = true;
         this.mainLoopService.topDivider = this.mainLoopService.topDivider > 5 ? 5 : this.mainLoopService.topDivider;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -1976,7 +1976,7 @@ export class ItemRepoService {
         this.mainLoopService.unlockFasterSpeed = true;
         this.mainLoopService.topDivider = this.mainLoopService.topDivider > 2 ? 2 : this.mainLoopService.topDivider;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -1997,7 +1997,7 @@ export class ItemRepoService {
         this.mainLoopService.unlockFastestSpeed = true;
         this.mainLoopService.topDivider = 1;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2022,7 +2022,7 @@ export class ItemRepoService {
         }
         this.activityService.autoRestart = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2050,7 +2050,7 @@ export class ItemRepoService {
         }
         this.inventoryService.autoSellUnlocked = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2078,7 +2078,7 @@ export class ItemRepoService {
         }
         this.inventoryService.autoUseUnlocked = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2106,7 +2106,7 @@ export class ItemRepoService {
         }
         this.inventoryService.autoBalanceUnlocked = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2133,7 +2133,7 @@ export class ItemRepoService {
         }
         this.homeService.autoBuyLandUnlocked = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2159,7 +2159,7 @@ export class ItemRepoService {
         }
         this.homeService.autoBuyHomeUnlocked = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2186,7 +2186,7 @@ export class ItemRepoService {
         }
         this.homeService.autoBuyFurnitureUnlocked = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2212,7 +2212,7 @@ export class ItemRepoService {
         }
         this.autoBuyerService.autoBuyerSettingsUnlocked = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2238,7 +2238,7 @@ export class ItemRepoService {
         }
         this.homeService.autoFieldUnlocked = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2271,7 +2271,7 @@ export class ItemRepoService {
           }
         }
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2305,7 +2305,7 @@ export class ItemRepoService {
           }
         }
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2333,7 +2333,7 @@ export class ItemRepoService {
         }
         this.battleService.autoTroubleUnlocked = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2361,7 +2361,7 @@ export class ItemRepoService {
         }
         this.inventoryService.autoWeaponMergeUnlocked = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2389,7 +2389,7 @@ export class ItemRepoService {
         }
         this.inventoryService.autoArmorMergeUnlocked = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2419,7 +2419,7 @@ export class ItemRepoService {
         this.inventoryService.useSpiritGemWeapons = true;
         this.inventoryService.useSpiritGemPotions = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2448,7 +2448,7 @@ export class ItemRepoService {
         this.inventoryService.autoSellOldHerbs = true;
         this.inventoryService.autoSellOldHerbsEnabled = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2477,7 +2477,7 @@ export class ItemRepoService {
         this.inventoryService.autoSellOldWood = true;
         this.inventoryService.autoSellOldWoodEnabled = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2508,7 +2508,7 @@ export class ItemRepoService {
         this.inventoryService.autoSellOldOreEnabled = true;
         this.inventoryService.autoSellOldBarsEnabled = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2537,7 +2537,7 @@ export class ItemRepoService {
         this.inventoryService.autoSellOldHides = true;
         this.inventoryService.autoSellOldHidesEnabled = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2565,7 +2565,7 @@ export class ItemRepoService {
         }
         this.inventoryService.autoequipBestWeapon = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2593,7 +2593,7 @@ export class ItemRepoService {
         }
         this.inventoryService.autoequipBestArmor = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2621,7 +2621,7 @@ export class ItemRepoService {
         }
         this.inventoryService.favoritesUnlocked = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2649,7 +2649,7 @@ export class ItemRepoService {
         }
         this.inventoryService.favoritePriorityUnlocked = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2678,7 +2678,7 @@ export class ItemRepoService {
         }
         this.inventoryService.maxStackSize *= 10;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2707,7 +2707,7 @@ export class ItemRepoService {
         }
         this.inventoryService.maxStackSize *= 10;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2736,7 +2736,7 @@ export class ItemRepoService {
         }
         this.inventoryService.maxStackSize *= 10;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2765,7 +2765,7 @@ export class ItemRepoService {
         }
         this.followerService.autoDismissUnlocked = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2795,7 +2795,7 @@ export class ItemRepoService {
         this.inventoryService.autoSellOldGemsUnlocked = true;
         this.inventoryService.autoSellOldGemsEnabled = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2822,7 +2822,7 @@ export class ItemRepoService {
         }
         this.activityService.autoPauseUnlocked = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2845,7 +2845,7 @@ export class ItemRepoService {
       use: () => {
         this.mainLoopService.offlineDivider = 2;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2868,7 +2868,7 @@ export class ItemRepoService {
         }
         this.activityService.autoRestUnlocked = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2891,7 +2891,7 @@ export class ItemRepoService {
       use: () => {
         this.mainLoopService.unlockAgeSpeed = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },
@@ -2911,7 +2911,7 @@ export class ItemRepoService {
       use: () => {
         this.mainLoopService.unlockPlaytimeSpeed = true;
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.CRAFTING,
           "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
         );
       },

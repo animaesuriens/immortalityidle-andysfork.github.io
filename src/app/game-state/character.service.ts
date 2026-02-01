@@ -88,9 +88,9 @@ export class CharacterService {
             STARVATION_DAMAGE_MIN
           );
           this.logService.injury(
-            LogTopic.COMBAT,
+            LogTopic.DAMAGE,
             'You take ' + this.bigNumberPipe.transform(starvationDamage) + ' damage from starvation.'
-          ); // it's not really a combat message, but I didn't want to spam the event log
+          );
           this.characterState.status.health.value -= starvationDamage;
           if (this.characterState.status.health.value < 0) {
             this.characterState.status.health.value = 0;
@@ -120,10 +120,10 @@ export class CharacterService {
       }
       if (deathMessage !== '') {
         if (!this.characterState.immortal) {
-          this.logService.injury(LogTopic.EVENT, deathMessage);
+          this.logService.injury(LogTopic.DEATH, deathMessage);
           if (!this.forceRebirth) {
             this.logService.log(
-              LogTopic.EVENT,
+              LogTopic.DEATH,
               "You have failed to achieve immortality and your life has ended. Don't worry, I'm sure you'll achieve immortality in your next life."
             );
           }
@@ -142,18 +142,18 @@ export class CharacterService {
         this.forceRebirth = false;
         if (this.characterState.immortal) {
           this.logService.log(
-            LogTopic.EVENT,
+            LogTopic.MILESTONE,
             'You are born anew, still an immortal but with the fresh vigor of youth.'
           );
         } else {
           this.logService.log(
-            LogTopic.EVENT,
+            LogTopic.MILESTONE,
             'Congratulations! The cycle of reincarnation has brought you back into the world. You have been born again. You are certain that lucky life number ' +
               this.characterState.totalLives +
               ' will be the one.'
           );
           this.logService.log(
-            LogTopic.EVENT,
+            LogTopic.MILESTONE,
             "It takes you a few years to grow up and remember your purpose: to become an immortal. You're all grown up now, so get to it!"
           );
         }
@@ -195,7 +195,7 @@ export class CharacterService {
       if (this.fatherGift && this.characterState.bloodlineRank < 6) {
         // Skip the family gifts, it's not thematic.
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.MILESTONE,
           'Your father puts some coins in your purse before sending you on your way.'
         );
         this.characterState.updateMoney(200);
@@ -459,10 +459,10 @@ export class CharacterService {
       return;
     }
     this.logService.log(
-      LogTopic.STORY,
+      LogTopic.MILESTONE,
       'Your spirituality coelesces around the core of your soul, strengthening it and reforging it into something stronger.'
     );
-    this.logService.log(LogTopic.STORY, 'You now gain additional aptitude each time you reincarnate.');
+    this.logService.log(LogTopic.MILESTONE, 'You now gain additional aptitude each time you reincarnate.');
     this.characterState.condenseSoulCoreCost *= 10;
     this.characterState.aptitudeGainDivider /= 1.5;
     this.resetAptitudes();
@@ -478,10 +478,10 @@ export class CharacterService {
       return;
     }
     this.logService.log(
-      LogTopic.STORY,
+      LogTopic.MILESTONE,
       'The pathways that carry your chi through your body have been strengthened and reinforced.'
     );
-    this.logService.log(LogTopic.STORY, 'Your aptitudes can now give you a greater increase when gaining attributes.');
+    this.logService.log(LogTopic.MILESTONE, 'Your aptitudes can now give you a greater increase when gaining attributes.');
 
     this.characterState.reinforceMeridiansCost *= 10;
     this.characterState.attributeScalingLimit *= 2;
@@ -498,11 +498,11 @@ export class CharacterService {
       return;
     }
     this.logService.log(
-      LogTopic.STORY,
+      LogTopic.MILESTONE,
       'You sacrifice your current life to strengthen a permanent bloodline that will pass on to all of your descendants.'
     );
     this.logService.log(
-      LogTopic.STORY,
+      LogTopic.MILESTONE,
       'You will be reborn into your own family line and reap greater benefits from your previous lives.'
     );
     this.characterState.bloodlineCost *= 100;

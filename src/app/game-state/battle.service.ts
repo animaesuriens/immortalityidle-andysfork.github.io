@@ -244,7 +244,7 @@ export class BattleService {
             damage -= damage * (this.characterService.characterState.yinYangBalance / 2);
           }
           this.logService.injury(
-            LogTopic.COMBAT,
+            LogTopic.DAMAGE,
             'Ow! ' + enemyStack.enemy.name + ' hit you for ' + this.bigNumberPipe.transform(damage) + ' damage'
           );
           if (damageBack) {
@@ -280,14 +280,14 @@ export class BattleService {
           if (this.characterService.characterState.status.health.value <= 0) {
             if (enemyStack.enemy.name === 'Death itself') {
               this.logService.injury(
-                LogTopic.EVENT,
+                LogTopic.DEATH,
                 enemyStack.enemy.name +
                   ' overkilled you by ' +
                   Math.floor(-this.characterService.characterState.status.health.value) +
                   ' damage. You were defeated.'
               );
             } else {
-              this.logService.injury(LogTopic.EVENT, 'You were defeated by ' + enemyStack.enemy.name);
+              this.logService.injury(LogTopic.DEATH, 'You were defeated by ' + enemyStack.enemy.name);
             }
             if (!this.characterService.characterState.immortal) {
               this.characterService.characterState.dead = true;
@@ -706,7 +706,7 @@ export class BattleService {
         this.hellService.daysFasted = 0;
         const damage = this.characterService.characterState.status.health.value / 4;
         this.logService.injury(
-          LogTopic.COMBAT,
+          LogTopic.DAMAGE,
           'The hellfire burns as it goes down, damaging you for ' + damage + ' extra damage.'
         );
         this.characterService.characterState.status.health.value -= damage;

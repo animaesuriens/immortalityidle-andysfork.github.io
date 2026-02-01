@@ -446,7 +446,7 @@ export class GameStateService {
   }
 
   cheat(): void {
-    this.logService.log(LogTopic.EVENT, 'You dirty cheater! You pressed the cheat button!');
+    this.logService.log(LogTopic.MILESTONE, 'You dirty cheater! You pressed the cheat button!');
     this.characterService.characterState.updateMoney(1e10);
     for (const key in this.itemRepoService.items) {
       const item = this.itemRepoService.items[key];

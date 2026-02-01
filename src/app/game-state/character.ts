@@ -457,7 +457,7 @@ export class Character {
             this.bigNumberPipe.transform(addedValue) +
             '\n    New aptitude: ' +
             this.bigNumberPipe.transform(this.attributes[keys[key]].aptitude);
-          this.logService.log(LogTopic.EVENT, message);
+          this.logService.log(LogTopic.MILESTONE, message);
           attributeGains +=
             message +
             '\n    New starting value: ' +

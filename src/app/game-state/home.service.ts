@@ -183,7 +183,7 @@ export class HomeService {
       consequence: () => {
         if (Math.random() < 0.05) {
           this.logService.injury(
-            LogTopic.EVENT,
+            LogTopic.HOME,
             'Some troublemakers stole some money while you were sleeping. It might be time to get some walls.'
           );
           this.characterService.characterState.updateMoney(0 - this.characterService.characterState.money / 10);
@@ -223,7 +223,7 @@ export class HomeService {
         this.characterService.characterState.status.stamina.value += 1;
         if (Math.random() < 0.03) {
           this.logService.injury(
-            LogTopic.EVENT,
+            LogTopic.HOME,
             'Some troublemakers stole some money while you were sleeping. It might be time to get some walls.'
           );
           this.characterService.characterState.updateMoney(0 - this.characterService.characterState.money / 10);
@@ -642,7 +642,7 @@ export class HomeService {
       if (!this.hellService?.inHell && !this.characterService.characterState.god) {
         if (this.home.costPerDay > this.characterService.characterState.money) {
           this.logService.injury(
-            LogTopic.EVENT,
+            LogTopic.HOME,
             "You can't afford the upkeep on your home. Some thugs rough you up over the debt. You better get some money, fast."
           );
           if (this.thugPause) {
@@ -683,20 +683,20 @@ export class HomeService {
       this.reset();
       if (this.characterService.characterState.bloodlineRank >= 6) {
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.MILESTONE,
           'You reincarnate as one of your descendants and your family recognizes you as you age.'
         );
         if (this.characterService.characterState.bloodlineRank >= 7) {
-          this.logService.log(LogTopic.EVENT, 'Your family steps aside and assists your takeover of your Empire.');
+          this.logService.log(LogTopic.MILESTONE, 'Your family steps aside and assists your takeover of your Empire.');
         } else {
           this.logService.log(
-            LogTopic.EVENT,
+            LogTopic.MILESTONE,
             'Your family escorts you to your ancestral home and helps you get settled in.'
           );
         }
       } else if (this.grandfatherTent) {
         this.logService.log(
-          LogTopic.EVENT,
+          LogTopic.HOME,
           'Your grandfather gives you a bit of land and helps you set up a tent on it.'
         );
         //and a few coins so you don't immediately get beat up for not having upkeep money for your house
@@ -830,7 +830,7 @@ export class HomeService {
       this.nextHomeCostReduction = 0;
       this.houseBuildingProgress = 0;
       this.upgrading = true;
-      this.logService.log(LogTopic.EVENT, 'You start upgrading your home to a ' + this.nextHome.name);
+      this.logService.log(LogTopic.HOME, 'You start upgrading your home to a ' + this.nextHome.name);
     }
   }
 
@@ -844,7 +844,7 @@ export class HomeService {
       this.houseBuildingProgress = 1;
       this.upgrading = false;
       this.setCurrentHome(this.nextHome);
-      this.logService.log(LogTopic.EVENT, 'You finished upgrading your home. You now live in a ' + this.home.name);
+      this.logService.log(LogTopic.HOME, 'You finished upgrading your home. You now live in a ' + this.home.name);
     }
   }
 

@@ -1152,7 +1152,7 @@ export class InventoryService {
     }
     if (this.motherGift) {
       this.logService.log(
-        LogTopic.EVENT,
+        LogTopic.MILESTONE,
         'Your mother gives you three big bags of rice as she sends you out to make your way in the world.'
       );
       this.addItem(this.itemRepoService.items['rice'], 300);
@@ -1369,13 +1369,13 @@ export class InventoryService {
     // if we're here we didn't find a slot for anything/everything.
     if (this.autoSellUnlocked && !this.hellService?.inHell) {
       this.logService.log(
-        LogTopic.EVENT,
+        LogTopic.INVENTORY,
         "You don't have enough room for the " + this.titleCasePipe.transform(item.name) + ' so you sold it.'
       );
       this.characterService.characterState.updateMoney(item.value * quantity);
     } else {
       this.logService.log(
-        LogTopic.EVENT,
+        LogTopic.INVENTORY,
         "You don't have enough room for the " + this.titleCasePipe.transform(item.name) + ' so you threw it away.'
       );
     }
@@ -1556,7 +1556,7 @@ export class InventoryService {
 
     if ((item.armorStats?.durability || 0) <= 0 && (item.weaponStats?.durability || 0) <= 0) {
       //it's broken, bail out
-      this.logService.log(LogTopic.EVENT, 'You tried to equip some broken equipment, but it was broken.');
+      this.logService.log(LogTopic.INVENTORY, 'You tried to equip some broken equipment, but it was broken.');
       return;
     }
 
