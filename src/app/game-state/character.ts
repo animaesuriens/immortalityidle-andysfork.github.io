@@ -76,6 +76,7 @@ export interface CharacterProperties {
   statLifespan: number;
   spiritualityLifespan: number;
   magicLifespan: number;
+  cultivationLifespanSources: Record<string, number>;
   attributeScalingLimit: number;
   attributeSoftCap: number;
   aptitudeGainDivider: number;
@@ -86,8 +87,12 @@ export interface CharacterProperties {
   totalLives: number;
   healthBonusFood: number;
   healthBonusBath: number;
-  healthBonusMagic: number;
+  healthBonusCultivation: number;
   healthBonusSoul: number;
+  staminaBonusFood: number;
+  staminaBonusCultivation: number;
+  qiBonusCultivation: number;
+  nourishmentBonusFood: number;
   empowermentFactor: number;
   immortal: boolean;
   god: boolean;
@@ -96,7 +101,7 @@ export interface CharacterProperties {
   highestAge: number;
   highestHealth: number;
   highestStamina: number;
-  highestMana: number;
+  highestQi: number;
   highestAttributes: { [key: string]: number };
   yinYangUnlocked: boolean;
   yin: number;
@@ -108,9 +113,58 @@ export interface CharacterProperties {
   showLifeSummary: boolean;
   showTips: boolean;
   showUpdateAnimations: boolean;
+  lastCauseOfDeath: string;
+  lastAttributeGains: string;
 }
 
+// Age and Lifespan
 const INITIAL_AGE = 18 * 365;
+export const BASE_LIFESPAN_YEARS = 30;
+const BASE_LIFESPAN = BASE_LIFESPAN_YEARS * 365;
+export const MAX_BASE_LIFESPAN_YEARS = 70;
+export const DAYS_PER_LIFESPAN_BONUS = 3650; // 1 day bonus per 10 years lived
+
+// Starvation
+export const STARVATION_DAMAGE_PERCENT = 0.2;
+export const STARVATION_DAMAGE_MIN = 20;
+export const STARVATION_SPIRITUALITY_GAIN = 0.1;
+
+// Spirit Projection
+export const SPIRIT_PROJECTION_QI_COST = 5;
+
+// Base Status Values
+export const BASE_HEALTH = 100;
+export const BASE_STAMINA = 100;
+export const BASE_NOURISHMENT = 14;
+export const BASE_QI = 1;
+const STARTING_NOURISHMENT = 7;
+const STARTING_MONEY = 300;
+
+// Limits and Caps
+const MAX_MONEY = 9.9999e23;
+const ATTRIBUTE_SCALING_LIMIT = 10;
+const ATTRIBUTE_SOFT_CAP = 100000;
+const ATTRIBUTE_HARD_CAP = 365000;
+
+// Bonus Caps
+const HEALTH_BONUS_FOOD_CAP = 1900;
+const HEALTH_BONUS_BATH_CAP = 8000;
+const HEALTH_BONUS_CULTIVATION_CAP = 10000;
+const HEALTH_BONUS_SOUL_CAP = 20000;
+const STAMINA_MAX_CAP = 1000000;
+const QI_MAX_CAP = 1000000;
+const NOURISHMENT_MAX_CAP = 1000;
+
+// Cost Base Values
+const CONDENSE_SOUL_CORE_BASE_COST = 10;
+const REINFORCE_MERIDIANS_BASE_COST = 1000;
+const BLOODLINE_BASE_COST = 1000;
+
+// Multipliers
+const BONUS_ATTRIBUTE_MULTIPLIER = 1000;
+const EASY_MODE_MULTIPLIER = 100;
+const APTITUDE_DAILY_DIVISOR = 1e7;
+const APTITUDE_DAILY_DIVISOR_SLOW = 1e14;
 
 export class Character {
   constructor(
@@ -126,10 +180,10 @@ export class Character {
       for (const key in keys) {
         this.attributes[keys[key]].aptitudeMult = this.getAptitudeMultipier(this.attributes[keys[key]].aptitude);
         if ((keys[key] === 'strength' || keys[key] === 'speed' || keys[key] === 'toughness') && this.bonusMuscles) {
-          this.attributes[keys[key]].aptitudeMult *= 1000;
+          this.attributes[keys[key]].aptitudeMult *= BONUS_ATTRIBUTE_MULTIPLIER;
         }
         if ((keys[key] === 'intelligence' || keys[key] === 'charisma') && this.bonusBrains) {
-          this.attributes[keys[key]].aptitudeMult *= 1000;
+          this.attributes[keys[key]].aptitudeMult *= BONUS_ATTRIBUTE_MULTIPLIER;
         }
       }
     });
@@ -151,17 +205,17 @@ export class Character {
     };
   }
 
-  maxMoney = 9.9999e23;
+  maxMoney = MAX_MONEY;
   totalLives = 1;
   dead = false;
-  attributeScalingLimit = 10;
-  attributeSoftCap = 100000;
+  attributeScalingLimit = ATTRIBUTE_SCALING_LIMIT;
+  attributeSoftCap = ATTRIBUTE_SOFT_CAP;
   aptitudeGainDivider = 5 * Math.pow(1.5, 9); // Exponential Soul Core ranks, up to 20%
-  condenseSoulCoreCost = 10;
-  condenseSoulCoreOriginalCost = 10;
-  reinforceMeridiansCost = 1000;
-  reinforceMeridiansOriginalCost = 1000;
-  bloodlineCost = 1000;
+  condenseSoulCoreCost = CONDENSE_SOUL_CORE_BASE_COST;
+  condenseSoulCoreOriginalCost = CONDENSE_SOUL_CORE_BASE_COST;
+  reinforceMeridiansCost = REINFORCE_MERIDIANS_BASE_COST;
+  reinforceMeridiansOriginalCost = REINFORCE_MERIDIANS_BASE_COST;
+  bloodlineCost = BLOODLINE_BASE_COST;
   bloodlineRank = 0;
   qiUnlocked = false;
   accuracy = 1;
@@ -169,8 +223,12 @@ export class Character {
   defense = 0;
   healthBonusFood = 0;
   healthBonusBath = 0;
-  healthBonusMagic = 0;
+  healthBonusCultivation = 0;
   healthBonusSoul = 0;
+  staminaBonusFood = 0;
+  staminaBonusCultivation = 0;
+  qiBonusCultivation = 0;
+  nourishmentBonusFood = 0;
   empowermentFactor = 1;
   empowermentMult = 1;
   imperial = false;
@@ -189,6 +247,8 @@ export class Character {
   showLifeSummary = true;
   showTips = false;
   showUpdateAnimations = true;
+  lastCauseOfDeath = '';
+  lastAttributeGains = '';
   dialogRef: MatDialogRef<LifeSummaryComponent> | null = null;
   attributeUpdates: AttributeUpdates;
   moneyUpdates = 0;
@@ -321,28 +381,29 @@ export class Character {
       max: 100,
     },
     qi: {
-      description: 'Magical energy required for mysterious spiritual activities.',
+      description: 'Spiritual energy required for cultivation activities.',
       value: 0,
       max: 0,
     },
     nourishment: {
       description:
         'Eating is essential to life. You will automatically eat whatever food you have available when you are hungry. If you run out of food you will automatically spend your money on a bowl of rice each day.',
-      value: 7,
-      max: 14,
+      value: STARTING_NOURISHMENT,
+      max: BASE_NOURISHMENT,
     },
   };
-  money = 300;
+  money = STARTING_MONEY;
   stashedMoney = 0;
   hellMoney = 0;
   // age in days
   age = INITIAL_AGE;
-  baseLifespan = 30 * 365;
+  baseLifespan = BASE_LIFESPAN;
   foodLifespan = 0; // bonus to lifespan based on food you've eaten
   alchemyLifespan = 0; // bonus to lifespan based on pills you've eaten
   statLifespan = 0; // bonus to lifespan based on base stat aptitudes
   spiritualityLifespan = 0; // bonus to lifespan based on spirituality
-  magicLifespan = 0;
+  magicLifespan = 0; // kept for backward compatibility, use cultivationLifespanSources instead
+  cultivationLifespanSources: Record<string, number> = {}; // tracks lifespan bonus by activity name
   lifespan =
     this.baseLifespan +
     this.foodLifespan +
@@ -370,7 +431,7 @@ export class Character {
   highestAge = 0;
   highestHealth = 0;
   highestStamina = 0;
-  highestMana = 0;
+  highestQi = 0;
   highestAttributes: { [key: string]: number } = {};
 
   // reset everything but increase aptitudes
@@ -414,6 +475,9 @@ export class Character {
       }
     }
 
+    this.lastCauseOfDeath = causeOfDeath;
+    this.lastAttributeGains = attributeGains;
+
     if (this.showLifeSummary) {
       if (this.dialogRef) {
         this.dialogRef.close();
@@ -425,15 +489,15 @@ export class Character {
       });
     }
 
-    this.status.health.value = 100;
-    this.status.health.max = 100;
-    this.status.stamina.value = 100;
-    this.status.stamina.max = 100;
-    this.status.nourishment.value = 7;
-    this.status.nourishment.max = 14;
+    this.status.health.value = BASE_HEALTH;
+    this.status.health.max = BASE_HEALTH;
+    this.status.stamina.value = BASE_STAMINA;
+    this.status.stamina.max = BASE_STAMINA;
+    this.status.nourishment.value = STARTING_NOURISHMENT;
+    this.status.nourishment.max = BASE_NOURISHMENT;
     if (this.qiUnlocked) {
-      this.status.qi.max = 1;
-      this.status.qi.value = 1;
+      this.status.qi.max = BASE_QI;
+      this.status.qi.value = BASE_QI;
     } else {
       this.status.qi.max = 0;
       this.status.qi.value = 0;
@@ -441,7 +505,11 @@ export class Character {
 
     this.healthBonusFood = 0;
     this.healthBonusBath = 0;
-    this.healthBonusMagic = 0;
+    this.healthBonusCultivation = 0;
+    this.staminaBonusFood = 0;
+    this.staminaBonusCultivation = 0;
+    this.qiBonusCultivation = 0;
+    this.nourishmentBonusFood = 0;
 
     // age in days
     this.age = INITIAL_AGE;
@@ -449,6 +517,7 @@ export class Character {
     this.alchemyLifespan = 0;
     this.spiritualityLifespan = 0;
     this.magicLifespan = 0;
+    this.cultivationLifespanSources = {};
     let totalAptitude = 0;
     totalAptitude +=
       this.attributes.strength.aptitude +
@@ -518,13 +587,18 @@ export class Character {
       bonusFactor = 5;
     }
     this.status.health.max =
-      (100 +
+      (BASE_HEALTH +
         this.healthBonusFood +
         this.healthBonusBath +
-        this.healthBonusMagic +
+        this.healthBonusCultivation +
         this.healthBonusSoul +
         Math.floor(Math.log2(this.attributes.toughness.value + 2) * 5)) *
       bonusFactor;
+    this.status.stamina.max = BASE_STAMINA + this.staminaBonusFood + this.staminaBonusCultivation;
+    this.status.nourishment.max = BASE_NOURISHMENT + this.nourishmentBonusFood;
+    if (this.qiUnlocked) {
+      this.status.qi.max = BASE_QI + this.qiBonusCultivation;
+    }
     if (this.money > this.maxMoney) {
       this.money = this.maxMoney;
     }
@@ -593,7 +667,7 @@ export class Character {
     const empowermentFactor = this.empowermentFactor - 1;
     let returnValue = 1 + (2 * max) / (1 + Math.pow(1.02, -empowermentFactor / 3)) - max;
     if (this.easyMode) {
-      returnValue *= 100;
+      returnValue *= EASY_MODE_MULTIPLIER;
     }
     return returnValue;
   }
@@ -647,7 +721,7 @@ export class Character {
     if (this.bloodlineRank >= 8) {
       return x;
     }
-    let c = 365000; // Hardcap
+    let c = ATTRIBUTE_HARD_CAP;
     if (this.yinYangUnlocked) {
       // calculate balance bonus, 1 for perfect balance, 0 at worst
       const yinYangBalance = Math.max(1 - Math.abs(this.yang - this.yin) / ((this.yang + this.yin) / 2), 0);
@@ -656,6 +730,15 @@ export class Character {
       c += yinYangBalance * c;
     }
     return c / (-1 - Math.log((x + c) / c)) + c; // soft-hardcap math
+  }
+
+  getCultivationLifespan(): number {
+    return Object.values(this.cultivationLifespanSources).reduce((sum, val) => sum + val, 0);
+  }
+
+  addCultivationLifespan(source: string, amount: number): void {
+    this.cultivationLifespanSources[source] = (this.cultivationLifespanSources[source] || 0) + amount;
+    this.magicLifespan = this.getCultivationLifespan(); // Keep magicLifespan in sync for backward compatibility
   }
 
   updateMoney(amount: number) {
@@ -692,9 +775,9 @@ export class Character {
     const slowGrowers = ['combatMastery', 'magicMastery'];
     for (const key in keys) {
       if (slowGrowers.includes(key)) {
-        this.attributes[keys[key]].aptitude += (this.attributes[keys[key]].value / 1e14) * days;
+        this.attributes[keys[key]].aptitude += (this.attributes[keys[key]].value / APTITUDE_DAILY_DIVISOR_SLOW) * days;
       } else {
-        this.attributes[keys[key]].aptitude += (this.attributes[keys[key]].value / 1e7) * days;
+        this.attributes[keys[key]].aptitude += (this.attributes[keys[key]].value / APTITUDE_DAILY_DIVISOR) * days;
       }
     }
   }
@@ -716,32 +799,33 @@ export class Character {
   }
 
   checkOverage() {
-    if (this.healthBonusFood > 1900) {
-      this.healthBonusFood = 1900;
+    this.recalculateDerivedStats();
+    if (this.healthBonusFood > HEALTH_BONUS_FOOD_CAP) {
+      this.healthBonusFood = HEALTH_BONUS_FOOD_CAP;
     }
-    if (this.healthBonusBath > 8000) {
-      this.healthBonusBath = 8000;
+    if (this.healthBonusBath > HEALTH_BONUS_BATH_CAP) {
+      this.healthBonusBath = HEALTH_BONUS_BATH_CAP;
     }
-    let healthBonusMagicCap = 10000;
-    let healthBonusSoulCap = 20000;
+    let healthBonusCultivationCap = HEALTH_BONUS_CULTIVATION_CAP;
+    let healthBonusSoulCap = HEALTH_BONUS_SOUL_CAP;
     if (this.yinYangUnlocked) {
-      healthBonusMagicCap += 2 * this.yinYangBalance * healthBonusMagicCap;
+      healthBonusCultivationCap += 2 * this.yinYangBalance * healthBonusCultivationCap;
       healthBonusSoulCap += 2 * this.yinYangBalance * healthBonusSoulCap;
     }
-    if (this.healthBonusMagic > healthBonusMagicCap) {
-      this.healthBonusMagic = healthBonusMagicCap;
+    if (this.healthBonusCultivation > healthBonusCultivationCap) {
+      this.healthBonusCultivation = healthBonusCultivationCap;
     }
     if (this.healthBonusSoul > healthBonusSoulCap) {
       this.healthBonusSoul = healthBonusSoulCap;
     }
-    if (this.status.stamina.max > 1000000) {
-      this.status.stamina.max = 1000000;
+    if (this.status.stamina.max > STAMINA_MAX_CAP) {
+      this.status.stamina.max = STAMINA_MAX_CAP;
     }
-    if (this.status.qi.max > 1000000) {
-      this.status.qi.max = 1000000;
+    if (this.status.qi.max > QI_MAX_CAP) {
+      this.status.qi.max = QI_MAX_CAP;
     }
-    if (this.status.nourishment.max > 1000) {
-      this.status.nourishment.max = 1000;
+    if (this.status.nourishment.max > NOURISHMENT_MAX_CAP) {
+      this.status.nourishment.max = NOURISHMENT_MAX_CAP;
     }
     if (this.status.health.value > this.status.health.max) {
       this.status.health.value = this.status.health.max;
@@ -779,6 +863,7 @@ export class Character {
       statLifespan: this.statLifespan,
       spiritualityLifespan: this.spiritualityLifespan,
       magicLifespan: this.magicLifespan,
+      cultivationLifespanSources: this.cultivationLifespanSources,
       attributeScalingLimit: this.attributeScalingLimit,
       attributeSoftCap: this.attributeSoftCap,
       aptitudeGainDivider: this.aptitudeGainDivider,
@@ -789,8 +874,12 @@ export class Character {
       totalLives: this.totalLives,
       healthBonusFood: this.healthBonusFood,
       healthBonusBath: this.healthBonusBath,
-      healthBonusMagic: this.healthBonusMagic,
+      healthBonusCultivation: this.healthBonusCultivation,
       healthBonusSoul: this.healthBonusSoul,
+      staminaBonusFood: this.staminaBonusFood,
+      staminaBonusCultivation: this.staminaBonusCultivation,
+      qiBonusCultivation: this.qiBonusCultivation,
+      nourishmentBonusFood: this.nourishmentBonusFood,
       empowermentFactor: this.empowermentFactor,
       immortal: this.immortal,
       god: this.god,
@@ -799,7 +888,7 @@ export class Character {
       highestAge: this.highestAge,
       highestHealth: this.highestHealth,
       highestStamina: this.highestStamina,
-      highestMana: this.highestMana,
+      highestQi: this.highestQi,
       highestAttributes: this.highestAttributes,
       yinYangUnlocked: this.yinYangUnlocked,
       yin: this.yin,
@@ -811,6 +900,8 @@ export class Character {
       showLifeSummary: this.showLifeSummary,
       showTips: this.showTips,
       showUpdateAnimations: this.showUpdateAnimations,
+      lastCauseOfDeath: this.lastCauseOfDeath,
+      lastAttributeGains: this.lastAttributeGains,
     };
   }
 
@@ -847,6 +938,12 @@ export class Character {
     this.statLifespan = properties.statLifespan || 0;
     this.spiritualityLifespan = properties.spiritualityLifespan || 0;
     this.magicLifespan = properties.magicLifespan || 0;
+    // Migrate old saves: if cultivationLifespanSources is empty but magicLifespan has a value,
+    // attribute it to 'Extending Life' (the original/only source)
+    this.cultivationLifespanSources = properties.cultivationLifespanSources || {};
+    if (Object.keys(this.cultivationLifespanSources).length === 0 && this.magicLifespan > 0) {
+      this.cultivationLifespanSources['Extending Life'] = this.magicLifespan;
+    }
     this.condenseSoulCoreCost = properties.condenseSoulCoreCost;
     // This is derived to avoid save issues. Calculate rank and subtract from power to reduce the exponential aptitude divider.
     this.aptitudeGainDivider =
@@ -862,8 +959,26 @@ export class Character {
     this.totalLives = properties.totalLives || 1;
     this.healthBonusFood = properties.healthBonusFood || 0;
     this.healthBonusBath = properties.healthBonusBath || 0;
-    this.healthBonusMagic = properties.healthBonusMagic || 0;
+    this.healthBonusCultivation = properties.healthBonusCultivation || 0;
     this.healthBonusSoul = properties.healthBonusSoul || 0;
+    this.staminaBonusFood = properties.staminaBonusFood || 0;
+    this.staminaBonusCultivation = properties.staminaBonusCultivation || 0;
+    this.qiBonusCultivation = properties.qiBonusCultivation || 0;
+    this.nourishmentBonusFood = properties.nourishmentBonusFood || 0;
+
+    // Migration: if counters don't account for saved max, attribute difference to primary counter
+    const expectedStaminaMax = BASE_STAMINA + this.staminaBonusFood + this.staminaBonusCultivation;
+    if (this.status.stamina.max > expectedStaminaMax) {
+      this.staminaBonusFood += this.status.stamina.max - expectedStaminaMax;
+    }
+    const expectedNourishmentMax = BASE_NOURISHMENT + this.nourishmentBonusFood;
+    if (this.status.nourishment.max > expectedNourishmentMax) {
+      this.nourishmentBonusFood += this.status.nourishment.max - expectedNourishmentMax;
+    }
+    const expectedQiMax = this.qiUnlocked ? BASE_QI + this.qiBonusCultivation : 0;
+    if (this.status.qi.max > expectedQiMax && this.qiUnlocked) {
+      this.qiBonusCultivation += this.status.qi.max - expectedQiMax;
+    }
     this.empowermentFactor = properties.empowermentFactor || 1;
     this.immortal = properties.immortal || false;
     this.god = properties.god || false;
@@ -872,7 +987,7 @@ export class Character {
     this.highestAge = properties.highestAge || 0;
     this.highestHealth = properties.highestHealth || 0;
     this.highestStamina = properties.highestStamina || 0;
-    this.highestMana = properties.highestMana || 0;
+    this.highestQi = properties.highestQi || 0;
     this.highestAttributes = properties.highestAttributes || {};
     this.yinYangUnlocked = properties.yinYangUnlocked || false;
     this.yin = properties.yin || 1;
@@ -884,6 +999,8 @@ export class Character {
     this.showLifeSummary = properties.showLifeSummary ?? true;
     this.showTips = properties.showTips || false;
     this.showUpdateAnimations = properties.showUpdateAnimations ?? true;
+    this.lastCauseOfDeath = properties.lastCauseOfDeath || '';
+    this.lastAttributeGains = properties.lastAttributeGains || '';
 
     // add attributes that were added after release if needed
     if (!this.attributes.combatMastery) {

@@ -3,7 +3,7 @@
     self_improvement
   </mat-icon>
   Activities
-  <mat-icon class="panelHelp" matTooltip="Choose activities to add to your schedule. At first you'll only know how to do a few things, but as you develop your attributes more options will become available.">
+  <mat-icon class="panelHelp" [matTooltip]="panelHelp">
     help
   </mat-icon>
 
@@ -100,7 +100,7 @@
               <span class='floatRight'>
                 @if (activity.skipApprenticeshipLevel > 0 && !activityService.completedApprenticeships.includes(activity.activityType)) {
                   <mat-icon
-                    matTooltip="This activity requires that you go through an apprenticeship. You can only do one apprenticeship in each lifetime, so choose carefully what trade you want to learn. Once you've started, other trades may be closed off until your next life."
+                    [matTooltip]="tooltips.apprenticeship"
                     aria-label="Requires an apprenticeship" aria-hidden="false">
                     model_training
                   </mat-icon>
@@ -112,7 +112,7 @@
                   </mat-icon>
                 }
                 <mat-icon class="iconButton" (click)="showActivity($event, activity)"
-                  matTooltip="What is this activity? Click to learn all about it!"
+                  [matTooltip]="tooltips.whatIsThis"
                   aria-label="Help" aria-hidden="false">
                   help
                 </mat-icon>

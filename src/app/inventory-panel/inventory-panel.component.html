@@ -3,7 +3,7 @@
     shopping_bag
   </mat-icon>
   Inventory
-  <mat-icon class="panelHelp" matTooltip="The items that you gain during your quest for immortality will appear here. Hover your cursor over an item to learn more about it.">
+  <mat-icon class="panelHelp" [matTooltip]="panelHelp">
     help
   </mat-icon>
 </div>
@@ -21,11 +21,11 @@
         }
       </span>
       @if (characterService.characterState.hellMoney > 0) {
-        <span matTooltip="Money accepted as legal tender in hell." class="moneyValue">| {{characterService.characterState.hellMoney | bigNumber}} Hell Money</span>
+        <span [matTooltip]="tooltips.hellMoney" class="moneyValue">| {{characterService.characterState.hellMoney | bigNumber}} Hell Money</span>
       }
     </div>
     <div class="iconRow">
-      <mat-icon matTooltip="Click to sort your inventory. Shift-click to toggle autosort. Ctrl-click to toggle descending."
+      <mat-icon [matTooltip]="tooltips.sort"
         (click)="sortClicked($event)" class="iconButton" aria-label="Sort Inventory" aria-hidden="false" [ngClass]="{highlighted: inventoryService.autoSort, sortHighlight: inventoryService.descendingSort}">
       sort
     </mat-icon>
@@ -70,25 +70,25 @@
         }
         @if ((inventoryService.selectedItem.item.useLabel !== undefined && inventoryService.autoBalanceUnlocked && isFinite(inventoryService.selectedItem.item.value)) && !hellService.inHell) {
           <mat-icon
-            class="iconButton" aria-label="Balance" aria-hidden="false" (click)="autoBalance()" matTooltip="Balance between automatically using and selling this item. You can change this in the options menu later if you change your mind.">
+            class="iconButton" aria-label="Balance" aria-hidden="false" (click)="autoBalance()" [matTooltip]="tooltips.autoBalance">
             balance
           </mat-icon>
         }
         @if ((inventoryService.selectedItem.item.type === 'equipment')) {
           <mat-icon (click)="equip()" class="iconButton" aria-label="Equip" aria-hidden="false"
-            matTooltip="Equip this. Double-click weapons or armor to equip.">
+            [matTooltip]="tooltips.equip">
             shield
           </mat-icon>
         }
         @if ((inventoryService.selectedItem.item.type === 'spiritGem')) {
           <mat-icon (click)="mergeSpiritGem()"  class="iconButton" aria-label="Merge Gem" aria-hidden="false"
-            matTooltip="Merge 10 of these into a higher grade gem.">
+            [matTooltip]="tooltips.mergeSpiritGem">
             diamond
           </mat-icon>
         }
         @if (isFinite(inventoryService.selectedItem.item.value)) {
           <mat-icon (click)="throwAway()"  class="iconButton" aria-label="Throw Away" aria-hidden="false"
-            matTooltip="Throw this stack of items away.">
+            [matTooltip]="tooltips.throwAway">
             delete
           </mat-icon>
         }

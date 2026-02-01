@@ -11,6 +11,7 @@ import { ImpossibleTaskService } from '../game-state/impossibleTask.service';
 import { MainLoopService } from '../game-state/main-loop.service';
 import { EffectExecutorService, EffectShortPipe, EffectLongPipe, RenderedEffect } from '../effects';
 import { BigNumberPipe } from '../app.component';
+import { PANEL_HELP, ACTIVITY } from '../game-state/tooltips';
 
 @Component({
   selector: 'app-portal-panel',
@@ -23,6 +24,8 @@ export class PortalPanelComponent {
   Math: Math;
   dragPositionX = 0;
   dragPositionY = 0;
+  panelHelp = PANEL_HELP.portals;
+  tooltips = ACTIVITY;
   private readonly effectExecutor = inject(EffectExecutorService);
   private readonly effectShortPipe = inject(EffectShortPipe);
   private readonly effectLongPipe = inject(EffectLongPipe);

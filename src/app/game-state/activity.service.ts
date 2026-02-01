@@ -3,7 +3,7 @@ import { inject, Injectable, Injector } from '@angular/core';
 import { BattleService } from './battle.service';
 import { Activity, ActivityLoopEntry, ActivityType, isDeclarativeActivity } from '../game-state/activity';
 import { EffectExecutorService } from '../effects';
-import { AttributeType, CharacterAttribute, StatusType } from '../game-state/character';
+import { AttributeType, CharacterAttribute, StatusType, SPIRIT_PROJECTION_QI_COST } from '../game-state/character';
 import { CharacterService } from '../game-state/character.service';
 import { HomeService, HomeType } from '../game-state/home.service';
 import { InventoryService } from '../game-state/inventory.service';
@@ -417,7 +417,7 @@ export class ActivityService {
       }
       if (
         this.characterService.characterState.status['qi'].value <
-        (activity.resourceUse[activity.level]?.['qi'] ?? 0) + 5
+        (activity.resourceUse[activity.level]?.['qi'] ?? 0) + SPIRIT_PROJECTION_QI_COST
       ) {
         return 'qi';
       }
@@ -434,13 +434,13 @@ export class ActivityService {
   }
 
   handleSpiritActivity() {
-    if (this.spiritActivity !== null && this.characterService.characterState.status.qi.value >= 5) {
+    if (this.spiritActivity !== null && this.characterService.characterState.status.qi.value >= SPIRIT_PROJECTION_QI_COST) {
       this.spiritActivityProgress = true;
       const activity = this.getActivityByType(this.spiritActivity);
       // if we don't have the resources for spirit activities, just don't do them
       if (activity !== null && this.checkResourceUse(activity, true) === '' && activity.unlocked) {
         this.executeActivity(activity);
-        this.characterService.characterState.status.qi.value -= 5;
+        this.characterService.characterState.status.qi.value -= SPIRIT_PROJECTION_QI_COST;
       } else {
         this.spiritActivityProgress = false;
       }
@@ -3268,6 +3268,7 @@ export class ActivityService {
           if (this.characterService.characterState.qiUnlocked) {
             if (Math.random() < 0.01) {
               this.characterService.characterState.status.qi.max++;
+              this.characterService.characterState.qiBonusCultivation++;
               this.characterService.characterState.status.qi.value++;
             }
           }
@@ -3334,8 +3335,8 @@ export class ActivityService {
           this.characterService.characterState.increaseAttribute('spirituality', 0.01);
 
           this.characterService.characterState.healthBonusSoul++;
-          this.characterService.characterState.status.stamina.max++;
-          this.characterService.characterState.status.qi.max++;
+          this.characterService.characterState.staminaBonusCultivation++;
+          this.characterService.characterState.qiBonusCultivation++;
           this.characterService.characterState.checkOverage();
           if (this.characterService.characterState.yinYangUnlocked) {
             if (this.characterService.characterState.yin > this.characterService.characterState.yang) {
@@ -3426,7 +3427,7 @@ export class ActivityService {
             this.characterService.characterState.status.qi.value >= 10
           ) {
             this.characterService.characterState.status.qi.value -= 10;
-            this.characterService.characterState.healthBonusMagic++;
+            this.characterService.characterState.healthBonusCultivation++;
           }
           if (this.characterService.characterState.yinYangUnlocked) {
             this.characterService.characterState.yang++;
@@ -3473,8 +3474,8 @@ export class ActivityService {
             this.characterService.characterState.status.qi.value >= 20
           ) {
             this.characterService.characterState.status.qi.value -= 20;
-            if (this.characterService.characterState.magicLifespan < 36500) {
-              this.characterService.characterState.magicLifespan += 10;
+            if (this.characterService.characterState.getCultivationLifespan() < 36500) {
+              this.characterService.characterState.addCultivationLifespan('Extending Life', 10);
             }
           }
           if (this.characterService.characterState.yinYangUnlocked) {

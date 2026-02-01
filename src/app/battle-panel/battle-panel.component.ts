@@ -4,6 +4,7 @@ import { BattleOptionsPanelComponent } from '../battle-options-panel/battle-opti
 import { BattleService } from '../game-state/battle.service';
 import { CharacterService } from '../game-state/character.service';
 import { GameStateService } from '../game-state/game-state.service';
+import { PANEL_HELP, COMBAT, BATTLE } from '../game-state/tooltips';
 
 @Component({
   selector: 'app-battle-panel',
@@ -12,6 +13,8 @@ import { GameStateService } from '../game-state/game-state.service';
 })
 export class BattlePanelComponent {
   Math: Math;
+  panelHelp = PANEL_HELP.battle;
+  tooltips = { combat: COMBAT, battle: BATTLE };
   constructor(
     public battleService: BattleService,
     public characterService: CharacterService,

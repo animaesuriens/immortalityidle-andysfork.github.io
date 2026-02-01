@@ -3,7 +3,7 @@
     calendar_month
   </mat-icon>
   Time
-  <mat-icon class="panelHelp" matTooltip="Achieving immortality doesn't happen overnight. It takes lifetimes of hard work. Choose how to schedule your days to take care of your basic needs and develop your immortal potential. Click the schedule button on activities or drag them here to put them on your schedule. When you allow time to move forward, you will perform each activity in your schedule in the order it is listed. You can move scheduled activities around or repeat activities over multiple days. Don't forget to schedule some rest too! You'll need to take a break now and then in your journey toward immortality.">
+  <mat-icon class="panelHelp" [matTooltip]="panelHelp">
     help
   </mat-icon>
 
@@ -14,46 +14,38 @@
       How will you spend your days?
     </span>
     <mat-icon (click)="pauseClick()" [ngClass]="{'iconActive': this.mainLoopService.pause}"
-      matTooltip="Pause the game. 
-      Hotkey: Alt-0 to pause or spacebar to toggle. 
-      Clicking this again while paused will step time forward a single day. 
-      When paused, you can also advance one day by pressing the Enter key." class="iconButton" aria-label="Pause" aria-hidden="false">
+      [matTooltip]="tooltips.pause" class="iconButton" aria-label="Pause" aria-hidden="false">
       pause
     </mat-icon>
 
     <mat-icon (click)="slowClick()" [ngClass]="{'iconActive': (mainLoopService.tickDivider === 40 && !this.mainLoopService.pause)}"
-      matTooltip="Slow Game Speed (1 day/sec).
-      Hotkey: Alt-1" class="iconButton" aria-label="Slow Speed" aria-hidden="false">
+      [matTooltip]="tooltips.slowSpeed" class="iconButton" aria-label="Slow Speed" aria-hidden="false">
       slow_motion_video
     </mat-icon>
     <mat-icon (click)="standardClick()" [ngClass]="{'iconActive': (mainLoopService.tickDivider === 10 && !this.mainLoopService.pause)}"
-      matTooltip="Standard Game Speed ({{mainLoopService.getTPS(10) | number: '1.0-2'}} days/sec).
-      Hotkey: Alt-2" class="iconButton" aria-label="Standard Speed" aria-hidden="false">
+      [matTooltip]="getSpeedTooltip(10)" class="iconButton" aria-label="Standard Speed" aria-hidden="false">
       play_arrow
     </mat-icon>
     @if (mainLoopService.unlockFastSpeed) {
       <mat-icon [ngClass]="{'iconActive': (mainLoopService.tickDivider === 5 && !this.mainLoopService.pause)}"
-      (click)="fastClick()" matTooltip="Fast Game Speed ({{mainLoopService.getTPS(5) | number: '1.0-2'}} days/sec).
-      Hotkey: Alt-3" class="iconButton" aria-label="Fast Speed" aria-hidden="false">
+      (click)="fastClick()" [matTooltip]="getSpeedTooltip(5)" class="iconButton" aria-label="Fast Speed" aria-hidden="false">
         fast_forward
       </mat-icon>
     }
     @if (mainLoopService.unlockFasterSpeed) {
       <mat-icon [ngClass]="{'iconActive': (mainLoopService.tickDivider === 2 && !this.mainLoopService.pause)}"
-      (click)="fasterClick()" matTooltip="Faster Game Speed ({{mainLoopService.getTPS(2) | number: '1.0-2'}} days/sec).
-      Hotkey: Alt-4" class="iconButton" aria-label="Faster Speed" aria-hidden="false">
+      (click)="fasterClick()" [matTooltip]="getSpeedTooltip(2)" class="iconButton" aria-label="Faster Speed" aria-hidden="false">
         skip_next
       </mat-icon>
     }
     @if (mainLoopService.unlockFastestSpeed) {
       <mat-icon [ngClass]="{'iconActive': (mainLoopService.tickDivider === 1 && !this.mainLoopService.pause)}"
-      (click)="fastestClick()" matTooltip="Fastest Game Speed ({{mainLoopService.getTPS(1) | number: '1.0-2'}} days/sec).
-      Hotkey: Alt-5" class="iconButton" aria-label="Fastest Speed" aria-hidden="false">
+      (click)="fastestClick()" [matTooltip]="getSpeedTooltip(1)" class="iconButton" aria-label="Fastest Speed" aria-hidden="false">
         bolt
       </mat-icon>
     }
     @if (activityService.autoRestart) {
-      <mat-icon  (click)="timeOptions()" matTooltip="Options" class="iconButton" aria-label="Time Options" aria-hidden="false">
+      <mat-icon  (click)="timeOptions()" [matTooltip]="tooltips.options" class="iconButton" aria-label="Time Options" aria-hidden="false">
         settings
       </mat-icon>
     }
@@ -69,7 +61,7 @@
       <table class="spiritActivityPanel" id="spiritActivity"
         (drop)="spiritActivityDrop($event)">
         <tr>
-          <td class="spiritProjectionLabel" matTooltip="You can project your spiritual self to take on a second activity while your physical body continues its work. Whatever activity you drop here will be completed each day as long as you have enough qi to support the effort. Requires 5 qi in addition to the regular requirements of the activity.">
+          <td class="spiritProjectionLabel" [matTooltip]="tooltips.spiritProjection">
             Spiritual Projection
           </td>
         </tr>
@@ -82,7 +74,7 @@
               </div>
             </td>
             <td>
-              <mat-icon matTooltip="Remove this activity from the schedule." (click)="removeSpiritActivity()" class="iconButton" aria-label="Remove Activity" aria-hidden="false">clear</mat-icon>
+              <mat-icon [matTooltip]="tooltips.removeActivity" (click)="removeSpiritActivity()" class="iconButton" aria-label="Remove Activity" aria-hidden="false">clear</mat-icon>
             </td>
           </tr>
         }
@@ -106,18 +98,12 @@
               </div>
             </td>
             <td [ngClass]="{'currentRow': indexOfelement === activityService.currentIndex, 'disabled': entry.disabled}" id="activityLoopIndex2{{indexOfelement}}">
-            <mat-icon matTooltip="Spend fewer days on this.
-
-            Shift- or Ctrl-click to remove 10x
-            Shift-Ctrl-click to remove 100x"
+            <mat-icon [matTooltip]="tooltips.minusDays"
               (click)="onMinusClick(entry, $event)" class="iconButton" aria-label="Remove Days" aria-hidden="false">remove</mat-icon>
-            <mat-icon matTooltip="Spend more days on this.
-
-            Shift- or Ctrl-click to add 10x
-            Shift-Ctrl-click to add 100x"
+            <mat-icon [matTooltip]="tooltips.plusDays"
               (click)="onPlusClick(entry, $event)" class="iconButton" aria-label="Add Days" aria-hidden="false">add</mat-icon>
-              <mat-icon matTooltip="Disable this activity on the schedule." (click)="onDisableClick(entry)" class="iconButton" aria-label="Disable Activity" aria-hidden="false">cancel</mat-icon>
-              <mat-icon matTooltip="Remove this activity from the schedule." (click)="onRemoveClick(entry)" class="iconButton" aria-label="Remove Activity" aria-hidden="false">clear</mat-icon>
+              <mat-icon [matTooltip]="tooltips.disableActivity" (click)="onDisableClick(entry)" class="iconButton" aria-label="Disable Activity" aria-hidden="false">cancel</mat-icon>
+              <mat-icon [matTooltip]="tooltips.removeActivity" (click)="onRemoveClick(entry)" class="iconButton" aria-label="Remove Activity" aria-hidden="false">clear</mat-icon>
             </td>
           </tr>
         }

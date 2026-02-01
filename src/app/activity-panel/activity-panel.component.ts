@@ -17,6 +17,7 @@ import { MainLoopService } from '../game-state/main-loop.service';
 import { LogService, LogTopic } from '../game-state/log.service';
 import { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
 import { EffectShortPipe, EffectLongPipe, RenderedEffect } from '../effects';
+import { PANEL_HELP, ACTIVITY } from '../game-state/tooltips';
 
 interface ActivityGroup {
   name: string;
@@ -37,6 +38,8 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
   Math: Math;
   dragPositionX = 0;
   dragPositionY = 0;
+  panelHelp = PANEL_HELP.activities;
+  tooltips = ACTIVITY;
   private subscriptions: Subscription[] = [];
   private readonly effectShortPipe = inject(EffectShortPipe);
   private readonly effectLongPipe = inject(EffectLongPipe);

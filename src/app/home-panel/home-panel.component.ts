@@ -11,6 +11,7 @@ import { FollowersService } from '../game-state/followers.service';
 import { BigNumberPipe } from '../app.component';
 import { HellService } from '../game-state/hell.service';
 import { GameStateService } from '../game-state/game-state.service';
+import { PANEL_HELP, HOME } from '../game-state/tooltips';
 
 @Component({
   selector: 'app-home-panel',
@@ -20,6 +21,8 @@ import { GameStateService } from '../game-state/game-state.service';
 export class HomePanelComponent {
   character: Character;
   Math: Math;
+  panelHelp = PANEL_HELP.home;
+  tooltips = HOME;
 
   constructor(
     public characterService: CharacterService,

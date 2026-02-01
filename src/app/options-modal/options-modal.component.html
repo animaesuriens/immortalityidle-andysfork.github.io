@@ -1,5 +1,8 @@
 <div class='darkMode optionsDiv'>
-  <span>Options</span>
+  <div class="optionsHeader">
+    <h2>Options</h2>
+    <hr/>
+  </div>
   <mat-tab-group>
     <mat-tab>
       <ng-template mat-tab-label>
@@ -60,16 +63,8 @@
         </span>
       </div>
       <div class="optionField">
-        <button matTooltip="Voluntarily end this life, allowing your current attributes to strengthen your aptitudes in the next life." (click)="rebirthClicked($event)">
-          Reincarnate
-        </button>
-      </div>
-      <div class="optionField">
-        <button matTooltip="Click to save your game now.
-          Shift-click for save options.
-          Ctrl-shift-click to load backup save."
-          (click)="saveClicked($event)">
-          Manual Save
+        <button matTooltip="View the summary from your previous life." (click)="openPreviousLifeSummary()" [disabled]="!characterService.characterState.lastCauseOfDeath">
+          Open Previous Life Summary
         </button>
       </div>
       <div class="optionField">

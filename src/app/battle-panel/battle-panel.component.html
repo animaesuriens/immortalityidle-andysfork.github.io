@@ -3,7 +3,7 @@
     fort
   </mat-icon>
   Battles
-  <mat-icon class="panelHelp" matTooltip="Monsters come out at night. You'll need to be strong enough to fight them off if you want to become an immortal.">
+  <mat-icon class="panelHelp" [matTooltip]="panelHelp">
     help
   </mat-icon>
 </div>
@@ -11,12 +11,12 @@
   @if (battleService.qiShieldUnlocked || battleService.qiAttackUnlocked ||
     battleService.pyroclasmUnlocked || battleService.fireShieldUnlocked) {
     <span>
-      <mat-icon  (click)="battleOptions()" matTooltip="Options" class="iconButton" aria-label="Battle Settings" aria-hidden="false">
+      <mat-icon  (click)="battleOptions()" [matTooltip]="tooltips.battle.options" class="iconButton" aria-label="Battle Settings" aria-hidden="false">
         settings
       </mat-icon>
     </span>
   }
-  <span class="rightAligned" matTooltip="Did you need more trouble in your life? If you don't have a monster to fight, get one. Be careful, they get stronger as they go.">
+  <span class="rightAligned" [matTooltip]="tooltips.combat.lookForTrouble">
     @if (!battleService.autoTroubleUnlocked) {
       <button (click)="battleService.trouble()">Look for Trouble</button>
     }
@@ -93,9 +93,9 @@
                 </span>
               </div>
             </td>
-            <td matTooltip="Accuracy"><mat-icon>manage_accounts</mat-icon>{{enemyStack.enemy.accuracy | percent}}</td>
-            <td matTooltip="Attack Power"><mat-icon>flare</mat-icon>{{enemyStack.enemy.attack | bigNumber}}</td>
-            <td matTooltip="Defense"><mat-icon>shield</mat-icon>{{enemyStack.enemy.defense | bigNumber}}</td>
+            <td [matTooltip]="tooltips.combat.accuracy"><mat-icon>manage_accounts</mat-icon>{{enemyStack.enemy.accuracy | percent}}</td>
+            <td [matTooltip]="tooltips.combat.attackPower"><mat-icon>flare</mat-icon>{{enemyStack.enemy.attack | bigNumber}}</td>
+            <td [matTooltip]="tooltips.combat.defense"><mat-icon>shield</mat-icon>{{enemyStack.enemy.defense | bigNumber}}</td>
           </tr>
         }
       </table>

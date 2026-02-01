@@ -62,6 +62,14 @@ html {
   overscroll-behavior: none;
 }
 
+mat-icon {
+  font-family: 'Material Symbols Outlined' !important;
+  font-variation-settings: 'FILL' 1;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
@@ -104,7 +112,42 @@ button {
 }
 
 button:disabled {
-  color: var(--bodyText);
+  color: var(--disabledText);
+}
+
+// Spacer to push save button to center
+.topBarCenterSpacer {
+  flex: 1;
+}
+
+// Container for right-aligned top bar controls
+.topBarRightGroup {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 15px;
+  padding-right: 10px;
+}
+
+.lockPanelsToggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+// Wrapper for text buttons in the top bar to ensure consistent styling in both modes
+.topBarButtonWrapper {
+  --buttonColor: #373737;
+  --buttonBorder: #999999;
+  --bodyText: #cacaca;
+  --disabledText: #999999;
+  display: flex;
+  align-items: center;
+
+  button {
+    margin: 0;
+  }
 }
 
 .itemSlot {

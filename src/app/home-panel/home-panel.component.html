@@ -3,7 +3,7 @@
     home
   </mat-icon>
   Home
-  <mat-icon class="panelHelp" matTooltip="Your home is an essential part of your life. A better home allows you to recover and has room for furniture that can aid your immortal development.">
+  <mat-icon class="panelHelp" [matTooltip]="panelHelp">
     help
   </mat-icon>
 </div>
@@ -66,7 +66,7 @@
           }
           @if (homeService.home.furnitureSlots.length === 0) {
             <div class="furnitureSlots">
-              <span class="mouseWarning">Tent living is rough. All these pesky mice could become a real problem. You might want to buy some land and get a better home.</span>
+              <span class="mouseWarning">{{tooltips.mouseWarning}}</span>
             </div>
           }
           @if (getActiveFurnitureEffects().length > 0) {
@@ -88,7 +88,7 @@
                 </mat-icon>
               }
               @if (homeService.upgrading) {
-                <div class="progress-bar" style="height:20px;" matTooltip="Upgrading your home."
+                <div class="progress-bar" style="height:20px;" [matTooltip]="tooltips.upgradingHome"
                   [attr.value]=buildTimeYears()>
                   <span [style.width.%]="100 * homeService.houseBuildingProgress"></span>
                 </div>
@@ -98,7 +98,7 @@
           }
           @if (!hellService.inHell || homeService.hellFood) {
             <div class="button-group">
-              <mat-icon matTooltip="View your farm." class="iconButton" (click)="farmClicked()" aria-label="View Farm" aria-hidden="false">grass</mat-icon>
+              <mat-icon [matTooltip]="tooltips.viewFarm" class="iconButton" (click)="farmClicked()" aria-label="View Farm" aria-hidden="false">grass</mat-icon>
               <mat-icon (click)="buyClicked($event)" [matTooltip]="'• Click to buy a plot of land for ' + (homeService.landPrice | bigNumber) + ' taels.\n• Shift-click to buy 10 plots for ' + getLandPrice(10) + ' taels.\n• Ctrl+Shift-click to buy 100 plots for ' + getLandPrice(100) + ' taels.\n• Ctrl-click to buy ' + getHalfAffordableLand() + ' plots (half the land you can afford).'" class="iconButton" aria-label="Buy Land" aria-hidden="false">
                 add
               </mat-icon>
@@ -111,7 +111,7 @@
                 delete_sweep
               </mat-icon>
               <mat-icon (click)="resetFieldsClicked($event)" class="iconButton" aria-label="Reset Fields" aria-hidden="false"
-                matTooltip="Reset all fields. Clears all fields and replants the same number with fresh crops.">
+                [matTooltip]="tooltips.resetFields">
                 restart_alt
               </mat-icon>
             </div>

@@ -19,12 +19,14 @@ import { ChangelogPanelComponent } from './changelog-panel/changelog-panel.compo
 import { StatisticsPanelComponent } from './statistics-panel/statistics-panel.component';
 import { HellService } from './game-state/hell.service';
 import { StatisticsService } from './game-state/statistics.service';
+import { CreditsModalComponent } from './credits-modal/credits-modal.component';
 import { CdkDragEnd, CdkDragStart, Point } from '@angular/cdk/drag-drop';
 import { KtdGridLayout } from '@katoid/angular-grid-layout';
 import { ViewportScroller } from '@angular/common';
 import { FollowersService } from './game-state/followers.service';
 import { HomeService } from './game-state/home.service';
 import { InventoryService, Item, Equipment, Furniture, Pill } from './game-state/inventory.service';
+import { TOP_BAR } from './game-state/tooltips';
 
 @Pipe({ name: 'floor' })
 export class FloorPipe implements PipeTransform {
@@ -261,6 +263,7 @@ export class AppComponent implements OnInit {
   doingPanelDrag = false;
   doingBodyDrag = false;
   panelIndex: typeof PanelIndex = PanelIndex;
+  tooltips = TOP_BAR;
   resizingPanel = -1;
   previousPoint: Point = { x: 0, y: 0 };
 
@@ -341,7 +344,7 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.gameStateService.loadFromLocalStorage();
+    this.gameStateService.loadFromSlot('auto');
     this.mainLoopService.start();
     this.setPanelPositions();
   }
@@ -536,8 +539,111 @@ export class AppComponent implements OnInit {
     });
   }
 
+  getSlotName(slot: string): string {
+    switch (slot) {
+      case '': return 'Slot 1';
+      case '1': return 'Slot 2';
+      case '2': return 'Slot 3';
+      case 'auto': return 'Autosave';
+      default: return slot;
+    }
+  }
+
+  saveClicked(slot: string) {
+    this.gameStateService.saveToSlot(slot);
+    this.characterService.toast(`Saved to ${this.getSlotName(slot)}`);
+  }
+
+  loadClicked(slot: string) {
+    const success = this.gameStateService.loadFromSlot(slot);
+    if (success) {
+      this.gameStateService.updateImportFlagKey(true);
+      window.location.reload();
+    } else {
+      this.characterService.toast(`${this.getSlotName(slot)} is empty`);
+    }
+  }
+
+  creditsClicked() {
+    this.dialog.open(CreditsModalComponent, {
+      autoFocus: false,
+    });
+  }
+
+  reincarnateClicked() {
+    const wasPaused = this.mainLoopService.pause;
+    this.mainLoopService.pause = true;
+
+    const gains = this.calculatePotentialAptitudeGains();
+    let message = 'You will end your current life and reincarnate.\n\nYou will earn:\n';
+    if (gains.length === 0) {
+      message += '• No aptitude gains (attributes unchanged from life start)\n';
+    } else {
+      for (const gain of gains) {
+        message += `• ${gain.name}: +${gain.amount}\n`;
+      }
+    }
+    message += '\nAre you sure?';
+
+    if (confirm(message)) {
+      this.gameStateService.rebirth();
+    } else {
+      this.mainLoopService.pause = wasPaused;
+    }
+  }
+
+  calculatePotentialAptitudeGains(): { name: string; amount: string }[] {
+    const gains: { name: string; amount: string }[] = [];
+    const camelToTitle = new CamelToTitlePipe();
+    const bigNumber = new BigNumberPipe(this.mainLoopService);
+    const attrs = this.characterService.characterState.attributes;
+    const divider = this.characterService.characterState.aptitudeGainDivider;
+
+    const keys = Object.keys(attrs) as (keyof typeof attrs)[];
+    for (const key of keys) {
+      const attr = attrs[key];
+      if (attr.value > 0) {
+        const addedValue = (attr.value - (attr.lifeStartValue || 0)) / divider;
+        if (addedValue > 0) {
+          gains.push({
+            name: camelToTitle.transform(key),
+            amount: bigNumber.transform(addedValue),
+          });
+        }
+      }
+    }
+    return gains;
+  }
+
   lockPanelsToggle() {
     this.gameStateService.lockPanels = !this.gameStateService.lockPanels;
+  }
+
+  autosaveToggle() {
+    this.gameStateService.autosaveEnabled = !this.gameStateService.autosaveEnabled;
+  }
+
+  autosaveIntervalChange(event: Event) {
+    if (!(event.target instanceof HTMLInputElement)) return;
+    this.gameStateService.changeAutoSaveInterval(parseInt(event.target.value));
+  }
+
+  getLastAutosaveRelativeTime(): string {
+    if (this.gameStateService.lastAutosaveTime === 0) {
+      return 'never';
+    }
+    const now = Date.now();
+    const diff = now - this.gameStateService.lastAutosaveTime;
+    const seconds = Math.floor(diff / 1000);
+    if (seconds < 60) {
+      return `${seconds} second${seconds !== 1 ? 's' : ''}`;
+    }
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) {
+      return `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+    }
+    const hours = Math.floor(minutes / 60);
+    return `${hours} hour${hours !== 1 ? 's' : ''}`;
   }
 
   onLayoutUpdated(layout: KtdGridLayout) {

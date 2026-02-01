@@ -569,12 +569,12 @@ export class ItemRepoService {
       useDescription: '+1 max nourishment, +1 nourishment, +2 max health, +20 health, +2 stamina, +2 max stamina, +1 qi, +1 day food lifespan (max 720 years).',
       useConsumes: true,
       use: (quantity = 1) => {
-        this.characterService.characterState.status.nourishment.max += quantity;
+        this.characterService.characterState.nourishmentBonusFood += quantity;
         this.characterService.characterState.status.nourishment.value += quantity;
         this.characterService.characterState.healthBonusFood += quantity * 2;
         this.characterService.characterState.status.health.value += quantity * 20;
         this.characterService.characterState.status.stamina.value += quantity * 2;
-        this.characterService.characterState.status.stamina.max += quantity * 2;
+        this.characterService.characterState.staminaBonusFood += quantity * 2;
         this.characterService.characterState.status.qi.value += quantity;
         if (this.characterService.characterState.foodLifespan + quantity <= daysInYear * 720) {
           this.characterService.characterState.foodLifespan += quantity;
@@ -598,7 +598,7 @@ export class ItemRepoService {
         this.characterService.characterState.status.nourishment.value += quantity * 2;
         this.characterService.characterState.healthBonusFood += quantity;
         this.characterService.characterState.status.health.value += quantity * 10;
-        this.characterService.characterState.status.stamina.max += quantity;
+        this.characterService.characterState.staminaBonusFood += quantity;
         this.characterService.characterState.checkOverage();
       },
     },
@@ -616,7 +616,7 @@ export class ItemRepoService {
         this.characterService.characterState.status.nourishment.value += quantity * 2;
         this.characterService.characterState.healthBonusFood += quantity;
         this.characterService.characterState.status.health.value += quantity * 20;
-        this.characterService.characterState.status.stamina.max += quantity;
+        this.characterService.characterState.staminaBonusFood += quantity;
         this.characterService.characterState.checkOverage();
       },
     },
@@ -634,7 +634,7 @@ export class ItemRepoService {
         this.characterService.characterState.status.nourishment.value += quantity;
         if (Math.random() < 0.1) {
           this.characterService.characterState.healthBonusFood += quantity;
-          this.characterService.characterState.status.stamina.max += quantity;
+          this.characterService.characterState.staminaBonusFood += quantity;
         }
         this.characterService.characterState.checkOverage();
       },

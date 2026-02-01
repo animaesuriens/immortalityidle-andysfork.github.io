@@ -3,22 +3,59 @@
 .tutorialWrapper {
     display: flex;
     flex-direction: column;
-    max-height: 700px;
+    max-height: 500px;
 }
 
 .tutorialHeader {
     flex-shrink: 0;
 
-    h3 {
+    h2 {
         margin: 0 0 8px 0;
+        color: var(--bodyText);
     }
 
     hr {
-        margin: 0;
+        margin: 0 0 8px 0;
+        border: none;
+        border-top: 1px solid white;
     }
 }
 
 .tutorialDiv {
     flex: 1;
     overflow-y: auto;
+}
+
+// Vertical tabs layout
+:host ::ng-deep .mat-mdc-tab-group {
+    flex-direction: row;
+}
+
+:host ::ng-deep .mat-mdc-tab-header {
+    border-bottom: none;
+}
+
+:host ::ng-deep .mat-mdc-tab-header-pagination {
+    display: none !important;
+}
+
+:host ::ng-deep .mat-mdc-tab-labels {
+    flex-direction: column;
+}
+
+:host ::ng-deep .mat-mdc-tab-label-container {
+    flex-grow: 0;
+}
+
+:host ::ng-deep .mat-mdc-tab-body-wrapper {
+    flex: 1 1 auto;
+}
+
+.tutorialSection {
+    margin: 12px;
+    line-height: 1.5;
+}
+
+.tab-label {
+    color: var(--bodyText);
 }

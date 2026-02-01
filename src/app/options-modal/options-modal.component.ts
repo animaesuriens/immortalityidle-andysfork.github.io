@@ -8,7 +8,7 @@ import { GameStateService } from '../game-state/game-state.service';
 import { HomeService } from '../game-state/home.service';
 import { InventoryService, BalanceItem, AutoItemEntry } from '../game-state/inventory.service';
 import { MainLoopService } from '../game-state/main-loop.service';
-import { SaveModalComponent } from '../save-modal/save-modal.component';
+import { LifeSummaryComponent } from '../life-summary/life-summary.component';
 import { environment } from '../../environments/environment';
 
 @Component({
@@ -36,28 +36,17 @@ export class OptionsModalComponent {
     }
   }
 
-  saveClicked(event: MouseEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if ((event.ctrlKey || event.metaKey) && (event.shiftKey || event.altKey)) {
-      this.gameStateService.loadFromLocalStorage(true);
-    } else if (event.shiftKey || event.altKey) {
-      this.dialog.open(SaveModalComponent, {
-        width: '400px',
-        data: { someField: 'foo' },
+  openPreviousLifeSummary() {
+    const state = this.characterService.characterState;
+    if (state.lastCauseOfDeath) {
+      this.dialog.open(LifeSummaryComponent, {
+        width: '600px',
+        data: {
+          causeOfDeath: state.lastCauseOfDeath,
+          attributeGains: state.lastAttributeGains,
+        },
         autoFocus: false,
       });
-    } else {
-      this.gameStateService.savetoLocalStorage();
-      this.characterService.toast('Manual Save Complete');
-    }
-  }
-
-  rebirthClicked(event: Event) {
-    event.preventDefault();
-    if (confirm('This will end your current life. Are you sure?')) {
-      this.gameStateService.rebirth();
     }
   }
 

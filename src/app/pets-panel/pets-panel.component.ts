@@ -5,6 +5,7 @@ import { Character } from '../game-state/character';
 import { CharacterService } from '../game-state/character.service';
 import { FollowersService, Follower } from '../game-state/followers.service';
 import { GameStateService } from '../game-state/game-state.service';
+import { PANEL_HELP, FOLLOWERS } from '../game-state/tooltips';
 
 @Component({
   selector: 'app-pets-panel',
@@ -14,6 +15,8 @@ import { GameStateService } from '../game-state/game-state.service';
 export class PetsPanelComponent {
   character: Character;
   popupCounter = 0;
+  panelHelp = PANEL_HELP.pets;
+  tooltips = FOLLOWERS;
 
   constructor(
     public characterService: CharacterService,

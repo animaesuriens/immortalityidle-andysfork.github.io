@@ -85,6 +85,8 @@ export class GameStateService {
   gameStartTimestamp = new Date().getTime();
   easyModeEver = false;
   saveInterval = 300; //In seconds
+  autosaveEnabled = true;
+  lastAutosaveTime = 0;
   saveSlot = '';
   panelPositions: Point[];
   defaultPanelPositions: Point[];
@@ -145,13 +147,14 @@ export class GameStateService {
     private hellService: HellService
   ) {
     window.GameStateService = this;
-    // TODO: Re-enable auto-save after UI improvements are finalized
-    // mainLoopService.longTickSubject.subscribe(() => {
-    //   const currentTime = new Date().getTime();
-    //   if (currentTime - this.lastSaved >= this.saveInterval * 1000) {
-    //     this.savetoLocalStorage();
-    //   }
-    // });
+    mainLoopService.longTickSubject.subscribe(() => {
+      if (!this.autosaveEnabled) return;
+      const currentTime = new Date().getTime();
+      if (currentTime - this.lastAutosaveTime >= this.saveInterval * 1000) {
+        this.saveToSlot('auto');
+        this.lastAutosaveTime = currentTime;
+      }
+    });
     // All positions and sizes aligned to 20px grid
     this.defaultPanelPositions = [];
 
@@ -280,8 +283,26 @@ export class GameStateService {
     this.lastSaved = new Date().getTime();
   }
 
+  saveToSlot(slot: string): void {
+    const key = LOCAL_STORAGE_GAME_STATE_KEY + this.getDeploymentFlavor() + slot;
+    const saveCopy = window.localStorage.getItem(key);
+    if (saveCopy) {
+      window.localStorage.setItem('BACKUP' + key, saveCopy);
+    }
+    window.localStorage.setItem(key, this.getGameExport());
+  }
+
+  loadFromSlot(slot: string): boolean {
+    const key = LOCAL_STORAGE_GAME_STATE_KEY + this.getDeploymentFlavor() + slot;
+    const gameStateSerialized = window.localStorage.getItem(key);
+    if (!gameStateSerialized) {
+      return false;
+    }
+    this.importGame(gameStateSerialized);
+    return true;
+  }
+
   loadFromLocalStorage(backup = false): boolean {
-    this.getSaveFile();
     const backupStr = backup ? 'BACKUP' : '';
     const gameStateSerialized = window.localStorage.getItem(
       backupStr + LOCAL_STORAGE_GAME_STATE_KEY + this.getDeploymentFlavor() + this.saveSlot
@@ -433,23 +454,6 @@ export class GameStateService {
     while (this.homeService.upgrading) {
       this.homeService.upgradeTick();
     }
-  }
-
-  setSaveFile() {
-    window.localStorage.setItem(
-      'saveSlotFor' + LOCAL_STORAGE_GAME_STATE_KEY + this.getDeploymentFlavor(),
-      this.saveSlot
-    );
-  }
-
-  getSaveFile() {
-    const saveString = window.localStorage.getItem(
-      'saveSlotFor' + LOCAL_STORAGE_GAME_STATE_KEY + this.getDeploymentFlavor()
-    );
-    if (!saveString) {
-      return;
-    }
-    this.saveSlot = saveString;
   }
 
   getDeploymentFlavor() {

@@ -5,6 +5,7 @@ import { Equipment, InventoryService, instanceOfEquipment, Item } from '../game-
 import { GameStateService } from '../game-state/game-state.service';
 import { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
 import { ItemRepoService } from '../game-state/item-repo.service';
+import { PANEL_HELP, COMBAT, EQUIPMENT } from '../game-state/tooltips';
 
 @Component({
   selector: 'app-equipment-panel',
@@ -15,6 +16,8 @@ export class EquipmentPanelComponent {
   character: Character;
   dragPositionX = 0;
   dragPositionY = 0;
+  panelHelp = PANEL_HELP.equipment;
+  tooltips = { combat: COMBAT, equipment: EQUIPMENT };
 
   constructor(
     private characterService: CharacterService,
@@ -162,5 +165,20 @@ export class EquipmentPanelComponent {
       red: true
     };
     return darkColors[color] ? 'white' : 'black';
+  }
+
+  /** Check if equipment in a slot is broken (has 0 durability) */
+  isBroken(slot: EquipmentPosition): boolean {
+    const equipment = this.character.equipment[slot];
+    if (!equipment) {
+      return false;
+    }
+    const armorDurability = equipment.armorStats?.durability ?? 0;
+    const weaponDurability = equipment.weaponStats?.durability ?? 0;
+    // If it has stats, check durability. If no stats, it's not breakable.
+    if (equipment.armorStats || equipment.weaponStats) {
+      return armorDurability <= 0 && weaponDurability <= 0;
+    }
+    return false;
   }
 }

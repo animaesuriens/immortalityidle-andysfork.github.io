@@ -3,7 +3,7 @@
     favorite
   </mat-icon>
   Health
-  <mat-icon class="panelHelp" matTooltip="Maintaining your health is an important part of becoming immortal. If your health reaches 0, you will die and need to try for immortality once you are reincarnated in your next life.">
+  <mat-icon class="panelHelp" [matTooltip]="panelHelp">
     help
   </mat-icon>
 </div>
@@ -39,10 +39,19 @@ Current Bonus: {{(characterService.characterState.baseLifespan - 30 * 365) / 365
 </h3>
 <div class="healthPanelContents">
   <div class="statusBarsGrid">
-    <div class="lifespanInfo">{{characterService.lifespanTooltip}}</div>
+    <div class="lifespanInfo">
+      <div>{{characterService.lifespanHeader}}</div>
+      @if (characterService.lifespanFactors.length > 0) {
+        <div class="lifespanFactorsGrid">
+          @for (factor of characterService.lifespanFactors; track $index) {
+            <span [matTooltip]="factor.tooltip">{{factor.label}}</span>
+          }
+        </div>
+      }
+    </div>
     <div class="statusRow">
-      <span class="statusLabel" matTooltip="{{characterService.characterState.status.health.description}}">Health</span>
-      <div class="health">
+      <span class="statusLabel" [matTooltip]="getHealthTooltip()">Health</span>
+      <div class="health" [matTooltip]="getHealthTooltip()">
         <div class="progress-bar" [ngClass]="flashHealth ? 'flash' : ''"
           [attr.value]="Math.floor(characterService.characterState.immortal && characterService.characterState.status.health.value < 0 ? 0 : characterService.characterState.status.health.value) | bigNumber"
           [attr.max]="Math.floor(characterService.characterState.status.health.max) | bigNumber">
@@ -53,8 +62,8 @@ Current Bonus: {{(characterService.characterState.baseLifespan - 30 * 365) / 365
           </span>
         </div>
       </div>
-      <span class="statusLabel" matTooltip="{{characterService.characterState.status.stamina.description}}">Stamina</span>
-      <div class="stamina">
+      <span class="statusLabel" [matTooltip]="getStaminaTooltip()">Stamina</span>
+      <div class="stamina" [matTooltip]="getStaminaTooltip()">
         <div class="progress-bar" [ngClass]="flashStamina ? 'flash' : ''"
           [attr.value]="Math.floor(characterService.characterState.status.stamina.value) | bigNumber"
           [attr.max]="Math.floor(characterService.characterState.status.stamina.max) | bigNumber">
@@ -67,8 +76,8 @@ Current Bonus: {{(characterService.characterState.baseLifespan - 30 * 365) / 365
       </div>
     </div>
     <div class="statusRow">
-      <span class="statusLabel" matTooltip="{{characterService.characterState.status.nourishment.description}}">Nutrition</span>
-      <div class="nourishment">
+      <span class="statusLabel" [matTooltip]="getNourishmentTooltip()">Nutrition</span>
+      <div class="nourishment" [matTooltip]="getNourishmentTooltip()">
         <div class="progress-bar" [ngClass]="flashNutrition ? 'flash' : ''"
           [attr.value]="Math.floor(characterService.characterState.status.nourishment.value) | bigNumber"
           [attr.max]="Math.floor(characterService.characterState.status.nourishment.max) | bigNumber">
@@ -79,8 +88,8 @@ Current Bonus: {{(characterService.characterState.baseLifespan - 30 * 365) / 365
           </span>
         </div>
       </div>
-      <span class="statusLabel" matTooltip="{{characterService.characterState.status.qi.description}}">Qi</span>
-      <div class="qi">
+      <span class="statusLabel" [matTooltip]="getQiTooltip()">Qi</span>
+      <div class="qi" [matTooltip]="getQiTooltip()">
         <div class="progress-bar" [ngClass]="flashQi ? 'flash' : ''"
           [attr.value]="Math.floor(characterService.characterState.status.qi.value) | bigNumber"
           [attr.max]="Math.floor(characterService.characterState.status.qi.max) | bigNumber">

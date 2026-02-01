@@ -12,6 +12,7 @@ import { ItemRepoService } from '../game-state/item-repo.service';
 import { ItemTooltipPipe } from '../app.component';
 import { HomeService } from '../game-state/home.service';
 import { FollowersService } from '../game-state/followers.service';
+import { PANEL_HELP, INVENTORY } from '../game-state/tooltips';
 
 @Component({
   selector: 'app-inventory-panel',
@@ -35,6 +36,8 @@ export class InventoryPanelComponent {
   popupCounter = 0;
   dragPositionX = 0;
   dragPositionY = 0;
+  panelHelp = PANEL_HELP.inventory;
+  tooltips = INVENTORY;
 
   private titleCasePipe = new TitleCasePipe();
 

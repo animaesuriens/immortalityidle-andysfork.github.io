@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { CharacterService } from '../game-state/character.service';
 import { MainLoopService } from '../game-state/main-loop.service';
 import { GameStateService } from '../game-state/game-state.service';
+import { BigNumberPipe } from '../app.component';
+import { BASE_HEALTH, BASE_STAMINA, BASE_NOURISHMENT, BASE_QI } from '../game-state/character';
+import { PANEL_HELP, STATUS } from '../game-state/tooltips';
 
 @Component({
   selector: 'app-health-panel',
@@ -16,13 +19,17 @@ export class HealthPanelComponent {
   flashStamina = false;
   flashQi = false;
   flashNutrition = false;
+  panelHelp = PANEL_HELP.health;
 
   Math: Math;
+  private bigNumberPipe: BigNumberPipe;
+
   constructor(
     public characterService: CharacterService,
     public gameStateService: GameStateService,
     public mainLoopService: MainLoopService
   ) {
+    this.bigNumberPipe = new BigNumberPipe(mainLoopService);
     this.Math = Math;
     mainLoopService.longTickSubject.subscribe(() => {
       this.updateYinYang();
@@ -71,5 +78,119 @@ export class HealthPanelComponent {
     const difference = Math.max((Math.abs(yang - yin) / ((yang + yin) / 2)) * 10000, 1);
     const differenceIndex = Math.min(Math.floor(Math.log(difference) / Math.log(5)), balanceValues.length - 1);
     this.balanceString = balanceValues[differenceIndex];
+  }
+
+  private fmt(n: number): string {
+    return this.bigNumberPipe.transform(n);
+  }
+
+  getHealthTooltip(): string {
+    const state = this.characterService.characterState;
+    const max = state.status.health.max;
+    const toughnessBonus = Math.floor(Math.log2(state.attributes.toughness.value + 2) * 5);
+    const bonusFactor = state.bonusHealth ? 5 : 1;
+
+    const lines: string[] = [
+      STATUS.health.name,
+      '',
+      STATUS.health.description,
+      '',
+      `Base: ${BASE_HEALTH}`,
+    ];
+
+    if (toughnessBonus > 0) {
+      lines.push(`  + ${this.fmt(toughnessBonus)} from toughness (floor(log2(${this.fmt(state.attributes.toughness.value)} + 2) × 5))`);
+    }
+    if (state.healthBonusFood > 0) {
+      lines.push(`  + ${this.fmt(state.healthBonusFood)} from food`);
+    }
+    if (state.healthBonusBath > 0) {
+      lines.push(`  + ${this.fmt(state.healthBonusBath)} from bathing`);
+    }
+    if (state.healthBonusCultivation > 0) {
+      lines.push(`  + ${this.fmt(state.healthBonusCultivation)} from cultivation`);
+    }
+    if (state.healthBonusSoul > 0) {
+      lines.push(`  + ${this.fmt(state.healthBonusSoul)} from soul`);
+    }
+    if (bonusFactor > 1) {
+      lines.push(`  × ${bonusFactor} multiplier`);
+    }
+    lines.push(`  = ${this.fmt(max)}`);
+
+    return lines.join('\n');
+  }
+
+  getStaminaTooltip(): string {
+    const state = this.characterService.characterState;
+    const max = state.status.stamina.max;
+
+    const lines: string[] = [
+      STATUS.stamina.name,
+      '',
+      STATUS.stamina.description,
+      '',
+      `Base: ${BASE_STAMINA}`,
+    ];
+
+    if (state.staminaBonusFood > 0) {
+      lines.push(`  + ${this.fmt(state.staminaBonusFood)} from food`);
+    }
+    if (state.staminaBonusCultivation > 0) {
+      lines.push(`  + ${this.fmt(state.staminaBonusCultivation)} from cultivation`);
+    }
+    lines.push(`  = ${this.fmt(max)}`);
+
+    return lines.join('\n');
+  }
+
+  getQiTooltip(): string {
+    const state = this.characterService.characterState;
+    const max = state.status.qi.max;
+
+    if (!state.qiUnlocked) {
+      return `${STATUS.qi.name}\n\n${STATUS.qi.locked}`;
+    }
+
+    const lines: string[] = [
+      STATUS.qi.name,
+      '',
+      STATUS.qi.description,
+      '',
+      `Base: ${BASE_QI}`,
+    ];
+
+    if (state.qiBonusCultivation > 0) {
+      lines.push(`  + ${this.fmt(state.qiBonusCultivation)} from cultivation`);
+    }
+    lines.push(`  = ${this.fmt(max)}`);
+
+    return lines.join('\n');
+  }
+
+  getNourishmentTooltip(): string {
+    const state = this.characterService.characterState;
+    const max = state.status.nourishment.max;
+
+    const lines: string[] = [
+      STATUS.nourishment.name,
+      '',
+      STATUS.nourishment.description,
+    ];
+
+    if (state.attributes.spirituality.value > 0) {
+      STATUS.nourishment.starvationWithSpirituality.forEach(line => lines.push(`• ${line}`));
+    } else {
+      lines.push(`• ${STATUS.nourishment.starvationWithoutSpirituality}`);
+    }
+
+    lines.push('');
+    lines.push(`Base: ${BASE_NOURISHMENT}`);
+    if (state.nourishmentBonusFood > 0) {
+      lines.push(`  + ${this.fmt(state.nourishmentBonusFood)} from food`);
+    }
+    lines.push(`  = ${this.fmt(max)}`);
+
+    return lines.join('\n');
   }
 }

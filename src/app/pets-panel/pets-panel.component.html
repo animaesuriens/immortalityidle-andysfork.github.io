@@ -3,7 +3,7 @@
     pets
   </mat-icon>
   Pets
-  <mat-icon class="panelHelp" matTooltip="Your pets can aid you in many ways. Each has a specific skill that they will use to your benefit.">
+  <mat-icon class="panelHelp" [matTooltip]="panelHelp">
     help
   </mat-icon>
 </div>
@@ -13,7 +13,7 @@
   </span>
   @if (followerService.autoDismissUnlocked) {
     <mat-icon class="iconButton optionsIcon" (click)="followerOptionsClicked()" aria-label="Manage Pets" aria-hidden="false"
-      matTooltip="Manage your pets.">
+      [matTooltip]="tooltips.managePets">
       settings
     </mat-icon>
   }
@@ -29,10 +29,7 @@
         <mat-icon class="smallerIcon"
           aria-label="Dismiss Pet" aria-hidden="false"
           (click)="dismissFollower($event, follower)"
-                [matTooltip]="followerService.autoDismissUnlocked ? 'Dismiss this pet.
-                Shift-click to automatically dismiss every pet of this type.
-                Ctrl-click to set the current number as the limit without dismissing.':
-                'Dismiss this pet.'">
+                [matTooltip]="followerService.autoDismissUnlocked ? tooltips.dismissPetAdvanced : tooltips.dismissPet">
           cancel
         </mat-icon>
       </div>

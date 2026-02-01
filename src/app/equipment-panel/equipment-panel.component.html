@@ -3,14 +3,14 @@
     colorize
   </mat-icon>
   Equipment
-  <mat-icon class="panelHelp" matTooltip="You will need to arm yourself with weapons and protective gear if you want to fight through the many battles that await you on your journey to immortality. Legends even speak of extraordinary cultivators who can combine items of the same type to produce even stronger equipment. Watch out, each piece of gear will take damage with use and you will need to constantly improve it to keep it strong.">
+  <mat-icon class="panelHelp" [matTooltip]="panelHelp">
     help
   </mat-icon>  
 </div>
 
 <div class="equipmentScrollWrapper">
 <div class="equipmentContainer" cdkDropList cdkDropListSortingDisabled>
-    <div style="grid-area: head;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'head', 'lockedSlot': inventoryService.isSlotLocked('head')}" [ngClass]="getEffectClass('head')"
+    <div style="grid-area: head;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'head', 'lockedSlot': inventoryService.isSlotLocked('head'), 'brokenItem': isBroken('head')}" [class]="getEffectClass('head')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
       [cdkDragData]="character.equipment.head" [cdkDragDisabled]="!character.equipment.head"
       (dblclick)="slotDoubleClicked('head', $event)" tabindex="0"
@@ -35,7 +35,7 @@
       }
     </div>
     <div style="grid-area: right;" class="itemSlot textOverflow"
-      [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'rightHand', 'lockedSlot': inventoryService.isSlotLocked('rightHand')}"  [ngClass]="getEffectClass('rightHand')"
+      [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'rightHand', 'lockedSlot': inventoryService.isSlotLocked('rightHand'), 'brokenItem': isBroken('rightHand')}" [class]="getEffectClass('rightHand')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
       [cdkDragData]="character.equipment.rightHand" [cdkDragDisabled]="!character.equipment.rightHand"
       (dblclick)="slotDoubleClicked('rightHand', $event)" tabindex="0"
@@ -59,7 +59,7 @@
         <div class="itemTier" [ngStyle]="getTierStyle(character.equipment.rightHand)">{{tierInfo.prefix}}{{tierInfo.tier}}</div>
       }
     </div>
-    <div style="grid-area: body;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'body', 'lockedSlot': inventoryService.isSlotLocked('body')}" [ngClass]="getEffectClass('body')"
+    <div style="grid-area: body;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'body', 'lockedSlot': inventoryService.isSlotLocked('body'), 'brokenItem': isBroken('body')}" [class]="getEffectClass('body')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
       [cdkDragData]="character.equipment.body" [cdkDragDisabled]="!character.equipment.body"
       (dblclick)="slotDoubleClicked('body', $event)" tabindex="0"
@@ -83,7 +83,7 @@
         <div class="itemTier" [ngStyle]="getTierStyle(character.equipment.body)">{{tierInfo.prefix}}{{tierInfo.tier}}</div>
       }
     </div>
-    <div style="grid-area: left;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'leftHand', 'lockedSlot': inventoryService.isSlotLocked('leftHand')}" [ngClass]="getEffectClass('leftHand')"
+    <div style="grid-area: left;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'leftHand', 'lockedSlot': inventoryService.isSlotLocked('leftHand'), 'brokenItem': isBroken('leftHand')}" [class]="getEffectClass('leftHand')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
       [cdkDragData]="character.equipment.leftHand" [cdkDragDisabled]="!character.equipment.leftHand"
       (dblclick)="slotDoubleClicked('leftHand', $event)" tabindex="0"
@@ -108,13 +108,13 @@
       }
     </div>
     <div style="grid-area: stats;">
-      <span tabindex="0" matTooltip="Accuracy. Your chance to hit monsters when you attack them. Based on your speed."><mat-icon>manage_accounts</mat-icon>{{character.accuracy | percent}}</span>
+      <span tabindex="0" [matTooltip]="tooltips.combat.accuracyFull"><mat-icon>manage_accounts</mat-icon>{{character.accuracy | percent}}</span>
       <br/>
-      <span tabindex="0" [ngClass]="{'highlightSpan': character.righteousWrathUnlocked}" matTooltip="Attack Power. The damage you will do when you hit a monster. Based on your strength and weapons.{{character.righteousWrathUnlocked ? ' Doubled by the power of your righteous wrath.':''}}"><mat-icon>flare</mat-icon>{{character.attackPower | bigNumber}}</span>
+      <span tabindex="0" [ngClass]="{'highlightSpan': character.righteousWrathUnlocked}" [matTooltip]="tooltips.combat.attackPowerFull + (character.righteousWrathUnlocked ? tooltips.combat.righteousWrathSuffix : '')"><mat-icon>flare</mat-icon>{{character.attackPower | bigNumber}}</span>
       <br/>
-      <span tabindex="0" [ngClass]="{'highlightSpan': character.righteousWrathUnlocked}" matTooltip="Defense. Reduces damage when a monster hits you. Based on your toughness and armor.{{character.righteousWrathUnlocked ? ' Doubled by the power of your righteous wrath.':''}}"><mat-icon>shield</mat-icon>{{character.defense | bigNumber}}</span>
+      <span tabindex="0" [ngClass]="{'highlightSpan': character.righteousWrathUnlocked}" [matTooltip]="tooltips.combat.defenseFull + (character.righteousWrathUnlocked ? tooltips.combat.righteousWrathSuffix : '')"><mat-icon>shield</mat-icon>{{character.defense | bigNumber}}</span>
     </div>
-    <div style="grid-area: legs;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'legs', 'lockedSlot': inventoryService.isSlotLocked('legs')}" [ngClass]="getEffectClass('legs')"
+    <div style="grid-area: legs;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'legs', 'lockedSlot': inventoryService.isSlotLocked('legs'), 'brokenItem': isBroken('legs')}" [class]="getEffectClass('legs')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
       [cdkDragData]="character.equipment.legs" [cdkDragDisabled]="!character.equipment.legs"
       (dblclick)="slotDoubleClicked('legs', $event)" tabindex="0"
@@ -138,7 +138,7 @@
         <div class="itemTier" [ngStyle]="getTierStyle(character.equipment.legs)">{{tierInfo.prefix}}{{tierInfo.tier}}</div>
       }
     </div>
-    <div style="grid-area: feet;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'feet', 'lockedSlot': inventoryService.isSlotLocked('feet')}" [ngClass]="getEffectClass('feet')"
+    <div style="grid-area: feet;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'feet', 'lockedSlot': inventoryService.isSlotLocked('feet'), 'brokenItem': isBroken('feet')}" [class]="getEffectClass('feet')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
       [cdkDragData]="character.equipment.feet" [cdkDragDisabled]="!character.equipment.feet"
       (dblclick)="slotDoubleClicked('feet', $event)" tabindex="0"

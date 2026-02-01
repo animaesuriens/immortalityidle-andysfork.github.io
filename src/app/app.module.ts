@@ -40,9 +40,9 @@ import { LogFilterPanelComponent } from './log-filter-panel/log-filter-panel.com
 import { StatisticsPanelComponent } from './statistics-panel/statistics-panel.component';
 import { TextPanelComponent } from './text-panel/text-panel.component';
 import { BattleOptionsPanelComponent } from './battle-options-panel/battle-options-panel.component';
-import { SaveModalComponent } from './save-modal/save-modal.component';
 import { OfflineModalComponent } from './offline-modal/offline-modal.component';
 import { LifeSummaryComponent } from './life-summary/life-summary.component';
+import { CreditsModalComponent } from './credits-modal/credits-modal.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { KtdGridModule } from '@katoid/angular-grid-layout';
 
@@ -83,9 +83,9 @@ const materialModules = [MatDialogModule, MatIconModule, MatTabsModule, MatToolt
     StatisticsPanelComponent,
     TextPanelComponent,
     BattleOptionsPanelComponent,
-    SaveModalComponent,
     OfflineModalComponent,
     LifeSummaryComponent,
+    CreditsModalComponent,
   ],
   imports: [
     BrowserModule,

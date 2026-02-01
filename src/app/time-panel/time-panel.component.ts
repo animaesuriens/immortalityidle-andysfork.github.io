@@ -7,6 +7,7 @@ import { TimeOptionsPanelComponent } from '../time-options-panel/time-options-pa
 import { MatDialog } from '@angular/material/dialog';
 import { GameStateService } from '../game-state/game-state.service';
 import { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
+import { PANEL_HELP, TIME_PANEL } from '../game-state/tooltips';
 
 @Component({
   selector: 'app-time-panel',
@@ -19,6 +20,8 @@ export class TimePanelComponent {
   unlockFastestSpeed = false;
   dragPositionX = 0;
   dragPositionY = 0;
+  panelHelp = PANEL_HELP.time;
+  tooltips = TIME_PANEL;
 
   constructor(
     public mainLoopService: MainLoopService,
@@ -27,6 +30,17 @@ export class TimePanelComponent {
     public gameStateService: GameStateService,
     public dialog: MatDialog
   ) {}
+
+  getSpeedTooltip(divider: number): string {
+    const tps = this.mainLoopService.getTPS(divider).toFixed(2);
+    switch (divider) {
+      case 10: return this.tooltips.standardSpeed(tps);
+      case 5: return this.tooltips.fastSpeed(tps);
+      case 2: return this.tooltips.fasterSpeed(tps);
+      case 1: return this.tooltips.fastestSpeed(tps);
+      default: return '';
+    }
+  }
 
   pauseClick() {
     if (this.mainLoopService.pause) {

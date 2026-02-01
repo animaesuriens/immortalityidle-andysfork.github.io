@@ -2,7 +2,15 @@ import { Injectable, Injector } from '@angular/core';
 import { LogService, LogTopic } from './log.service';
 import { MainLoopService } from './main-loop.service';
 import { ReincarnationService } from './reincarnation.service';
-import { Character, AttributeType } from './character';
+import {
+  Character,
+  AttributeType,
+  DAYS_PER_LIFESPAN_BONUS,
+  MAX_BASE_LIFESPAN_YEARS,
+  STARVATION_DAMAGE_PERCENT,
+  STARVATION_DAMAGE_MIN,
+  STARVATION_SPIRITUALITY_GAIN,
+} from './character';
 import { ActivityService } from './activity.service';
 import { Subscription } from 'rxjs';
 import { BigNumberPipe } from '../app.component';
@@ -22,6 +30,8 @@ export class CharacterService {
   forceRebirth = false;
   fatherGift = false;
   lifespanTooltip = '';
+  lifespanHeader = '';
+  lifespanFactors: { label: string; tooltip: string }[] = [];
   deathSubscriber?: Subscription;
   hellService?: HellService;
   private snackBar: MatSnackBar;
@@ -42,15 +52,14 @@ export class CharacterService {
     let prevTotalTicks = this.mainLoopService.totalTicks;
     mainLoopService.longTickSubject.subscribe(elapsedDays => {
       const currentTotalTicks = this.mainLoopService.totalTicks;
-      const daysPerExtraDay = 3650;
 
-      let extraDays = Math.floor(elapsedDays / daysPerExtraDay);
-      if (prevTotalTicks % daysPerExtraDay > currentTotalTicks % daysPerExtraDay) {
+      let extraDays = Math.floor(elapsedDays / DAYS_PER_LIFESPAN_BONUS);
+      if (prevTotalTicks % DAYS_PER_LIFESPAN_BONUS > currentTotalTicks % DAYS_PER_LIFESPAN_BONUS) {
         extraDays++;
       }
 
       if (extraDays > 0) {
-        this.characterState.increaseBaseLifespan(extraDays, 70); //bonus day for living another 10 years, capped at 70 years
+        this.characterState.increaseBaseLifespan(extraDays, MAX_BASE_LIFESPAN_YEARS);
       }
 
       prevTotalTicks = currentTotalTicks;
@@ -73,8 +82,11 @@ export class CharacterService {
       } else if (this.characterState.status.nourishment.value <= 0) {
         this.characterState.status.nourishment.value = 0;
         if (this.characterState.attributes.spirituality.value > 0) {
-          // you're spritual now, you can fast!
-          const starvationDamage = Math.max(this.characterState.status.health.value * 0.2, 20);
+          // you're spiritual now, you can fast!
+          const starvationDamage = Math.max(
+            this.characterState.status.health.value * STARVATION_DAMAGE_PERCENT,
+            STARVATION_DAMAGE_MIN
+          );
           this.logService.injury(
             LogTopic.COMBAT,
             'You take ' + this.bigNumberPipe.transform(starvationDamage) + ' damage from starvation.'
@@ -83,7 +95,7 @@ export class CharacterService {
           if (this.characterState.status.health.value < 0) {
             this.characterState.status.health.value = 0;
           }
-          this.characterState.increaseAttribute('spirituality', 0.1);
+          this.characterState.increaseAttribute('spirituality', STARVATION_SPIRITUALITY_GAIN);
           if (this.characterState.status.health.value <= 0) {
             if (!this.characterState.immortal) {
               deathMessage = 'You starve to death at the age of ' + this.formatAge() + '.';
@@ -161,8 +173,8 @@ export class CharacterService {
       if (this.characterState.highestStamina < this.characterState.status.stamina.value) {
         this.characterState.highestStamina = this.characterState.status.stamina.value;
       }
-      if (this.characterState.highestMana < this.characterState.status.qi.value) {
-        this.characterState.highestMana = this.characterState.status.qi.value;
+      if (this.characterState.highestQi < this.characterState.status.qi.value) {
+        this.characterState.highestQi = this.characterState.status.qi.value;
       }
 
       if (this.characterState.dead) {
@@ -206,40 +218,206 @@ export class CharacterService {
         this.characterState.magicLifespan <=
       0
     ) {
-      this.lifespanTooltip = 'You have done nothing to extend your lifespan.';
+      this.lifespanHeader = 'You have done nothing to extend your lifespan.';
+      this.lifespanFactors = [];
+      this.lifespanTooltip = this.lifespanHeader;
       return;
     }
-    let tooltip = 'Your base lifespan of ' + this.yearify(this.characterState.baseLifespan) + ' is extended by:';
     if (this.characterState.immortal) {
-      tooltip =
+      this.lifespanHeader =
         'You are immortal. If you had remained mortal, your base lifespan of ' +
         this.yearify(this.characterState.baseLifespan) +
         ' would be extended by:';
+    } else {
+      this.lifespanHeader = 'Your base lifespan of ' + this.yearify(this.characterState.baseLifespan) + ' is extended by:';
     }
-    const factors: string[] = [];
+    const factors: { label: string; tooltip: string }[] = [];
     if (this.characterState.foodLifespan > 0) {
-      factors.push('Healthy Food: ' + this.yearify(this.characterState.foodLifespan));
+      factors.push({
+        label: 'Healthy Food: ' + this.yearify(this.characterState.foodLifespan),
+        tooltip: 'Eating healthy crops increases lifespan.\n\nTotal bonus: ' + this.yearify(this.characterState.foodLifespan),
+      });
     }
     if (this.characterState.alchemyLifespan > 0) {
-      factors.push('Alchemy: ' + this.yearify(this.characterState.alchemyLifespan));
+      factors.push({
+        label: 'Alchemy: ' + this.yearify(this.characterState.alchemyLifespan),
+        tooltip: 'Consuming alchemical pills increases lifespan.\n\nTotal bonus: ' + this.yearify(this.characterState.alchemyLifespan),
+      });
     }
     if (this.characterState.statLifespan > 0) {
-      factors.push('Basic Attributes: ' + this.yearify(this.characterState.statLifespan));
-    }
-    if (this.characterState.spiritualityLifespan > 0) {
-      factors.push('Spirituality: ' + this.yearify(this.characterState.spiritualityLifespan));
+      factors.push({
+        label: 'Basic Attributes: ' + this.yearify(this.characterState.statLifespan),
+        tooltip: this.getStatLifespanTooltip(),
+      });
     }
     if (this.characterState.magicLifespan > 0) {
-      factors.push('Magic: ' + this.yearify(this.characterState.magicLifespan));
+      factors.push({
+        label: 'Cultivation: ' + this.yearify(this.characterState.magicLifespan),
+        tooltip: this.getCultivationLifespanTooltip(),
+      });
     }
+    if (this.characterState.spiritualityLifespan > 0) {
+      factors.push({
+        label: 'Spirituality: ' + this.yearify(this.characterState.spiritualityLifespan),
+        tooltip: this.getSpiritualityLifespanTooltip(),
+      });
+    }
+    this.lifespanFactors = factors;
+    // Keep legacy tooltip for backward compatibility
+    let tooltip = this.lifespanHeader;
     for (let i = 0; i < factors.length; i++) {
       if (i % 3 === 0) {
-        tooltip += '\n' + factors[i];
+        tooltip += '\n' + factors[i].label;
       } else {
-        tooltip += ' | ' + factors[i];
+        tooltip += ' | ' + factors[i].label;
       }
     }
     this.lifespanTooltip = tooltip;
+  }
+
+  private getStatLifespanTooltip(): string {
+    const attrs = this.characterState.attributes;
+    const totalAptitude =
+      attrs.strength.aptitude +
+      attrs.toughness.aptitude +
+      attrs.speed.aptitude +
+      attrs.intelligence.aptitude +
+      attrs.charisma.aptitude;
+    const avgAptitude = totalAptitude / 5;
+    const multiplier = this.characterState.bloodlineRank < 5 ? 0.1 : 5;
+
+    const lines: string[] = [
+      'Basic Attributes',
+      '',
+      'Lifespan bonus based on average aptitude.',
+      '',
+      'Aptitudes:',
+      `  Str ${this.bigNumberPipe.transform(attrs.strength.aptitude)} + Tou ${this.bigNumberPipe.transform(attrs.toughness.aptitude)} + Spd ${this.bigNumberPipe.transform(attrs.speed.aptitude)} + Int ${this.bigNumberPipe.transform(attrs.intelligence.aptitude)} + Cha ${this.bigNumberPipe.transform(attrs.charisma.aptitude)}`,
+      `  = ${this.bigNumberPipe.transform(totalAptitude)} total ÷ 5 = ${this.bigNumberPipe.transform(avgAptitude)} avg`,
+      '',
+      ...this.getAptitudeMultiplierBreakdown(avgAptitude, false),
+      '',
+      `Bloodline multiplier: ×${multiplier} (${this.characterState.bloodlineRank < 5 ? 'rank < 5: ×0.1' : 'rank ≥ 5: ×5'})`,
+      `Final: ${this.yearify(this.characterState.statLifespan)}`,
+    ];
+    return lines.join('\n');
+  }
+
+  private getSpiritualityLifespanTooltip(): string {
+    const spirValue = this.characterState.attributes.spirituality.value;
+
+    const lines: string[] = [
+      'Spirituality',
+      '',
+      'Lifespan bonus based on spirituality value.',
+      '',
+      `Spirituality: ${this.bigNumberPipe.transform(spirValue)}`,
+      '',
+      ...this.getAptitudeMultiplierBreakdown(spirValue, true),
+      '',
+      `Spirituality multiplier: ×5 (fixed)`,
+      `Final: ${this.yearify(this.characterState.spiritualityLifespan)}`,
+    ];
+    return lines.join('\n');
+  }
+
+  private getAptitudeMultiplierBreakdown(value: number, noEmpowerment: boolean): string[] {
+    const state = this.characterState;
+    const limit = state.attributeScalingLimit;
+    const softCap = state.attributeSoftCap;
+    const empMult = noEmpowerment ? 1 : state.empowermentMult;
+    const lines: string[] = [];
+
+    // Determine which tier and show the formula
+    let x: number;
+    let tierName: string;
+    let formula: string;
+
+    if (value < limit) {
+      tierName = 'Linear (below scaling limit)';
+      x = value;
+      formula = `${this.bigNumberPipe.transform(value)}`;
+    } else if (value < limit * 10) {
+      tierName = 'Reduced (1/4 rate)';
+      const excess = value - limit;
+      x = limit + excess / 4;
+      formula = `${this.bigNumberPipe.transform(limit)} + (${this.bigNumberPipe.transform(value)} - ${this.bigNumberPipe.transform(limit)}) ÷ 4 = ${this.bigNumberPipe.transform(x)}`;
+    } else if (value < limit * 100) {
+      tierName = 'Reduced (1/20 rate)';
+      const tier1 = limit;
+      const tier2 = (limit * 9) / 4;
+      const excess = (value - limit * 10) / 20;
+      x = tier1 + tier2 + excess;
+      formula = `${this.bigNumberPipe.transform(tier1)} + ${this.bigNumberPipe.transform(tier2)} + (${this.bigNumberPipe.transform(value)} - ${this.bigNumberPipe.transform(limit * 10)}) ÷ 20 = ${this.bigNumberPipe.transform(x)}`;
+    } else if (value <= softCap) {
+      tierName = 'Reduced (1/100 rate)';
+      const tier1 = limit;
+      const tier2 = (limit * 9) / 4;
+      const tier3 = (limit * 90) / 20;
+      const excess = (value - limit * 100) / 100;
+      x = tier1 + tier2 + tier3 + excess;
+      formula = `${this.bigNumberPipe.transform(tier1)} + ${this.bigNumberPipe.transform(tier2)} + ${this.bigNumberPipe.transform(tier3)} + (${this.bigNumberPipe.transform(value)} - ${this.bigNumberPipe.transform(limit * 100)}) ÷ 100 = ${this.bigNumberPipe.transform(x)}`;
+    } else {
+      tierName = 'Soft-capped (sqrt)';
+      const d = limit + (limit * 9) / 4 + (limit * 90) / 20 + (softCap - limit * 100) / 100;
+      const sqrtFactor = Math.pow(limit / 1e13, 0.15);
+      const inner = (value - softCap) * sqrtFactor;
+      x = Math.pow(inner, 0.5) + d;
+      formula = `√((${this.bigNumberPipe.transform(value)} - ${this.bigNumberPipe.transform(softCap)}) × ${sqrtFactor.toFixed(6)}) + ${this.bigNumberPipe.transform(d)} = √(${this.bigNumberPipe.transform(inner)}) + ${this.bigNumberPipe.transform(d)} = ${this.bigNumberPipe.transform(x)}`;
+    }
+
+    lines.push(`Tier: ${tierName}`);
+    const meridianRank = Math.log10(state.reinforceMeridiansCost / state.reinforceMeridiansOriginalCost);
+    lines.push(`Scaling limit: ${this.bigNumberPipe.transform(limit)} (10 × 2^${meridianRank} from Meridians)`);
+    lines.push(`Calculation: ${formula}`);
+
+    // Empowerment
+    if (!noEmpowerment && empMult !== 1) {
+      const afterEmp = x * empMult;
+      lines.push(`Empowerment: × ${empMult.toFixed(3)} = ${this.bigNumberPipe.transform(afterEmp)}`);
+      x = afterEmp;
+    }
+
+    // Hardcap (if bloodlineRank < 8)
+    if (state.bloodlineRank < 8) {
+      let c = 365000;
+      if (state.yinYangUnlocked) {
+        const balance = Math.max(1 - Math.abs(state.yang - state.yin) / ((state.yang + state.yin) / 2), 0);
+        c += balance * c;
+      }
+      const hardcapped = c / (-1 - Math.log((x + c) / c)) + c;
+      lines.push(`Hardcap applied: ${this.bigNumberPipe.transform(x)} → ${this.bigNumberPipe.transform(hardcapped)}`);
+      x = hardcapped;
+    }
+
+    lines.push(`Base bonus: ${this.yearify(x)}`);
+    return lines;
+  }
+
+  private getCultivationLifespanTooltip(): string {
+    const sources = this.characterState.cultivationLifespanSources;
+    const sourceNames = Object.keys(sources);
+    const total = this.characterState.getCultivationLifespan();
+
+    const lines: string[] = [
+      'Cultivation',
+      '',
+      'Lifespan bonus from cultivation activities.',
+      '',
+    ];
+
+    if (sourceNames.length === 0) {
+      lines.push('No sources yet.');
+    } else {
+      lines.push('Sources:');
+      for (const name of sourceNames) {
+        lines.push(`• ${name}: ${this.yearify(sources[name])}`);
+      }
+      lines.push('');
+      lines.push(`Total: ${this.yearify(total)}`);
+    }
+
+    return lines.join('\n');
   }
 
   yearify(value: number) {
