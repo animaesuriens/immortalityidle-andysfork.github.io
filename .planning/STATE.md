@@ -63,6 +63,7 @@ Decisions are logged in DECISIONS.md. Key decisions affecting current work:
 ### Pending Todos
 
 1. **Angular modernization refactor** (ui) - Standalone components, inject() function, signal-based inputs/outputs
+2. **Refactor activity location/visibility system** (architecture) - Data-driven activity visibility with location flags instead of procedural list building
 
 ### Blockers/Concerns
 
