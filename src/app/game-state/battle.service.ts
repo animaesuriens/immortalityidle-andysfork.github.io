@@ -244,7 +244,7 @@ export class BattleService {
             damage -= damage * (this.characterService.characterState.yinYangBalance / 2);
           }
           this.logService.injury(
-            LogTopic.DAMAGE,
+            LogTopic.COMBAT,
             'Ow! ' + enemyStack.enemy.name + ' hit you for ' + this.bigNumberPipe.transform(damage) + ' damage'
           );
           if (damageBack) {
@@ -706,7 +706,7 @@ export class BattleService {
         this.hellService.daysFasted = 0;
         const damage = this.characterService.characterState.status.health.value / 4;
         this.logService.injury(
-          LogTopic.DAMAGE,
+          LogTopic.COMBAT,
           'The hellfire burns as it goes down, damaging you for ' + damage + ' extra damage.'
         );
         this.characterService.characterState.status.health.value -= damage;

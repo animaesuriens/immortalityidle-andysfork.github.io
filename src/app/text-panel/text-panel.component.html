@@ -1,8 +1,13 @@
-<div class='darkMode'>
-  <h3>{{titleText}}</h3>
-  <hr/>
+<div class='darkMode' [ngClass]="{'milestoneModal': isMilestone}">
+  <h3 [ngClass]="{'milestoneTitle': isMilestone}">{{titleText}}</h3>
+  <hr [ngClass]="{'milestoneDivider': isMilestone}"/>
   <div class="textDiv">
     <span [innerHTML]="bodyText"></span>
+    @if (isMilestone) {
+      <div class="enterHellSection">
+        <button class="enterHellButton" mat-dialog-close>Enter Hell</button>
+      </div>
+    }
   </div>
   @if (imageFile !== '') {
     <div class="imageDiv">

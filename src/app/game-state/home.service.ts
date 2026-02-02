@@ -773,12 +773,12 @@ export class HomeService {
     this.autoBuyHomeLimit = properties.autoBuyHomeLimit || 3;
     this.autoBuyFurnitureUnlocked = properties.autoBuyFurnitureUnlocked || false;
     // Hydrate autoBuyFurniture with actual Furniture instances
-    if (properties.autoBuyFurniture) {
-      for (const slot of this.furniturePositionsArray) {
-        const savedFurniture = (properties.autoBuyFurniture as FurnitureSlots)[slot];
-        if (savedFurniture) {
-          this.autoBuyFurniture[slot] = this.itemRepoService.getFurnitureById(savedFurniture.id);
-        }
+    for (const slot of this.furniturePositionsArray) {
+      const savedFurniture = (properties.autoBuyFurniture as FurnitureSlots)?.[slot];
+      if (savedFurniture) {
+        this.autoBuyFurniture[slot] = this.itemRepoService.getFurnitureById(savedFurniture.id);
+      } else {
+        this.autoBuyFurniture[slot] = null; // Clear slots not in save (migration from old saves)
       }
     }
     this.autoFieldUnlocked = properties.autoFieldUnlocked || false;
@@ -789,9 +789,11 @@ export class HomeService {
     this.houseBuildingProgress = properties.houseBuildingProgress || 1;
     this.upgrading = properties.upgrading || false;
     for (const slot of this.furniturePositionsArray) {
-      const savedFurniture = properties.furniture[slot];
+      const savedFurniture = properties.furniture?.[slot];
       if (savedFurniture) {
         this.furniture[slot] = this.itemRepoService.getFurnitureById(savedFurniture.id);
+      } else {
+        this.furniture[slot] = null; // Clear slots not in save (migration from old saves)
       }
     }
     this.ownedFurniture = properties.ownedFurniture || [];

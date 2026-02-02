@@ -1,0 +1,77 @@
+@import (reference) "../../styles.less";
+
+.confirmationDialog {
+    padding: 32px 40px;
+    min-width: 380px;
+    max-width: 500px;
+    background: linear-gradient(180deg, #3d3520 0%, #2a2518 50%, #1a1610 100%);
+    border: 2px solid #daa520;
+    border-radius: 8px;
+    box-shadow:
+        0 0 40px rgba(218, 165, 32, 0.5),
+        0 0 80px rgba(218, 165, 32, 0.35),
+        0 0 120px rgba(218, 165, 32, 0.2),
+        0 0 160px rgba(218, 165, 32, 0.1);
+}
+
+.confirmationTitle {
+    font-size: 1.5em;
+    text-align: center;
+    color: #daa520;
+    text-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
+    margin: 0 0 16px 0;
+}
+
+.confirmationDivider {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #daa520, transparent);
+    margin-bottom: 20px;
+}
+
+.confirmationMessage {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 28px;
+    white-space: pre-line;
+    text-align: justify;
+    padding: 0 8px;
+}
+
+.confirmationButtons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.confirmButton {
+    font-size: 13px;
+    padding: 8px 16px;
+    min-width: auto;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: normal;
+    transition: all 0.2s ease;
+}
+
+.yesButton {
+    background: linear-gradient(180deg, #2e7d32 0%, #1b5e20 100%);
+    color: white;
+    border: 2px solid #4caf50;
+
+    &:hover {
+        background: linear-gradient(180deg, #388e3c 0%, #2e7d32 100%);
+        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+    }
+}
+
+.noButton {
+    background: linear-gradient(180deg, #616161 0%, #424242 100%);
+    color: white;
+    border: 2px solid #757575;
+
+    &:hover {
+        background: linear-gradient(180deg, #757575 0%, #616161 100%);
+        box-shadow: 0 2px 8px rgba(117, 117, 117, 0.4);
+    }
+}

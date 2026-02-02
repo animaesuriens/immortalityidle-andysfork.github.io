@@ -25,7 +25,7 @@ export interface LogProperties {
 export enum LogTopic {
   MILESTONE = 'Milestone',
   COMBAT = 'Combat',
-  DAMAGE = 'Damage',
+  DAMAGE = 'Non-combat Damage',
   CRAFTING = 'Crafting',
   FOLLOWER = 'Follower',
   HOME = 'Home',

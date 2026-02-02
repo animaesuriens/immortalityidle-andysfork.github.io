@@ -9,9 +9,6 @@
         [checked]="logService.topicProperties[topic].enabled" />
       <label [for]="'filter' + topic">
         Show {{topic}} Log Entries
-        @if (logService.topicProperties[topic].hasNewMessages) {
-          <span class="highlightText"> (new)</span>
-        }
       </label>
       <br/>
     }

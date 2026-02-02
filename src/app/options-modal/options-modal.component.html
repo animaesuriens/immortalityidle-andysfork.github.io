@@ -80,16 +80,18 @@
 
       <!-- Game Files Section -->
       <h1>Game Files</h1>
-      <div class="optionField">
-        <div>
+      <div class="optionField gameFilesSection">
+        <div class="gameFileRow">
+          <span class="gameFileLabel">Layout:</span>
           <input type="file" id="importLayoutFile" #importLayoutFile (change)="importLayoutFileClick($event)" />
-          <button (click)="importLayoutFile.click()">Import Layout File</button>
-          <button (click)="exportLayoutFileClick()">Export Layout File</button>
+          <button (click)="importLayoutFile.click()">Import</button>
+          <button (click)="exportLayoutFileClick()">Export</button>
         </div>
-        <div>
+        <div class="gameFileRow">
+          <span class="gameFileLabel">Save:</span>
           <input type="file" id="importGameFile" #importGameFile (change)="importGameFileClick($event)" />
-          <button (click)="importGameFile.click()">Import Save File</button>
-          <button (click)="exportGameFileClick()">Export Save File</button>
+          <button (click)="importGameFile.click()">Import</button>
+          <button (click)="exportGameFileClick()">Export</button>
         </div>
       </div>
 
@@ -850,7 +852,9 @@
         <div class="creditSection">
           <h1>This Fork</h1>
           <span>
-            This version is Andy's Fork, a modified version with UI improvements and experimental features.
+            This version is Andy's Fork, a modified version with UI changes and experimental features built using Claude Code.
+            Ever since forking from v1.2.5, I've referenced Christian's work on v2 from time to time to directly port or recreate some of the newer features he has made.
+            Check out the fork's code on <a href="https://github.com/animaesuriens/immortalityidle-andysfork.github.io" target="_blank">GitHub</a>.
           </span>
         </div>
         <div class="creditSection">

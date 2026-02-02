@@ -11,10 +11,12 @@ export class TextPanelComponent {
   titleText = '';
   bodyText = '';
   imageFile = '';
+  isMilestone = false;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { titleText: string; bodyText: string; imageFile: string }) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { titleText: string; bodyText: string; imageFile?: string; milestone?: boolean }) {
     this.titleText = data.titleText;
     this.bodyText = data.bodyText;
-    this.imageFile = data.imageFile;
+    this.imageFile = data.imageFile || '';
+    this.isMilestone = data.milestone || false;
   }
 }

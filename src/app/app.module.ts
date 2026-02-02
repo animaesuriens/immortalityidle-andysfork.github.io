@@ -43,6 +43,7 @@ import { BattleOptionsPanelComponent } from './battle-options-panel/battle-optio
 import { OfflineModalComponent } from './offline-modal/offline-modal.component';
 import { LifeSummaryComponent } from './life-summary/life-summary.component';
 import { CreditsModalComponent } from './credits-modal/credits-modal.component';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { KtdGridModule } from '@katoid/angular-grid-layout';
 
@@ -86,6 +87,7 @@ const materialModules = [MatDialogModule, MatIconModule, MatTabsModule, MatToolt
     OfflineModalComponent,
     LifeSummaryComponent,
     CreditsModalComponent,
+    ConfirmationDialogComponent,
   ],
   imports: [
     BrowserModule,

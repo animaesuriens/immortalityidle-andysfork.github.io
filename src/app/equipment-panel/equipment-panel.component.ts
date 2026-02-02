@@ -271,6 +271,25 @@ export class EquipmentPanelComponent {
     }
   }
 
+  unequipAll(): void {
+    const equipment = this.characterService.characterState.equipment;
+    const slots: EquipmentPosition[] = ['leftHand', 'rightHand', 'head', 'body', 'legs', 'feet'];
+
+    for (const slot of slots) {
+      const item = equipment[slot];
+      if (item && this.inventoryService.openInventorySlots() > 0) {
+        this.inventoryService.addItem(item as Item);
+        equipment[slot] = null;
+      }
+    }
+    this.inventoryService.selectedItem = null;
+  }
+
+  hasAnyEquipment(): boolean {
+    const equipment = this.characterService.characterState.equipment;
+    return !!(equipment.leftHand || equipment.rightHand || equipment.head || equipment.body || equipment.legs || equipment.feet);
+  }
+
   getSelectedItemSlot() {
     const item = this.inventoryService.selectedItem?.item;
     if (!item || !instanceOfEquipment(item)) {

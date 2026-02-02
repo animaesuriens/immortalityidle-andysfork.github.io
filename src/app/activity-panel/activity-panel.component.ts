@@ -18,6 +18,7 @@ import { LogService, LogTopic } from '../game-state/log.service';
 import { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
 import { EffectShortPipe, EffectLongPipe, RenderedEffect } from '../effects';
 import { PANEL_HELP, ACTIVITY } from '../game-state/tooltips';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 interface ActivityGroup {
   name: string;
@@ -179,24 +180,46 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
   }
 
   JoinTheGodsClick() {
-    if (
-      !confirm(
-        'Are you sure you are ready for this? You will need to leave all your money and most of your followers and possessions behind as you leave this mortal realm.'
-      )
-    ) {
-      return;
-    }
-    const dialogRef = this.dialog.open(TextPanelComponent, {
-      width: '700px',
-      data: { titleText: 'Joining the Gods', bodyText: JoinTheGodsText },
+    // Pause time while showing confirmation, but ticks still accumulate
+    const wasPaused = this.mainLoopService.pause;
+    this.mainLoopService.pause = true;
+
+    // Check if player has any food in inventory
+    const hasFood = this.inventoryService.itemStacks.some(
+      stack => stack?.item?.type === 'food'
+    );
+
+    const confirmDialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        message: 'You will need to leave all your money, mundane followers, and possessions behind as you leave this mortal realm. It will be a long journey with no place for rest, so make sure to bring a lot of food with you.\n\nAre you sure you are ready for this?',
+        yesText: hasFood ? 'Yes, I am ready to manifest my destiny' : 'Yes, an Immortal has no need for food',
+        noText: hasFood ? 'No, I still have unfinished business' : 'No, I need to prepare',
+      },
       autoFocus: false,
+      panelClass: 'golden-dialog',
     });
-    dialogRef.afterClosed().subscribe(() => {
-      this.hellService.inHell = true;
-      this.characterService.characterState.money = 0;
-      this.inventoryService.stashInventory();
-      this.followerService.hellPurge();
-      this.activityService.reloadActivities();
+
+    confirmDialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) {
+        this.mainLoopService.pause = wasPaused;
+        return;
+      }
+
+      const dialogRef = this.dialog.open(TextPanelComponent, {
+        width: '700px',
+        height: '80vh',
+        data: { titleText: 'Joining the Gods', bodyText: JoinTheGodsText, milestone: true },
+        autoFocus: false,
+      });
+      dialogRef.afterClosed().subscribe(() => {
+        this.mainLoopService.pause = wasPaused;
+        this.hellService.inHell = true;
+        this.characterService.characterState.hasEnteredHell = true;
+        this.characterService.characterState.money = 0;
+        this.inventoryService.stashInventory();
+        this.followerService.hellPurge();
+        this.activityService.reloadActivities();
+      });
     });
   }
 

@@ -291,6 +291,7 @@ export class OptionsModalComponent {
           mainLoopService.importing = true;
           gameStateService.importGame(Reader.result);
           gameStateService.savetoLocalStorage();
+          gameStateService.saveToSlot('auto'); // Also save to auto slot so it loads on refresh
           gameStateService.updateImportFlagKey(true);
           // refresh the page
           setTimeout(() => {

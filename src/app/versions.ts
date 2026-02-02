@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.30.0', description: 'Enhanced Join the Gods experience: golden confirmation dialog with radial glow, dynamic button text based on food inventory, milestone-styled modal with activity image and Enter Hell button. Equipment panel: Unequip All button. Log improvements: rename Damage to Non-combat Damage, move combat damage to Combat topic, move follower deaths to Follower topic, remove (new) indicators. Home panel: fix furniture column layout. Options modal: Game Files button spacing. Top bar: center left buttons. Bug fixes: stale furniture data on save import. Add hasEnteredHell character flag.' },
   { version: '1.29.0', description: 'Reorganize log topics from 5 to 10 player-impact categories: MILESTONE, COMBAT, DAMAGE, CRAFTING, FOLLOWER, HOME, INVENTORY, BLOCKED, DEATH, HELL. Default enabled: MILESTONE, BLOCKED, DEATH. Includes save migration for old topics.' },
   { version: '1.28.0', description: 'Rename health-panel to status-panel, enhance equipment panel item management, expand options modal with additional settings, add new achievements, and UI refinements across multiple panels.' },
   { version: '1.27.0', description: 'Add credits modal (replaces save modal), centralized tooltips system, health panel status expansion, equipment panel layout improvements, options modal redesign, time panel and tutorial panel UI updates.' },

@@ -484,7 +484,7 @@ export class FollowersService {
               ' passed away from old age and was not replaced because of your choices in follower jobs.'
           );
         } else {
-          this.logService.injury(LogTopic.DEATH, 'Your follower ' + follower.name + ' passed away from old age.');
+          this.logService.injury(LogTopic.FOLLOWER, 'Your follower ' + follower.name + ' passed away from old age.');
         }
         this.updateFollowerTotalPower();
       } else if (

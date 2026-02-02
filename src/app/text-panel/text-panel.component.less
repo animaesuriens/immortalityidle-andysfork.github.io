@@ -1,12 +1,84 @@
 @import (reference) "../../styles.less";
 
 .textDiv {
-    max-height: 600px;
+    flex: 1;
     overflow-y: auto;
     white-space: pre-line;
+    text-align: justify;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+:host ::ng-deep .textDiv img {
+    display: block;
+    margin: 16px auto;
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
 }
 
 .imageDiv {
     text-align: center;
     margin-top: 16px;
+}
+
+// Make container flex for proper height distribution
+:host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    > div {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+}
+
+// Milestone modal styling
+.milestoneModal {
+    background: linear-gradient(180deg, rgba(255, 215, 0, 0.08) 0%, transparent 30%);
+}
+
+.milestoneTitle {
+    font-size: 1.8em;
+    text-align: center;
+    color: #daa520;
+    text-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
+    margin: 8px 0 12px 0;
+}
+
+.milestoneDivider {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #daa520, transparent);
+    margin-bottom: 16px;
+}
+
+// Enter Hell section at bottom of Join the Gods modal
+.enterHellSection {
+    display: flex;
+    justify-content: center;
+    margin-top: -100px;
+    padding: 124px 16px 24px 16px;
+    background: linear-gradient(0deg, rgba(150, 30, 30, 0.15) 0%, transparent 100%);
+}
+
+.enterHellButton {
+    font-size: 18px;
+    padding: 12px 32px;
+    min-width: 200px;
+    background: linear-gradient(180deg, #8b0000 0%, #5c0000 100%);
+    color: white;
+    border: 2px solid #cc3333;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 2px 8px rgba(200, 50, 50, 0.4);
+
+    &:hover {
+        background: linear-gradient(180deg, #aa0000 0%, #8b0000 100%);
+        box-shadow: 0 4px 12px rgba(200, 50, 50, 0.6);
+    }
 }

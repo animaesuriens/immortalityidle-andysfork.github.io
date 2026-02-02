@@ -5,7 +5,7 @@
   Equipment
   <mat-icon class="panelHelp" [matTooltip]="panelHelp">
     help
-  </mat-icon>  
+  </mat-icon>
 </div>
 
 <div class="equipmentScrollWrapper">
@@ -113,6 +113,10 @@
       <span tabindex="0" [ngClass]="{'highlightSpan': character.righteousWrathUnlocked}" [matTooltip]="getAttackPowerTooltip()" matTooltipClass="multiline-tooltip"><mat-icon>flare</mat-icon>{{character.attackPower | bigNumber}}</span>
       <br/>
       <span tabindex="0" [ngClass]="{'highlightSpan': character.righteousWrathUnlocked}" [matTooltip]="getDefenseTooltip()" matTooltipClass="multiline-tooltip"><mat-icon>shield</mat-icon>{{character.defense | bigNumber}}</span>
+      @if (hasAnyEquipment()) {
+        <br/>
+        <mat-icon class="iconButton unequipAllButton" matTooltip="Unequip all items" (click)="unequipAll()" aria-label="Unequip All" aria-hidden="false">backpack</mat-icon>
+      }
     </div>
     <div style="grid-area: legs;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'legs', 'brokenItem': isBroken('legs')}" [class]="getEffectClass('legs')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"

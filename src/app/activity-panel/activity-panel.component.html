@@ -8,16 +8,16 @@
   </mat-icon>
 
 </div>
+@if (characterService.characterState.immortal && !hellService.inHell && !characterService.characterState.god) {
+  <div class="joinGodsSection">
+    <button class="joinGodsButton" (click)="JoinTheGodsClick()">Join the Gods</button>
+  </div>
+}
 <h3 class="activitiesHeader">
   <div class="standardHeader">
 
   </div>
   <div class="customHeader">
-    @if (characterService.characterState.immortal && !hellService.inHell && !characterService.characterState.god) {
-      <span>
-        <button (click)="JoinTheGodsClick()">Join the Gods</button>
-      </span>
-    }
     @if (!hellService.inHell) {
       <span matTooltip="{{activityService.activityHeaderDescription}}">{{activityService.activityHeader}} </span>
     }

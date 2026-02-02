@@ -557,6 +557,7 @@ export class AppComponent implements OnInit {
   loadClicked(slot: string) {
     const success = this.gameStateService.loadFromSlot(slot);
     if (success) {
+      this.gameStateService.saveToSlot('auto'); // Update autosave so refresh loads the correct save
       this.gameStateService.updateImportFlagKey(true);
       window.location.reload();
     } else {
