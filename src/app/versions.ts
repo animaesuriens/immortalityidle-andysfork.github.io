@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.31.0', description: 'Add unified consumable tracking system for foods, potions, and pills with currentLife/allTime counters. New lifespan modal (click timer icon in status panel) showing base lifespan details, bonus years, and years lived. New rebirth modal for end-of-life summary. Status panel UI enhancements.' },
   { version: '1.30.0', description: 'Enhanced Join the Gods experience: golden confirmation dialog with radial glow, dynamic button text based on food inventory, milestone-styled modal with activity image and Enter Hell button. Equipment panel: Unequip All button. Log improvements: rename Damage to Non-combat Damage, move combat damage to Combat topic, move follower deaths to Follower topic, remove (new) indicators. Home panel: fix furniture column layout. Options modal: Game Files button spacing. Top bar: center left buttons. Bug fixes: stale furniture data on save import. Add hasEnteredHell character flag.' },
   { version: '1.29.0', description: 'Reorganize log topics from 5 to 10 player-impact categories: MILESTONE, COMBAT, DAMAGE, CRAFTING, FOLLOWER, HOME, INVENTORY, BLOCKED, DEATH, HELL. Default enabled: MILESTONE, BLOCKED, DEATH. Includes save migration for old topics.' },
   { version: '1.28.0', description: 'Rename health-panel to status-panel, enhance equipment panel item management, expand options modal with additional settings, add new achievements, and UI refinements across multiple panels.' },

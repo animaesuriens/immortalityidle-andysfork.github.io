@@ -790,6 +790,7 @@ export class ActivityService {
     }
 
     newList.push(this.Resting);
+    this.OddJobs.projectionOnly = false;
     newList.push(this.OddJobs);
     newList.push(this.Begging);
     newList.push(this.Burning);

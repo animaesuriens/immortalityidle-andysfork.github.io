@@ -125,6 +125,7 @@ export class HellService {
     unlocked: true,
     discovered: true,
     skipApprenticeshipLevel: 0,
+    projectionOnly: false,
   };
 
   hellRecruiting = {
@@ -1317,6 +1318,10 @@ export class HellService {
       newList.push(this.activityService.PurifyGems);
     }
     newList.push(this.activityService.InfuseEquipment);
+    this.activityService.OddJobs.projectionOnly = true;
+    newList.push(this.activityService.OddJobs);
+    this.burnMoney.projectionOnly = true;
+    newList.push(this.burnMoney);
     let allComplete = true;
     for (const hell of this.hells) {
       let consequenceDescription = '';
@@ -2107,7 +2112,7 @@ export class HellService {
         );
       },
       activities: [this.endureTheMill],
-      projectionActivities: [],
+      projectionActivities: [this.activityService.OddJobs, this.burnMoney],
       hint: 'Just endure.',
       progress: () => {
         return this.timesCrushed;

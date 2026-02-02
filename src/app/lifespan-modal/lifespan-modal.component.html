@@ -1,0 +1,22 @@
+<div class="darkMode lifespanModal">
+  <h3>Lifespan Details</h3>
+  <hr/>
+  <div class="baseLifespanInfo">
+    <p>Your base lifespan is {{baseLifespanFormatted}}.</p>
+    <p class="explanation">It starts at {{BASE_LIFESPAN_YEARS}} years and increases by 1 day for every {{YEARS_PER_BONUS_DAY}} years lived across all lives, up to a maximum of {{MAX_BASE_LIFESPAN_YEARS}} years (maximum of {{MAX_BASE_LIFESPAN_YEARS - BASE_LIFESPAN_YEARS}} bonus years).</p>
+    <br/>
+    <p>Years Lived: {{totalYearsLivedFormatted}}</p>
+    <p>Current Bonus: {{currentBonusFormatted}}@if (isBonusMaxed) { (maxed)}</p>
+  </div>
+  <hr/>
+  <div class="lifespanInfo">
+    <div [matTooltip]="getBaseLifespanTooltip()">{{characterService.lifespanHeader}}</div>
+    @if (characterService.lifespanFactors.length > 0) {
+      <div class="lifespanFactorsGrid">
+        @for (factor of characterService.lifespanFactors; track $index) {
+          <span [matTooltip]="factor.tooltip">{{factor.label}}</span>
+        }
+      </div>
+    }
+  </div>
+</div>

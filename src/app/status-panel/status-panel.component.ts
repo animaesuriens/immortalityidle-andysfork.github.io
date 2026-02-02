@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { CharacterService } from '../game-state/character.service';
 import { MainLoopService } from '../game-state/main-loop.service';
 import { GameStateService } from '../game-state/game-state.service';
 import { BigNumberPipe } from '../app.component';
 import { BASE_HEALTH, BASE_STAMINA, BASE_NOURISHMENT, BASE_QI } from '../game-state/character';
-import { PANEL_HELP, STATUS, LIFESPAN } from '../game-state/tooltips';
+import { PANEL_HELP, STATUS } from '../game-state/tooltips';
+import { LifespanModalComponent } from '../lifespan-modal/lifespan-modal.component';
 
 @Component({
   selector: 'app-status-panel',
@@ -27,7 +29,8 @@ export class StatusPanelComponent {
   constructor(
     public characterService: CharacterService,
     public gameStateService: GameStateService,
-    public mainLoopService: MainLoopService
+    public mainLoopService: MainLoopService,
+    private dialog: MatDialog
   ) {
     this.bigNumberPipe = new BigNumberPipe(mainLoopService);
     this.Math = Math;
@@ -39,6 +42,10 @@ export class StatusPanelComponent {
       this.flashNutrition = this.characterService.characterState.statusToFlash.includes('nourishment');
       this.characterService.characterState.statusToFlash = [];
     });
+  }
+
+  openLifespanModal(): void {
+    this.dialog.open(LifespanModalComponent);
   }
 
   updateYinYang() {
@@ -82,18 +89,6 @@ export class StatusPanelComponent {
 
   private fmt(n: number): string {
     return this.bigNumberPipe.transform(n);
-  }
-
-  getBaseLifespanTooltip(): string {
-    const state = this.characterService.characterState;
-    const baseYears = Math.floor(state.baseLifespan / 365);
-    const baseDays = Math.floor(state.baseLifespan % 365);
-    const totalYears = Math.floor(this.mainLoopService.totalTicks / 365).toLocaleString();
-    const totalDays = Math.floor(this.mainLoopService.totalTicks % 365).toFixed(0);
-    const bonusYears = Math.floor((state.baseLifespan - 30 * 365) / 365);
-    const bonusDays = Math.floor((state.baseLifespan - 30 * 365) % 365);
-
-    return LIFESPAN.template(baseYears, baseDays, totalYears, totalDays, bonusYears, bonusDays);
   }
 
   getHealthTooltip(): string {

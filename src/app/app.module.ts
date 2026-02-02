@@ -44,6 +44,8 @@ import { OfflineModalComponent } from './offline-modal/offline-modal.component';
 import { LifeSummaryComponent } from './life-summary/life-summary.component';
 import { CreditsModalComponent } from './credits-modal/credits-modal.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import { RebirthModalComponent } from './rebirth-modal/rebirth-modal.component';
+import { LifespanModalComponent } from './lifespan-modal/lifespan-modal.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { KtdGridModule } from '@katoid/angular-grid-layout';
 
@@ -88,6 +90,8 @@ const materialModules = [MatDialogModule, MatIconModule, MatTabsModule, MatToolt
     LifeSummaryComponent,
     CreditsModalComponent,
     ConfirmationDialogComponent,
+    RebirthModalComponent,
+    LifespanModalComponent,
   ],
   imports: [
     BrowserModule,

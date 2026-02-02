@@ -23,6 +23,7 @@ import {
 import { FurniturePosition } from './home.service';
 import { BigNumberPipe } from '../app.component';
 import { HellService } from './hell.service';
+import { PotionAttribute } from './consumable-tracking';
 
 export interface WeaponStats {
   baseDamage: number;
@@ -274,7 +275,7 @@ export class InventoryService {
     }
 
     mainLoopService.tickSubject.subscribe(() => {
-      if (this.characterService.characterState.dead || this.mainLoopService.pause) {
+      if (this.characterService.characterState.dead) {
         return;
       }
       this.eatFood();
@@ -1723,7 +1724,9 @@ export class InventoryService {
       quantity = 1; //handle potential 0 and negatives just in case
     }
     this.lifetimePotionsUsed += quantity;
-    this.characterService.characterState.attributes[potion.attribute].value += potion.increase * quantity;
+    const totalGained = potion.increase * quantity;
+    this.characterService.characterState.attributes[potion.attribute].value += totalGained;
+    this.characterService.characterState.trackPotionUsed(potion.attribute as PotionAttribute, quantity, totalGained);
   }
 
   /** A special use function for generated pills*/
@@ -1733,12 +1736,15 @@ export class InventoryService {
     }
     this.lifetimePillsUsed += quantity;
     if (pill.effect === 'Longevity') {
-      this.characterService.characterState.alchemyLifespan += pill.power * quantity;
+      const daysGained = pill.power * quantity;
+      this.characterService.characterState.alchemyLifespan += daysGained;
       if (this.characterService.characterState.alchemyLifespan > 36500) {
         this.characterService.characterState.alchemyLifespan = 36500;
       }
+      this.characterService.characterState.trackPillUsed('longevity', quantity, daysGained);
     } else if (pill.effect === 'Empowerment') {
       this.characterService.characterState.empowermentFactor += 0.01;
+      this.characterService.characterState.trackPillUsed('empowerment', quantity, 1);
     }
     this.characterService.characterState.checkOverage();
   }

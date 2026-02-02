@@ -1,0 +1,36 @@
+<div class="darkMode rebirthModal">
+  <div class="textDiv">
+    <span>You will release your soul from your body at the age of {{age}}.</span>
+  </div>
+  <br/>
+  @if (gains.length === 0) {
+    <div class="textDiv noGains">
+      <span>No aptitude gains (attributes unchanged from life start)</span>
+    </div>
+  } @else {
+    <table class="gainsTable">
+      <thead>
+        <tr>
+          <th>Attribute</th>
+          <th>Aptitude Gain</th>
+          <th>New Aptitude</th>
+          <th>Next Life Starts At</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (gain of gains; track gain.name) {
+          <tr>
+            <td>{{gain.name}}</td>
+            <td class="gain">+{{gain.increase}}</td>
+            <td>{{gain.newAptitude}}</td>
+            <td>{{gain.newStartValue}}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+  <div class="buttonRow">
+    <button mat-flat-button class="yesButton" (click)="onYes()">Reincarnate</button>
+    <button mat-flat-button class="noButton" (click)="onNo()">Cancel</button>
+  </div>
+</div>

@@ -27,7 +27,7 @@
       <table>
         <tr>
           <td>Current age:</td>
-          <td>{{characterService.yearify(characterService.characterState.age)}}</td>
+          <td>{{characterService.formatDays(characterService.characterState.age, 'years')}}</td>
         </tr>
         <tr>
           <td>Current money:</td>
@@ -155,7 +155,7 @@
       <table>
         <tr>
           <td>Oldest age:</td>
-          <td>{{characterService.yearify(characterService.characterState.highestAge)}}</td>
+          <td>{{characterService.formatDays(characterService.characterState.highestAge, 'years')}}</td>
         </tr>
         <tr>
           <td>Most money:</td>

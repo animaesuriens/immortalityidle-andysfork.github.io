@@ -11,6 +11,7 @@ import { FollowersService } from './followers.service';
 import { AutoBuyerService } from './autoBuyer.service';
 import { GameStateService } from './game-state.service';
 import { HellLevel, HellService } from './hell.service';
+import { BonusFoodId, BonusType } from './consumable-tracking';
 
 const daysInYear = 365;
 @Injectable({
@@ -406,8 +407,10 @@ export class ItemRepoService {
       useConsumes: true,
       use: (quantity = 1) => {
         this.characterService.characterState.status.nourishment.value += quantity;
+        this.characterService.characterState.trackBonusFoodEaten('cabbage', quantity);
         if (Math.random() < 0.01) {
           this.characterService.characterState.healthBonusFood += quantity;
+          this.characterService.characterState.trackBonusFoodTrigger('cabbage', 'health', quantity);
           this.characterService.characterState.status.health.value += quantity;
         }
         this.characterService.characterState.checkOverage();
@@ -426,7 +429,7 @@ export class ItemRepoService {
       use: (quantity = 1) => {
         const lifespanChance = 0.02;
         const maxLifespanIncrease = 5;
-        this.eatProduce(lifespanChance, maxLifespanIncrease, quantity);
+        this.eatProduce('beans', lifespanChance, maxLifespanIncrease, quantity);
       },
     },
     broccoli: {
@@ -442,7 +445,7 @@ export class ItemRepoService {
       use: (quantity = 1) => {
         const lifespanChance = 0.05;
         const maxLifespanIncrease = 10;
-        this.eatProduce(lifespanChance, maxLifespanIncrease, quantity);
+        this.eatProduce('broccoli', lifespanChance, maxLifespanIncrease, quantity);
       },
     },
     calabash: {
@@ -458,7 +461,7 @@ export class ItemRepoService {
       use: (quantity = 1) => {
         const lifespanChance = 0.08;
         const maxLifespanIncrease = 15;
-        this.eatProduce(lifespanChance, maxLifespanIncrease, quantity);
+        this.eatProduce('calabash', lifespanChance, maxLifespanIncrease, quantity);
       },
     },
     taro: {
@@ -474,7 +477,7 @@ export class ItemRepoService {
       use: (quantity = 1) => {
         const lifespanChance = 0.1;
         const maxLifespanIncrease = 20;
-        this.eatProduce(lifespanChance, maxLifespanIncrease, quantity);
+        this.eatProduce('taro', lifespanChance, maxLifespanIncrease, quantity);
       },
     },
     pear: {
@@ -490,7 +493,7 @@ export class ItemRepoService {
       use: (quantity = 1) => {
         const lifespanChance = 0.12;
         const maxLifespanIncrease = 25;
-        this.eatProduce(lifespanChance, maxLifespanIncrease, quantity);
+        this.eatProduce('pear', lifespanChance, maxLifespanIncrease, quantity);
       },
     },
     melon: {
@@ -506,7 +509,7 @@ export class ItemRepoService {
       use: (quantity = 1) => {
         const lifespanChance = 0.15;
         const maxLifespanIncrease = 30;
-        this.eatProduce(lifespanChance, maxLifespanIncrease, quantity);
+        this.eatProduce('melon', lifespanChance, maxLifespanIncrease, quantity);
       },
     },
     plum: {
@@ -522,7 +525,7 @@ export class ItemRepoService {
       use: (quantity = 1) => {
         const lifespanChance = 0.18;
         const maxLifespanIncrease = 35;
-        this.eatProduce(lifespanChance, maxLifespanIncrease, quantity);
+        this.eatProduce('plum', lifespanChance, maxLifespanIncrease, quantity);
       },
     },
     apricot: {
@@ -538,7 +541,7 @@ export class ItemRepoService {
       use: (quantity = 1) => {
         const lifespanChance = 0.2;
         const maxLifespanIncrease = 40;
-        this.eatProduce(lifespanChance, maxLifespanIncrease, quantity);
+        this.eatProduce('apricot', lifespanChance, maxLifespanIncrease, quantity);
       },
     },
     peach: {
@@ -555,7 +558,7 @@ export class ItemRepoService {
         const lifespanChance = 0.22;
         const maxLifespanIncrease = 72;
         const healValue = 2;
-        this.eatProduce(lifespanChance, maxLifespanIncrease, quantity, healValue);
+        this.eatProduce('peach', lifespanChance, maxLifespanIncrease, quantity, healValue);
       },
     },
     divinePeach: {
@@ -569,17 +572,24 @@ export class ItemRepoService {
       useDescription: '+1 max nourishment, +1 nourishment, +2 max health, +20 health, +2 stamina, +2 max stamina, +1 qi, +1 day food lifespan (max 720 years).',
       useConsumes: true,
       use: (quantity = 1) => {
+        this.characterService.characterState.trackBonusFoodEaten('divinePeach', quantity);
+        // All bonuses are 100% for divine peach
         this.characterService.characterState.nourishmentBonusFood += quantity;
+        this.characterService.characterState.trackBonusFoodTrigger('divinePeach', 'nourishment', quantity);
         this.characterService.characterState.status.nourishment.value += quantity;
         this.characterService.characterState.healthBonusFood += quantity * 2;
+        this.characterService.characterState.trackBonusFoodTrigger('divinePeach', 'health', quantity);
         this.characterService.characterState.status.health.value += quantity * 20;
         this.characterService.characterState.status.stamina.value += quantity * 2;
         this.characterService.characterState.staminaBonusFood += quantity * 2;
+        this.characterService.characterState.trackBonusFoodTrigger('divinePeach', 'stamina', quantity);
         this.characterService.characterState.status.qi.value += quantity;
         if (this.characterService.characterState.foodLifespan + quantity <= daysInYear * 720) {
           this.characterService.characterState.foodLifespan += quantity;
+          this.characterService.characterState.trackBonusFoodTrigger('divinePeach', 'lifespan', quantity);
         } else if (this.characterService.characterState.foodLifespan < daysInYear * 720) {
           this.characterService.characterState.foodLifespan = daysInYear * 720;
+          this.characterService.characterState.trackBonusFoodTrigger('divinePeach', 'lifespan', quantity);
         }
         this.characterService.characterState.checkOverage();
       },
@@ -595,10 +605,14 @@ export class ItemRepoService {
       useDescription: '+2 nourishment, +1 max health, +10 health, +1 max stamina.',
       useConsumes: true,
       use: (quantity = 1) => {
+        this.characterService.characterState.trackBonusFoodEaten('meat', quantity);
         this.characterService.characterState.status.nourishment.value += quantity * 2;
+        // All bonuses are 100% for meat
         this.characterService.characterState.healthBonusFood += quantity;
+        this.characterService.characterState.trackBonusFoodTrigger('meat', 'health', quantity);
         this.characterService.characterState.status.health.value += quantity * 10;
         this.characterService.characterState.staminaBonusFood += quantity;
+        this.characterService.characterState.trackBonusFoodTrigger('meat', 'stamina', quantity);
         this.characterService.characterState.checkOverage();
       },
     },
@@ -613,10 +627,14 @@ export class ItemRepoService {
       useDescription: '+2 nourishment, +1 max health, +20 health, +1 max stamina.',
       useConsumes: true,
       use: (quantity = 1) => {
+        this.characterService.characterState.trackBonusFoodEaten('spiritMeat', quantity);
         this.characterService.characterState.status.nourishment.value += quantity * 2;
+        // All bonuses are 100% for spirit meat
         this.characterService.characterState.healthBonusFood += quantity;
+        this.characterService.characterState.trackBonusFoodTrigger('spiritMeat', 'health', quantity);
         this.characterService.characterState.status.health.value += quantity * 20;
         this.characterService.characterState.staminaBonusFood += quantity;
+        this.characterService.characterState.trackBonusFoodTrigger('spiritMeat', 'stamina', quantity);
         this.characterService.characterState.checkOverage();
       },
     },
@@ -631,10 +649,13 @@ export class ItemRepoService {
       useDescription: '+1 nourishment. 10% chance: +1 max health, +1 max stamina.',
       useConsumes: true,
       use: (quantity = 1) => {
+        this.characterService.characterState.trackBonusFoodEaten('carp', quantity);
         this.characterService.characterState.status.nourishment.value += quantity;
         if (Math.random() < 0.1) {
           this.characterService.characterState.healthBonusFood += quantity;
+          this.characterService.characterState.trackBonusFoodTrigger('carp', 'health', quantity);
           this.characterService.characterState.staminaBonusFood += quantity;
+          this.characterService.characterState.trackBonusFoodTrigger('carp', 'stamina', quantity);
         }
         this.characterService.characterState.checkOverage();
       },
@@ -2951,15 +2972,19 @@ export class ItemRepoService {
     return null;
   }
 
-  private eatProduce(lifespanChance: number, maxLifespanIncrease: number, quantity = 1, healValue = 1) {
+  private eatProduce(foodId: BonusFoodId, lifespanChance: number, maxLifespanIncrease: number, quantity = 1, healValue = 1) {
     this.characterService.characterState.status.nourishment.value += quantity;
+    this.characterService.characterState.trackBonusFoodEaten(foodId, quantity);
     if (Math.random() < lifespanChance) {
       this.characterService.characterState.healthBonusFood += quantity;
+      this.characterService.characterState.trackBonusFoodTrigger(foodId, 'health', quantity);
       this.characterService.characterState.status.health.value += quantity * healValue;
       if (this.characterService.characterState.foodLifespan + quantity <= daysInYear * maxLifespanIncrease) {
         this.characterService.characterState.foodLifespan += quantity;
+        this.characterService.characterState.trackBonusFoodTrigger(foodId, 'lifespan', quantity);
       } else if (this.characterService.characterState.foodLifespan < daysInYear * maxLifespanIncrease) {
         this.characterService.characterState.foodLifespan = daysInYear * maxLifespanIncrease;
+        this.characterService.characterState.trackBonusFoodTrigger(foodId, 'lifespan', quantity);
       }
     }
     this.characterService.characterState.checkOverage();

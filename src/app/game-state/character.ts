@@ -4,6 +4,19 @@ import { MainLoopService } from './main-loop.service';
 import { BigNumberPipe, CamelToTitlePipe } from '../app.component';
 import { LifeSummaryComponent } from '../life-summary/life-summary.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import {
+  ConsumableCounters,
+  createEmptyConsumableCounters,
+  ConsumableId,
+  EffectType,
+  CONSUMABLE_IDS,
+  BonusFoodId,
+  BonusType,
+  PotionAttribute,
+  PillEffect,
+  potionId,
+  pillId,
+} from './consumable-tracking';
 
 export type CharacterAttribute = {
   [key: string]: number | undefined;
@@ -116,6 +129,7 @@ export interface CharacterProperties {
   showUpdateAnimations: boolean;
   lastCauseOfDeath: string;
   lastAttributeGains: string;
+  consumableCounters: ConsumableCounters;
 }
 
 // Age and Lifespan
@@ -251,6 +265,7 @@ export class Character {
   showUpdateAnimations = true;
   lastCauseOfDeath = '';
   lastAttributeGains = '';
+  consumableCounters: ConsumableCounters = createEmptyConsumableCounters();
   dialogRef: MatDialogRef<LifeSummaryComponent> | null = null;
   attributeUpdates: AttributeUpdates;
   moneyUpdates = 0;
@@ -512,6 +527,14 @@ export class Character {
     this.staminaBonusCultivation = 0;
     this.qiBonusCultivation = 0;
     this.nourishmentBonusFood = 0;
+
+    // Reset currentLife consumable counters (allTime persists)
+    for (const id of CONSUMABLE_IDS) {
+      this.consumableCounters[id].consumed.currentLife = 0;
+      for (const effectKey of Object.keys(this.consumableCounters[id].effects)) {
+        this.consumableCounters[id].effects[effectKey as EffectType]!.currentLife = 0;
+      }
+    }
 
     // age in days
     this.age = INITIAL_AGE;
@@ -800,6 +823,49 @@ export class Character {
     return false;
   }
 
+  /**
+   * Track consumption of a bonus food item.
+   * Call this when food is eaten, regardless of whether bonuses trigger.
+   * @param foodId - Must be a valid BonusFoodId (TypeScript enforces this)
+   * @param quantity - Number consumed
+   */
+  trackConsumableUsed(id: ConsumableId, quantity: number): void {
+    this.consumableCounters[id].consumed.currentLife += quantity;
+    this.consumableCounters[id].consumed.allTime += quantity;
+  }
+
+  /**
+   * Track when an effect triggers from a consumable.
+   * For foods: call when bonus triggers (health, stamina, etc.)
+   * For potions/pills: call with 'gained' and the total effect amount
+   */
+  trackConsumableEffect(id: ConsumableId, effectType: EffectType, amount: number): void {
+    if (!this.consumableCounters[id].effects[effectType]) {
+      this.consumableCounters[id].effects[effectType] = { currentLife: 0, allTime: 0 };
+    }
+    this.consumableCounters[id].effects[effectType]!.currentLife += amount;
+    this.consumableCounters[id].effects[effectType]!.allTime += amount;
+  }
+
+  // Convenience methods for backwards compatibility
+  trackBonusFoodEaten(foodId: BonusFoodId, quantity: number): void {
+    this.trackConsumableUsed(foodId, quantity);
+  }
+
+  trackBonusFoodTrigger(foodId: BonusFoodId, bonusType: BonusType, quantity: number): void {
+    this.trackConsumableEffect(foodId, bonusType, quantity);
+  }
+
+  trackPotionUsed(attribute: PotionAttribute, quantity: number, totalGained: number): void {
+    this.trackConsumableUsed(potionId(attribute), quantity);
+    this.trackConsumableEffect(potionId(attribute), 'gained', totalGained);
+  }
+
+  trackPillUsed(effect: PillEffect, quantity: number, totalGained: number): void {
+    this.trackConsumableUsed(pillId(effect), quantity);
+    this.trackConsumableEffect(pillId(effect), 'gained', totalGained);
+  }
+
   checkOverage() {
     this.recalculateDerivedStats();
     if (this.healthBonusFood > HEALTH_BONUS_FOOD_CAP) {
@@ -905,6 +971,7 @@ export class Character {
       showUpdateAnimations: this.showUpdateAnimations,
       lastCauseOfDeath: this.lastCauseOfDeath,
       lastAttributeGains: this.lastAttributeGains,
+      consumableCounters: this.consumableCounters,
     };
   }
 
@@ -1005,6 +1072,7 @@ export class Character {
     this.showUpdateAnimations = properties.showUpdateAnimations ?? true;
     this.lastCauseOfDeath = properties.lastCauseOfDeath || '';
     this.lastAttributeGains = properties.lastAttributeGains || '';
+    this.consumableCounters = properties.consumableCounters || createEmptyConsumableCounters();
 
     // add attributes that were added after release if needed
     if (!this.attributes.combatMastery) {

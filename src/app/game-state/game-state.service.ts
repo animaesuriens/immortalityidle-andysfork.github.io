@@ -385,12 +385,20 @@ export class GameStateService {
     this.populateMissingPanelInfo();
   }
 
-  /** Migrate old layout panel IDs to new names */
+  /** Migrate old layout panel IDs to new names and add missing panels */
   migrateLayout() {
     for (const item of this.layout) {
       // Rename healthPanel to statusPanel
       if (item.id === 'healthPanel') {
         item.id = 'statusPanel';
+      }
+    }
+
+    // Add any missing panels from defaultLayout
+    const existingIds = new Set(this.layout.map(item => item.id));
+    for (const defaultItem of this.defaultLayout) {
+      if (!existingIds.has(defaultItem.id)) {
+        this.layout.push(structuredClone(defaultItem));
       }
     }
   }

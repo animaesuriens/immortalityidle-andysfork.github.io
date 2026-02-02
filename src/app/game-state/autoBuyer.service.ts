@@ -42,7 +42,7 @@ export class AutoBuyerService {
   ) {
     setTimeout(() => (this.hellService = this.injector.get(HellService)));
     mainLoopService.tickSubject.subscribe(() => {
-      if (this.characterService.characterState.dead || this.mainLoopService.pause) {
+      if (this.characterService.characterState.dead) {
         return;
       }
       this.tick();

@@ -20,6 +20,8 @@ import { StatisticsPanelComponent } from './statistics-panel/statistics-panel.co
 import { HellService } from './game-state/hell.service';
 import { StatisticsService } from './game-state/statistics.service';
 import { CreditsModalComponent } from './credits-modal/credits-modal.component';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import { RebirthModalComponent } from './rebirth-modal/rebirth-modal.component';
 import { CdkDragEnd, CdkDragStart, Point } from '@angular/cdk/drag-drop';
 import { KtdGridLayout } from '@katoid/angular-grid-layout';
 import { ViewportScroller } from '@angular/common';
@@ -74,7 +76,7 @@ export class BigNumberPipe implements PipeTransform {
       if (unsignedValue < 100 && !Number.isInteger(unsignedValue)) {
         returnValue = unsignedValue.toFixed(2) + '';
       } else if (unsignedValue < 10000) {
-        returnValue = Math.round(unsignedValue) + '';
+        returnValue = Math.round(unsignedValue).toLocaleString();
       } else if (unsignedValue >= Math.pow(10, suffixArray.length * 3)) {
         returnValue = unsignedValue.toPrecision(3);
       } else {
@@ -575,30 +577,30 @@ export class AppComponent implements OnInit {
     const wasPaused = this.mainLoopService.pause;
     this.mainLoopService.pause = true;
 
-    const gains = this.calculatePotentialAptitudeGains();
-    let message = 'You will end your current life and reincarnate.\n\nYou will earn:\n';
-    if (gains.length === 0) {
-      message += '• No aptitude gains (attributes unchanged from life start)\n';
-    } else {
-      for (const gain of gains) {
-        message += `• ${gain.name}: +${gain.amount}\n`;
-      }
-    }
-    message += '\nAre you sure?';
+    const dialogRef = this.dialog.open(RebirthModalComponent, {
+      data: {
+        age: this.characterService.formatDays(this.characterService.characterState.age),
+        gains: this.calculatePotentialAptitudeGains(),
+      },
+      autoFocus: false,
+    });
 
-    if (confirm(message)) {
-      this.gameStateService.rebirth();
-    } else {
-      this.mainLoopService.pause = wasPaused;
-    }
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.gameStateService.rebirth();
+      } else {
+        this.mainLoopService.pause = wasPaused;
+      }
+    });
   }
 
-  calculatePotentialAptitudeGains(): { name: string; amount: string }[] {
-    const gains: { name: string; amount: string }[] = [];
+  calculatePotentialAptitudeGains(): { name: string; increase: string; newAptitude: string; newStartValue: string }[] {
+    const gains: { name: string; increase: string; newAptitude: string; newStartValue: string }[] = [];
     const camelToTitle = new CamelToTitlePipe();
     const bigNumber = new BigNumberPipe(this.mainLoopService);
     const attrs = this.characterService.characterState.attributes;
     const divider = this.characterService.characterState.aptitudeGainDivider;
+    const state = this.characterService.characterState;
 
     const keys = Object.keys(attrs) as (keyof typeof attrs)[];
     for (const key of keys) {
@@ -606,9 +608,13 @@ export class AppComponent implements OnInit {
       if (attr.value > 0) {
         const addedValue = (attr.value - (attr.lifeStartValue || 0)) / divider;
         if (addedValue > 0) {
+          const newAptitude = attr.aptitude + addedValue;
+          const newStartValue = state.getAttributeStartingValue(attr.value, newAptitude);
           gains.push({
             name: camelToTitle.transform(key),
-            amount: bigNumber.transform(addedValue),
+            increase: bigNumber.transform(addedValue),
+            newAptitude: bigNumber.transform(newAptitude),
+            newStartValue: bigNumber.transform(newStartValue),
           });
         }
       }

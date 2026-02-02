@@ -258,6 +258,12 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
       this.logService.log(LogTopic.BLOCKED, activity.name[activity.level] + ' is unavailable now.');
       return;
     }
+
+    if (activity.projectionOnly) {
+      this.activityService.spiritActivity = activity.activityType;
+      return;
+    }
+
     const failedStatus = this.activityService.checkResourceUse(activity);
     if (failedStatus !== '') {
       this.characterService.characterState.flashStatus(failedStatus);

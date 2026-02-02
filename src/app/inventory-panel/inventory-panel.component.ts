@@ -149,6 +149,9 @@ export class InventoryPanelComponent {
   }
 
   autoSell() {
+    if (this.mainLoopService.pause) {
+      return;
+    }
     if (this.inventoryService.selectedItem) {
       this.inventoryService.autoSell(this.inventoryService.selectedItem.item);
     }
@@ -170,12 +173,18 @@ export class InventoryPanelComponent {
   }
 
   autoUse(): void {
+    if (this.mainLoopService.pause) {
+      return;
+    }
     if (this.inventoryService.selectedItem) {
       this.inventoryService.autoUse(this.inventoryService.selectedItem.item);
     }
   }
 
   autoBalance(): void {
+    if (this.mainLoopService.pause) {
+      return;
+    }
     if (this.inventoryService.selectedItem) {
       this.inventoryService.autoBalance(this.inventoryService.selectedItem.item);
     }

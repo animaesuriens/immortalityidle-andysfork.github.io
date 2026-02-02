@@ -11,9 +11,7 @@
   <table>
     <tr>
       <td class="headerCell">
-        You are {{characterService.characterState.age / 365 | floor }} years@if (characterService.characterState.age < 10000 * 365) {
-        <span> and {{characterService.characterState.age % 365 | number: '1.0-0'}} days</span>
-        } old.
+        You are {{characterService.formatDays(characterService.characterState.age, 'long')}} old.
       </td>
       @if (characterService.characterState.immortal) {
         <td class="headerCell">
@@ -22,24 +20,17 @@
       }
       @else {
         <td class="headerCell">
-          You expect to live up to {{characterService.characterState.lifespan / 365 | floor}} years and {{characterService.characterState.lifespan % 365 | number: '1.0-0'}} days old.
+          You expect to live up to {{characterService.formatDays(characterService.characterState.lifespan, 'long')}} old.
         </td>
       }
     </tr>
   </table>
 </h3>
 <div class="statusPanelContents">
+  <mat-icon class="lifespanIcon" (click)="openLifespanModal()" matTooltip="View lifespan details">
+    timer
+  </mat-icon>
   <div class="statusBarsGrid">
-    <div class="lifespanInfo">
-      <div [matTooltip]="getBaseLifespanTooltip()">{{characterService.lifespanHeader}}</div>
-      @if (characterService.lifespanFactors.length > 0) {
-        <div class="lifespanFactorsGrid">
-          @for (factor of characterService.lifespanFactors; track $index) {
-            <span [matTooltip]="factor.tooltip">{{factor.label}}</span>
-          }
-        </div>
-      }
-    </div>
     <div class="statusRow">
       <span class="statusLabel" [matTooltip]="getHealthTooltip()">Health</span>
       <div class="health" [matTooltip]="getHealthTooltip()">

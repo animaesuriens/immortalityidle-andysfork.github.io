@@ -73,11 +73,11 @@ export class CharacterService {
       // check for death
       let deathMessage = '';
       if (this.forceRebirth) {
-        deathMessage = 'You release your soul from your body at the age of ' + this.formatAge() + '.';
+        deathMessage = 'You release your soul from your body at the age of ' + this.formatDays(this.characterState.age) + '.';
       } else if (this.characterState.age >= this.characterState.lifespan && !this.characterState.immortal) {
         deathMessage =
           'You reach the end of your natural life and pass away from natural causes at the age of ' +
-          this.formatAge() +
+          this.formatDays(this.characterState.age) +
           '.';
       } else if (this.characterState.status.nourishment.value <= 0) {
         this.characterState.status.nourishment.value = 0;
@@ -98,22 +98,22 @@ export class CharacterService {
           this.characterState.increaseAttribute('spirituality', STARVATION_SPIRITUALITY_GAIN);
           if (this.characterState.status.health.value <= 0) {
             if (!this.characterState.immortal) {
-              deathMessage = 'You starve to death at the age of ' + this.formatAge() + '.';
+              deathMessage = 'You starve to death at the age of ' + this.formatDays(this.characterState.age) + '.';
             } else if (this.hellService?.inHell) {
               this.hellService.beaten = true;
             }
           }
         } else if (!this.characterState.immortal) {
-          deathMessage = 'You starve to death at the age of ' + this.formatAge() + '.';
+          deathMessage = 'You starve to death at the age of ' + this.formatDays(this.characterState.age) + '.';
         }
       } else if (this.characterState.status.health.value <= 0 && !this.characterState.immortal) {
         if (!this.activityService) {
           this.activityService = this.injector.get(ActivityService);
         }
         if (this.activityService.activityDeath) {
-          deathMessage = 'You die from overwork at the age of ' + this.formatAge() + '.';
+          deathMessage = 'You die from overwork at the age of ' + this.formatDays(this.characterState.age) + '.';
         } else {
-          deathMessage = 'You succumb to your wounds and die at the age of ' + this.formatAge() + '.';
+          deathMessage = 'You succumb to your wounds and die at the age of ' + this.formatDays(this.characterState.age) + '.';
         }
       } else if (this.characterState.immortal && this.characterState.status.health.value < 0) {
         this.characterState.status.health.value = 0;
@@ -203,10 +203,34 @@ export class CharacterService {
     });
   }
 
-  formatAge(): string {
-    const years = Math.floor(this.characterState.age / 365);
-    const days = this.characterState.age % 365;
-    return years + ' years, ' + days + ' days';
+  formatDays(ageInDays: number, format: 'short' | 'long' | 'years' = 'short'): string {
+    // 'years' format: decimal years (for lifespan bonuses)
+    if (format === 'years') {
+      if (ageInDays < 1) {
+        return '0 years';
+      }
+      const years = ageInDays / 365;
+      if (years >= 1000) {
+        return this.bigNumberPipe.transform(years) + ' years';
+      }
+      // Don't show .0 decimal
+      if (years % 1 === 0) {
+        return years.toFixed(0) + ' years';
+      }
+      return years.toFixed(1) + ' years';
+    }
+
+    // 'short' and 'long' formats: years + days
+    const years = Math.floor(ageInDays / 365);
+    const days = ageInDays % 365;
+
+    // Hide days if 0 or after 10,000 years
+    if (days === 0 || years >= 10000) {
+      return `${years.toLocaleString()} years`;
+    }
+
+    const separator = format === 'long' ? ' and ' : ', ';
+    return `${years.toLocaleString()} years${separator}${days.toLocaleString()} days`;
   }
 
   setLifespanTooltip() {
@@ -226,39 +250,39 @@ export class CharacterService {
     if (this.characterState.immortal) {
       this.lifespanHeader =
         'You are immortal. If you had remained mortal, your base lifespan of ' +
-        this.yearify(this.characterState.baseLifespan) +
+        this.formatDays(this.characterState.baseLifespan, 'years') +
         ' would be extended by:';
     } else {
-      this.lifespanHeader = 'Your base lifespan of ' + this.yearify(this.characterState.baseLifespan) + ' is extended by:';
+      this.lifespanHeader = 'Your base lifespan of ' + this.formatDays(this.characterState.baseLifespan, 'years') + ' is extended by:';
     }
     const factors: { label: string; tooltip: string }[] = [];
     if (this.characterState.foodLifespan > 0) {
       factors.push({
-        label: 'Healthy Food: ' + this.yearify(this.characterState.foodLifespan),
-        tooltip: 'Eating healthy crops increases lifespan.\n\nTotal bonus: ' + this.yearify(this.characterState.foodLifespan),
+        label: 'Healthy Food: ' + this.formatDays(this.characterState.foodLifespan, 'years'),
+        tooltip: 'Eating healthy crops increases lifespan.\n\nTotal bonus: ' + this.formatDays(this.characterState.foodLifespan, 'years'),
       });
     }
     if (this.characterState.alchemyLifespan > 0) {
       factors.push({
-        label: 'Alchemy: ' + this.yearify(this.characterState.alchemyLifespan),
-        tooltip: 'Consuming alchemical pills increases lifespan.\n\nTotal bonus: ' + this.yearify(this.characterState.alchemyLifespan),
+        label: 'Alchemy: ' + this.formatDays(this.characterState.alchemyLifespan, 'years'),
+        tooltip: 'Consuming alchemical pills increases lifespan.\n\nTotal bonus: ' + this.formatDays(this.characterState.alchemyLifespan, 'years'),
       });
     }
     if (this.characterState.statLifespan > 0) {
       factors.push({
-        label: 'Basic Attributes: ' + this.yearify(this.characterState.statLifespan),
+        label: 'Basic Attributes: ' + this.formatDays(this.characterState.statLifespan, 'years'),
         tooltip: this.getStatLifespanTooltip(),
       });
     }
     if (this.characterState.magicLifespan > 0) {
       factors.push({
-        label: 'Cultivation: ' + this.yearify(this.characterState.magicLifespan),
+        label: 'Cultivation: ' + this.formatDays(this.characterState.magicLifespan, 'years'),
         tooltip: this.getCultivationLifespanTooltip(),
       });
     }
     if (this.characterState.spiritualityLifespan > 0) {
       factors.push({
-        label: 'Spirituality: ' + this.yearify(this.characterState.spiritualityLifespan),
+        label: 'Spirituality: ' + this.formatDays(this.characterState.spiritualityLifespan, 'years'),
         tooltip: this.getSpiritualityLifespanTooltip(),
       });
     }
@@ -298,7 +322,7 @@ export class CharacterService {
       ...this.getAptitudeMultiplierBreakdown(avgAptitude, false),
       '',
       `Bloodline multiplier: ×${multiplier} (${this.characterState.bloodlineRank < 5 ? 'rank < 5: ×0.1' : 'rank ≥ 5: ×5'})`,
-      `Final: ${this.yearify(this.characterState.statLifespan)}`,
+      `Final: ${this.formatDays(this.characterState.statLifespan, 'years')}`,
     ];
     return lines.join('\n');
   }
@@ -316,7 +340,7 @@ export class CharacterService {
       ...this.getAptitudeMultiplierBreakdown(spirValue, true),
       '',
       `Spirituality multiplier: ×5 (fixed)`,
-      `Final: ${this.yearify(this.characterState.spiritualityLifespan)}`,
+      `Final: ${this.formatDays(this.characterState.spiritualityLifespan, 'years')}`,
     ];
     return lines.join('\n');
   }
@@ -390,7 +414,7 @@ export class CharacterService {
       x = hardcapped;
     }
 
-    lines.push(`Base bonus: ${this.yearify(x)}`);
+    lines.push(`Base bonus: ${this.formatDays(x, 'years')}`);
     return lines;
   }
 
@@ -411,26 +435,15 @@ export class CharacterService {
     } else {
       lines.push('Sources:');
       for (const name of sourceNames) {
-        lines.push(`• ${name}: ${this.yearify(sources[name])}`);
+        lines.push(`• ${name}: ${this.formatDays(sources[name], 'years')}`);
       }
       lines.push('');
-      lines.push(`Total: ${this.yearify(total)}`);
+      lines.push(`Total: ${this.formatDays(total, 'years')}`);
     }
 
     return lines.join('\n');
   }
 
-  yearify(value: number) {
-    if (value < 1) {
-      return '0 years';
-    }
-    const years = value / 365;
-    // Format with 1 decimal place, use bigNumber for large values
-    if (years >= 1000) {
-      return this.bigNumberPipe.transform(years) + ' years';
-    }
-    return years.toFixed(1) + ' years';
-  }
 
   resetAptitudes() {
     const keys = Object.keys(this.characterState.attributes) as AttributeType[];
