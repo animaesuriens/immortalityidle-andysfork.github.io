@@ -45,7 +45,9 @@ export class StatusPanelComponent {
   }
 
   openLifespanModal(): void {
-    this.dialog.open(LifespanModalComponent);
+    this.dialog.open(LifespanModalComponent, {
+      panelClass: 'lifespan-modal-panel',
+    });
   }
 
   updateYinYang() {

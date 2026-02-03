@@ -1,6 +1,8 @@
 <div class="darkMode lifespanModal">
   <h3>Lifespan Details</h3>
   <hr/>
+  <div class="currentAge">You are {{characterService.formatDays(characterService.characterState.age, 'long')}} old.</div>
+  <hr/>
   <div class="baseLifespanInfo">
     <p>Your base lifespan is {{baseLifespanFormatted}}.</p>
     <p class="explanation">It starts at {{BASE_LIFESPAN_YEARS}} years and increases by 1 day for every {{YEARS_PER_BONUS_DAY}} years lived across all lives, up to a maximum of {{MAX_BASE_LIFESPAN_YEARS}} years (maximum of {{MAX_BASE_LIFESPAN_YEARS - BASE_LIFESPAN_YEARS}} bonus years).</p>
@@ -9,14 +11,193 @@
     <p>Current Bonus: {{currentBonusFormatted}}@if (isBonusMaxed) { (maxed)}</p>
   </div>
   <hr/>
-  <div class="lifespanInfo">
-    <div [matTooltip]="getBaseLifespanTooltip()">{{characterService.lifespanHeader}}</div>
-    @if (characterService.lifespanFactors.length > 0) {
-      <div class="lifespanFactorsGrid">
-        @for (factor of characterService.lifespanFactors; track $index) {
-          <span [matTooltip]="factor.tooltip">{{factor.label}}</span>
-        }
+  <div class="lifespanBreakdown">
+    <div class="lifeExpectancy">Life Expectancy: {{lifeExpectancyFormatted}}</div>
+
+    @if (!hasAnyBonus) {
+      <p class="noBonus">You have done nothing to extend your lifespan.</p>
+    } @else {
+      <div class="breakdownContent">
+        <div class="factorsSummary">
+          <p class="summaryHeader">Extended by:</p>
+          @if (hasFoodBonus) {
+            <div class="factorRow" [class.selected]="selectedFactor === 'food'" (click)="selectFactor('food')">
+              <span class="factorName">Healthy Food</span>
+              <span class="factorValue">{{formatDays(characterService.characterState.foodLifespan)}}</span>
+            </div>
+          }
+          @if (hasAlchemyBonus) {
+            <div class="factorRow" [class.selected]="selectedFactor === 'alchemy'" (click)="selectFactor('alchemy')">
+              <span class="factorName">Alchemy</span>
+              <span class="factorValue">{{formatDays(characterService.characterState.alchemyLifespan)}}</span>
+            </div>
+          }
+          @if (hasCultivationBonus) {
+            <div class="factorRow" [class.selected]="selectedFactor === 'cultivation'" (click)="selectFactor('cultivation')">
+              <span class="factorName">Cultivation</span>
+              <span class="factorValue">{{formatDays(characterService.characterState.magicLifespan)}}</span>
+            </div>
+          }
+          @if (hasAttributesBonus) {
+            <div class="factorRow" [class.selected]="selectedFactor === 'attributes'" (click)="selectFactor('attributes')">
+              <span class="factorName">Basic Attributes</span>
+              <span class="factorValue">{{formatDays(characterService.characterState.statLifespan)}}</span>
+            </div>
+          }
+          @if (hasSpiritualityBonus) {
+            <div class="factorRow" [class.selected]="selectedFactor === 'spirituality'" (click)="selectFactor('spirituality')">
+              <span class="factorName">Spirituality</span>
+              <span class="factorValue">{{formatDays(characterService.characterState.spiritualityLifespan)}}</span>
+            </div>
+          }
+        </div>
       </div>
     }
   </div>
+
+  @if (selectedFactor) {
+    <div class="factorDetails">
+            @if (selectedFactor === 'food') {
+              <div class="detailsHeader">Healthy Food</div>
+              <p class="detailsDescription">Eating healthy crops has a chance to increase lifespan. Each food can only contribute while total is below its cap.</p>
+              <div class="detailsStats">
+                <span>Total bonus: {{formatDays(characterService.characterState.foodLifespan)}}</span>
+              </div>
+              @if (foodLifespanEntries.length > 0) {
+                <table class="foodTable">
+                  <thead>
+                    <tr>
+                      <th>Food</th>
+                      <th>Chance</th>
+                      <th>Cap</th>
+                      <th>Eaten</th>
+                      <th>Triggered</th>
+                      <th>Bonus</th>
+                      <th>Uncapped</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (entry of foodLifespanEntries; track entry.id) {
+                      <tr>
+                        <td>{{entry.name}}</td>
+                        <td>{{entry.chance}}%</td>
+                        <td>{{formatDays(entry.capDays, 'y')}}</td>
+                        <td>{{formatBigNumber(entry.eaten.currentLife)}}</td>
+                        <td>{{formatBigNumber(entry.triggered.currentLife)}}</td>
+                        <td>{{formatDays(entry.bonusDays, 'y')}}</td>
+                        <td>{{formatDays(entry.uncappedDays, 'y')}}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              }
+            }
+
+            @if (selectedFactor === 'alchemy') {
+              <div class="detailsHeader">Alchemy</div>
+              <p class="detailsDescription">Consuming alchemical items increases lifespan. Each item can only contribute while total is below its cap.</p>
+              <div class="detailsStats">
+                <span>Total bonus: {{formatDays(characterService.characterState.alchemyLifespan)}}</span>
+              </div>
+              @if (alchemyLifespanEntries.length > 0) {
+                <table class="foodTable">
+                  <thead>
+                    <tr>
+                      <th>Item</th>
+                      <th>Cap</th>
+                      <th>Consumed</th>
+                      <th>Bonus</th>
+                      <th>Uncapped</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (entry of alchemyLifespanEntries; track entry.id) {
+                      <tr>
+                        <td>{{entry.name}}</td>
+                        <td>{{formatDays(entry.capDays, 'y')}}</td>
+                        <td>{{formatBigNumber(entry.consumed.currentLife)}}</td>
+                        <td>{{formatDays(entry.bonusDays, 'y')}}</td>
+                        <td>{{formatDays(entry.uncappedDays, 'y')}}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              }
+            }
+
+            @if (selectedFactor === 'cultivation') {
+              <div class="detailsHeader">Cultivation</div>
+              <p class="detailsDescription">Lifespan bonus from cultivation activities. Each activity can only contribute up to its cap.</p>
+              <div class="detailsStats">
+                <span>Total bonus: {{formatDays(characterService.characterState.magicLifespan)}}</span>
+              </div>
+              @if (cultivationLifespanEntries.length > 0) {
+                <table class="foodTable">
+                  <thead>
+                    <tr>
+                      <th>Activity</th>
+                      <th>Cap</th>
+                      <th>Bonus</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (entry of cultivationLifespanEntries; track entry.id) {
+                      <tr>
+                        <td>{{entry.name}}</td>
+                        <td>{{formatDays(entry.capDays, 'y')}}</td>
+                        <td>{{formatDays(entry.bonusDays, 'y')}}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              }
+            }
+
+            @if (selectedFactor === 'attributes') {
+              <div class="detailsHeader">Basic Attributes</div>
+              <p class="detailsDescription">Lifespan bonus based on average aptitude of your 5 basic attributes.</p>
+              <div class="detailsStats">
+                @for (line of attributesColoredBreakdown; track $index) {
+                  @if (line.length === 0) {
+                    <span class="coloredLine emptyLine"></span>
+                  } @else {
+                    <span class="coloredLine">
+                      @for (segment of line; track $index) {
+                        @if (segment.color === 'meridians') {
+                          <span class="color-meridians tooltipTarget" [matTooltip]="meridianScalingTooltip">{{segment.text}}</span>
+                        } @else if (segment.color === 'bloodline') {
+                          <span class="color-bloodline tooltipTarget" [matTooltip]="bloodlineMultiplierTooltip">{{segment.text}}</span>
+                        } @else {
+                          <span [class]="segment.color ? 'color-' + segment.color : ''">{{segment.text}}</span>
+                        }
+                      }
+                    </span>
+                  }
+                }
+              </div>
+            }
+
+      @if (selectedFactor === 'spirituality') {
+        <div class="detailsHeader">Spirituality</div>
+        <p class="detailsDescription">Lifespan bonus based on your spirituality value.</p>
+        <div class="detailsStats">
+          @for (line of spiritualityColoredBreakdown; track $index) {
+            @if (line.length === 0) {
+              <span class="coloredLine emptyLine"></span>
+            } @else {
+              <span class="coloredLine">
+                @for (segment of line; track $index) {
+                  @if (segment.color === 'meridians') {
+                    <span class="color-meridians tooltipTarget" [matTooltip]="meridianScalingTooltip">{{segment.text}}</span>
+                  } @else {
+                    <span [class]="segment.color ? 'color-' + segment.color : ''">{{segment.text}}</span>
+                  }
+                }
+              </span>
+            }
+          }
+        </div>
+      }
+    </div>
+  }
 </div>

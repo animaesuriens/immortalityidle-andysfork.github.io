@@ -203,34 +203,50 @@ export class CharacterService {
     });
   }
 
-  formatDays(ageInDays: number, format: 'short' | 'long' | 'years' = 'short'): string {
-    // 'years' format: decimal years (for lifespan bonuses)
-    if (format === 'years') {
+  formatDays(ageInDays: number, format: 'short' | 'long' | 'years' | 'y' = 'short'): string {
+    // 'years' and 'y' format: decimal years (for lifespan bonuses)
+    if (format === 'years' || format === 'y') {
+      const suffix = format === 'y' ? 'y' : ' years';
       if (ageInDays < 1) {
-        return '0 years';
+        return '0' + suffix;
       }
       const years = ageInDays / 365;
       if (years >= 1000) {
-        return this.bigNumberPipe.transform(years) + ' years';
+        return this.bigNumberPipe.transform(years) + suffix;
       }
-      // Don't show .0 decimal
-      if (years % 1 === 0) {
-        return years.toFixed(0) + ' years';
+      // Don't show .0 or .00 decimal
+      const formatted = years.toFixed(2);
+      if (formatted.endsWith('.00')) {
+        return formatted.slice(0, -3) + suffix;
       }
-      return years.toFixed(1) + ' years';
+      if (formatted.endsWith('0')) {
+        return formatted.slice(0, -1) + suffix;
+      }
+      return formatted + suffix;
     }
 
     // 'short' and 'long' formats: years + days
     const years = Math.floor(ageInDays / 365);
-    const days = ageInDays % 365;
+    const days = Math.floor(ageInDays % 365);
 
     // Hide days if 0 or after 10,000 years
     if (days === 0 || years >= 10000) {
       return `${years.toLocaleString()} years`;
     }
 
-    const separator = format === 'long' ? ' and ' : ', ';
-    return `${years.toLocaleString()} years${separator}${days.toLocaleString()} days`;
+    // For 'long' format, skip "0 years"
+    if (format === 'long') {
+      if (years === 0) {
+        return `${days.toLocaleString()} days`;
+      }
+      return `${years.toLocaleString()} years and ${days.toLocaleString()} days`;
+    }
+
+    // 'short' format: skip "0 years"
+    if (years === 0) {
+      return `${days.toLocaleString()} days`;
+    }
+    return `${years.toLocaleString()} years, ${days.toLocaleString()} days`;
   }
 
   setLifespanTooltip() {
@@ -299,7 +315,7 @@ export class CharacterService {
     this.lifespanTooltip = tooltip;
   }
 
-  private getStatLifespanTooltip(): string {
+  getStatLifespanTooltip(): string {
     const attrs = this.characterState.attributes;
     const totalAptitude =
       attrs.strength.aptitude +
@@ -327,7 +343,7 @@ export class CharacterService {
     return lines.join('\n');
   }
 
-  private getSpiritualityLifespanTooltip(): string {
+  getSpiritualityLifespanTooltip(): string {
     const spirValue = this.characterState.attributes.spirituality.value;
 
     const lines: string[] = [
@@ -418,7 +434,7 @@ export class CharacterService {
     return lines;
   }
 
-  private getCultivationLifespanTooltip(): string {
+  getCultivationLifespanTooltip(): string {
     const sources = this.characterState.cultivationLifespanSources;
     const sourceNames = Object.keys(sources);
     const total = this.characterState.getCultivationLifespan();
