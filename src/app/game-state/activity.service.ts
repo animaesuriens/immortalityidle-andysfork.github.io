@@ -2,7 +2,7 @@
 import { inject, Injectable, Injector } from '@angular/core';
 import { BattleService } from './battle.service';
 import { Activity, ActivityLoopEntry, ActivityType, isDeclarativeActivity } from '../game-state/activity';
-import { EffectExecutorService } from '../effects';
+import { EffectExecutorService, add, log2, attr, fixed, mult } from '../effects';
 import { AttributeType, CharacterAttribute, StatusType, SPIRIT_PROJECTION_QI_COST } from '../game-state/character';
 import { CharacterService } from '../game-state/character.service';
 import { HomeService, HomeType } from '../game-state/home.service';
@@ -369,12 +369,29 @@ export class ActivityService {
    * For legacy activities, calls the consequence function and checkOverage.
    */
   private executeActivity(activity: Activity): void {
+    const moneyBefore = this.characterService.characterState.money;
+
     if (isDeclarativeActivity(activity)) {
       const effects = activity.effects[activity.level] ?? [];
       this.effectExecutor.executeEffects(effects);
     } else {
       activity.consequence[activity.level]();
       this.characterService.characterState.checkOverage();
+    }
+
+    // Track activity-specific statistics for declarative activities
+    if (isDeclarativeActivity(activity)) {
+      const moneyEarned = this.characterService.characterState.money - moneyBefore;
+      if (moneyEarned > 0) {
+        activity.lastIncome = moneyEarned;
+      }
+
+      // Activity-specific counters
+      if (activity.activityType === ActivityType.Begging) {
+        this.beggingDays++;
+      } else if (activity.activityType === ActivityType.OddJobs) {
+        this.oddJobDays++;
+      }
     }
   }
 
@@ -1912,59 +1929,48 @@ export class ActivityService {
         'Move the crowds with your stirring speeches.',
         'Charm your way into civic leadership.',
       ],
-      consequenceDescription: [
-        'Uses 5 Stamina. Increases charisma and provides a little money.',
-        'Uses 5 Stamina. Increases charisma and provides some money.',
-        'Uses 5 Stamina. Increases charisma and provides money.',
-        'Uses 5 Stamina. Increases charisma, provides money, and makes you wonder if there is more to life than just money and fame.',
-      ],
-      effectsLegacy: ['+Cha, +Money', '+Cha, +Money', '+Cha, +Money', '+Cha, +Money'],
-      consequence: [
-        () => {
-          this.characterService.characterState.increaseAttribute('charisma', 0.1);
-          this.characterService.characterState.status.stamina.value -= 5;
-          const money = 3 + Math.log2(this.characterService.characterState.attributes.charisma.value);
-          this.characterService.characterState.updateMoney(money);
-          this.Begging.lastIncome = money;
-          this.beggingDays++;
-          if (this.characterService.characterState.yinYangUnlocked) {
-            this.characterService.characterState.yang++;
-          }
-        },
-        () => {
-          this.characterService.characterState.increaseAttribute('charisma', 0.2);
-          this.characterService.characterState.status.stamina.value -= 5;
-          const money = 10 + Math.log2(this.characterService.characterState.attributes.charisma.value);
-          this.characterService.characterState.updateMoney(money);
-          this.Begging.lastIncome = money;
-          this.beggingDays++;
-          if (this.characterService.characterState.yinYangUnlocked) {
-            this.characterService.characterState.yang++;
-          }
-        },
-        () => {
-          this.characterService.characterState.increaseAttribute('charisma', 0.3);
-          this.characterService.characterState.status.stamina.value -= 5;
-          const money = 20 + Math.log2(this.characterService.characterState.attributes.charisma.value * 2);
-          this.characterService.characterState.updateMoney(money);
-          this.Begging.lastIncome = money;
-          this.beggingDays++;
-          if (this.characterService.characterState.yinYangUnlocked) {
-            this.characterService.characterState.yang++;
-          }
-        },
-        () => {
-          this.characterService.characterState.increaseAttribute('charisma', 0.5);
-          this.characterService.characterState.status.stamina.value -= 5;
-          const money = 30 + Math.log2(this.characterService.characterState.attributes.charisma.value * 10);
-          this.characterService.characterState.updateMoney(money);
-          this.Begging.lastIncome = money;
-          this.beggingDays++;
-          if (this.characterService.characterState.yinYangUnlocked) {
-            this.characterService.characterState.yang++;
-          }
-        },
-      ],
+      effects: {
+        0: [
+          { kind: 'status', status: 'stamina', amount: -5 },
+          { kind: 'attribute', attribute: 'charisma', amount: 0.1 },
+          { kind: 'money', amount: add(fixed(3), log2(attr('charisma'))) },
+          {
+            kind: 'conditional',
+            condition: { kind: 'HasFlag', flag: 'yinYangUnlocked' },
+            then: [{ kind: 'yinyang', modify: 'yang', amount: 1 }],
+          },
+        ],
+        1: [
+          { kind: 'status', status: 'stamina', amount: -5 },
+          { kind: 'attribute', attribute: 'charisma', amount: 0.2 },
+          { kind: 'money', amount: add(fixed(10), log2(attr('charisma'))) },
+          {
+            kind: 'conditional',
+            condition: { kind: 'HasFlag', flag: 'yinYangUnlocked' },
+            then: [{ kind: 'yinyang', modify: 'yang', amount: 1 }],
+          },
+        ],
+        2: [
+          { kind: 'status', status: 'stamina', amount: -5 },
+          { kind: 'attribute', attribute: 'charisma', amount: 0.3 },
+          { kind: 'money', amount: add(fixed(20), log2(mult(attr('charisma'), fixed(2)))) },
+          {
+            kind: 'conditional',
+            condition: { kind: 'HasFlag', flag: 'yinYangUnlocked' },
+            then: [{ kind: 'yinyang', modify: 'yang', amount: 1 }],
+          },
+        ],
+        3: [
+          { kind: 'status', status: 'stamina', amount: -5 },
+          { kind: 'attribute', attribute: 'charisma', amount: 0.5 },
+          { kind: 'money', amount: add(fixed(30), log2(mult(attr('charisma'), fixed(10)))) },
+          {
+            kind: 'conditional',
+            condition: { kind: 'HasFlag', flag: 'yinYangUnlocked' },
+            then: [{ kind: 'yinyang', modify: 'yang', amount: 1 }],
+          },
+        ],
+      },
       resourceUse: [
         {
           stamina: 5,
