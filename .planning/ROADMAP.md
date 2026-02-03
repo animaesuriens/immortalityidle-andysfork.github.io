@@ -78,17 +78,22 @@ Plans:
 **Goal**: 4 diverse activities validate architecture handles all complexity
 **Depends on**: Phase 3
 **Inherits**: All Phase 3 cascading decisions (type system, rendering, architecture)
+**Context**: `.planning/phases/04-validation-slice/04-CONTEXT.md`
+**Research**: `.planning/phases/04-validation-slice/04-RESEARCH.md`
 **Requirements**: ATTR-03, STAT-02, STAT-03, MONEY-01, MONEY-02, ITEM-01, ITEM-02, ITEM-03, ITEM-04, ITEM-05, COND-01, COND-02, COND-03, COND-04, COND-05, SPEC-01, SPEC-02, SPEC-03, SPEC-04, SPEC-05, REND-03, REND-04, REND-05, MIG-02
 **Success Criteria** (what must be TRUE):
-  1. OddJobs activity works (formula-based money, conditional effects)
+  1. Begging activity works (formula-based money, conditional effects)
   2. Blacksmithing activity works (item consumption, probability, equipment generation)
-  3. Hunting activity works (enemy spawning, battle triggering)
-  4. BuildTower activity works (progress counters, special effects)
+  3. Hunting activity works (enemy spawning, chance-based loot)
+  4. BuildTower activity works (progress counters, prerequisite checks)
   5. All 4 activities render correctly in short, long, and formula formats
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 04-01: TBD
+- [ ] 04-01-PLAN.md - Begging (money handler, event system, type extensions, new conditions)
+- [ ] 04-02-PLAN.md - BuildTower (progress handler, ImpossibleTaskService integration)
+- [ ] 04-03-PLAN.md - Hunting (chance handler, spawn-enemy handler, item-add handler)
+- [ ] 04-04-PLAN.md - Blacksmithing (item-consume handler, factory support, variable capture)
 
 ### Phase 5: Full Migration
 **Goal**: All ~45 remaining activities converted to declarative format
@@ -141,10 +146,11 @@ Plans:
 | 1. Duration Foundation | 1/1 | Complete | 2026-01-31 |
 | 2. Interface Design | 2/2 | Complete | 2026-01-31 |
 | 3. First Vertical Slice | 4/4 | Complete | 2026-02-03 |
-| 4. Validation Slice | 0/TBD | Not started | - |
+| 4. Validation Slice | 0/4 | Not started | - |
 | 5. Full Migration | 0/TBD | Not started | - |
 | 6. Multi-day Logic | 0/TBD | Not started | - |
 | 7. Schedule Rework | 0/TBD | Not started | - |
 
 ---
 *Created: 2026-01-31*
+*Updated: 2026-02-03 - Phase 4 plans created*
