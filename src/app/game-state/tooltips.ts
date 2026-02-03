@@ -207,6 +207,9 @@ It can depend on your attributes, but the last time you did this job you made ${
 
   whatIsThis: 'What is this activity?\nClick to learn all about it!',
   takePortal: 'Take this portal',
+
+  canLevelUp: (nextLevelName: string, requirements: string) =>
+    `This activity can be upgraded to "${nextLevelName}" when you have:\n\n${requirements}`,
 };
 
 // =============================================================================

@@ -424,11 +424,18 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
         if (e.formula) {
           let formulaText: string;
           if (e.formula.type === 'fixed') {
-            formulaText = e.formula.expression ?? `Fixed: ${e.formula.base}`;
+            const value = `<span class="formula-result">${this.bigNumberPipe.transform(e.formula.base ?? 0)}</span>`;
+            formulaText = `Fixed: ${value}`;
           } else {
-            // Multiplied formula
-            const base = e.formula.expression ?? String(e.formula.base);
-            formulaText = `${base} × ${e.formula.multiplierName} = ${base} × ${this.bigNumberPipe.transform(e.formula.multiplier ?? 1)} = ${this.bigNumberPipe.transform(e.formula.result ?? 0)}`;
+            // Formula type - show symbolic = substituted = result with color coding
+            const symbolic = `<span class="formula-symbolic">${e.formula.symbolic}</span>`;
+            const substituted = `<span class="formula-substituted">${e.formula.substituted}</span>`;
+            const result = `<span class="formula-result">${this.bigNumberPipe.transform(e.formula.result ?? 0)}</span>`;
+            if (e.formula.substituted && e.formula.substituted !== e.formula.symbolic) {
+              formulaText = `${symbolic} = ${substituted} = ${result}`;
+            } else {
+              formulaText = `${symbolic} = ${result}`;
+            }
           }
           if (e.condition) {
             formulaText += `; ${e.condition}`;
@@ -469,13 +476,16 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
    * Get structured effect data for an activity.
    * Returns only visible RenderedEffect[] for declarative activities, null for legacy.
    * Pre-filters to visible effects so template can use @for with proper last tracking.
+   * Excludes negative status effects for resource costs (shown separately by getActivityCost).
    */
   getActivityEffects(activity: Activity): RenderedEffect[] | null {
     if (isDeclarativeActivity(activity)) {
       const effects = activity.effects[activity.level] ?? [];
       const rendered = this.effectShortPipe.transform(effects);
-      // Filter to visible effects only - solves trailing comma issue
-      return rendered.filter(e => e.visible);
+      // Filter to visible effects, excluding resource COSTS (negative, already shown by getActivityCost)
+      // But keep resource GAINS (positive)
+      const resourceLabels = ['Sta', 'HP', 'Qi', 'Food'];
+      return rendered.filter(e => e.visible && !(resourceLabels.includes(e.short.label) && !e.positive));
     }
     return null;
   }
@@ -522,5 +532,32 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
       return 'Balance Yin/Yang';
     }
     return `${effect.short.sign}${this.bigNumberPipe.transform(effect.short.amount)} ${effect.short.label}`;
+  }
+
+  /**
+   * Check if an activity has a next level that the player hasn't unlocked yet.
+   */
+  canActivityLevelUp(activity: Activity): boolean {
+    // Must have a next level
+    if (activity.level >= activity.description.length - 1) {
+      return false;
+    }
+    // Must not already meet requirements for next level
+    return !this.activityService.meetsRequirementsByLevel(activity, activity.level + 1);
+  }
+
+  /**
+   * Get tooltip for the level-up indicator showing next level requirements.
+   */
+  getNextLevelTooltip(activity: Activity): string {
+    const nextLevel = activity.level + 1;
+    const nextLevelName = activity.name[nextLevel];
+    const requirements = activity.requirements[nextLevel];
+
+    const reqLines = Object.entries(requirements)
+      .filter(([, value]) => value !== undefined && value > 0)
+      .map(([key, value]) => `${this.camelToTitle.transform(key)}: ${this.bigNumberPipe.transform(value!)}`);
+
+    return this.tooltips.canLevelUp(nextLevelName, reqLines.join('\n'));
   }
 }

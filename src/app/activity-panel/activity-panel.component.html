@@ -54,7 +54,7 @@
     }
   </div>
 </h3>
-<div class="activitiesContainer">
+<div class="activitiesContainer" (pointerdown)="$event.stopPropagation()" (mousedown)="$event.stopPropagation()">
   <div class="overflow">
     @for (group of getGroupedActivities(); track group.name) {
       <div class="activityGroupHeader">{{group.name}}</div>
@@ -107,6 +107,13 @@
                   <mat-icon matTooltip="Exactly how much will you make doing this job? It can depend on your attributes, but the last time you did this job you made {{activity.lastIncome | bigNumber}} taels."
                     aria-label="Earns money" aria-hidden="false">
                     attach_money
+                  </mat-icon>
+                }
+                @if (canActivityLevelUp(activity)) {
+                  <mat-icon
+                    [matTooltip]="getNextLevelTooltip(activity)"
+                    aria-label="Can level up" aria-hidden="false">
+                    arrow_circle_up
                   </mat-icon>
                 }
                 <mat-icon class="iconButton" (click)="showActivity($event, activity)"
