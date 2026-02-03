@@ -90,7 +90,25 @@ export interface Not {
 }
 
 /**
- * Union of all condition types (9 variants).
+ * Check if no enemies currently exist.
+ */
+export interface NoEnemies {
+  readonly kind: 'NoEnemies';
+}
+
+/**
+ * Generic property path comparison for extensible game state checks.
+ * Path format: 'furniture.workbench.id', 'followerCount.builder', etc.
+ */
+export interface CompareProperty {
+  readonly kind: 'CompareProperty';
+  readonly path: string;
+  readonly operator: '==' | '!=' | '>' | '<' | '>=' | '<=';
+  readonly value: string | number | boolean;
+}
+
+/**
+ * Union of all condition types (11 variants).
  */
 export type Condition =
   | HasFlag
@@ -101,4 +119,6 @@ export type Condition =
   | HasInventory
   | And
   | Or
-  | Not;
+  | Not
+  | NoEnemies
+  | CompareProperty;

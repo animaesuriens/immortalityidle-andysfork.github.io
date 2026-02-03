@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.33.0', description: 'Internal: Add Phase 4 infrastructure - EffectEvent types, NoEnemies/CompareProperty conditions, GameContext wired to all services, Money handler with formula support, Begging activity converted to declarative effects (Phase 4 plan 1).' },
   { version: '1.32.1', description: 'Fix trailing comma in activity effect display when conditional effects (yin/yang) are hidden due to unmet conditions.' },
   { version: '1.32.0', description: 'Lifespan modal improvements: alchemy and cultivation drawers now use table format like food, showing caps and bonuses for each item/activity. Improved visual separation in attribute breakdowns. formatDays now supports compact "y" format with 2 decimal precision. Drawer panels extend beyond modal bounds.' },
   { version: '1.31.0', description: 'Add unified consumable tracking system for foods, potions, and pills with currentLife/allTime counters. New lifespan modal (click timer icon in status panel) showing base lifespan details, bonus years, and years lived. New rebirth modal for end-of-life summary. Status panel UI enhancements.' },

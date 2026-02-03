@@ -13,6 +13,8 @@ import { AttributeType, StatusType } from '../../game-state/character';
 interface BaseEffect {
   /** Optional description for debugging/logging */
   readonly description?: string;
+  /** Override default error handling for this effect */
+  readonly onError?: 'continue' | 'abort' | 'skip';
 }
 
 /**

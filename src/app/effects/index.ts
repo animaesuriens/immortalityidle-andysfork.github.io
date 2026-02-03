@@ -35,8 +35,11 @@
 // Effect types (14 variants)
 export * from './types/effect.types';
 
-// Condition types (9 variants)
+// Condition types (11 variants)
 export * from './types/condition.types';
+
+// Event types for tracking/statistics
+export * from './types/event.types';
 
 // Formula interface and context
 export * from './types/formula.types';

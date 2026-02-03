@@ -9,6 +9,7 @@ import { Equipment, Pill } from '../../game-state/inventory.service';
 import { LogTopic } from '../../game-state/log.service';
 import { EnemyConfig } from './effect.types';
 import { FormulaContext } from './formula.types';
+import { EffectEvent } from './event.types';
 
 /**
  * Read-only view of attribute data.
@@ -221,6 +222,35 @@ export interface EffectContext {
    * Log an injury message (red color).
    */
   logInjury(topic: LogTopic, message: string): void;
+
+  // ============================================================
+  // PHASE 4 ADDITIONS - QUERY METHODS
+  // ============================================================
+
+  /**
+   * Get the current number of enemies.
+   */
+  getEnemyCount(): number;
+
+  /**
+   * Get count of followers with a specific job.
+   */
+  getFollowerCount(job: string): number;
+
+  /**
+   * Get total power of followers with a specific job.
+   */
+  getFollowerPower(job: string): number;
+
+  /**
+   * Get a property value by path (e.g., 'furniture.workbench.id').
+   */
+  getPropertyValue(path: string): unknown;
+
+  /**
+   * Emit an event for tracking/statistics.
+   */
+  emitEvent(event: EffectEvent): void;
 
 }
 
