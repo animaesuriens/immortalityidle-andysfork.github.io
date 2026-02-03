@@ -72,6 +72,10 @@ function renderCondition(condition: ConditionalEffect['condition']): string {
       return condition.conditions.map(c => renderCondition(c)).join(' or ');
     case 'Not':
       return `not (${renderCondition(condition.condition)})`;
+    case 'NoEnemies':
+      return 'no enemies';
+    case 'CompareProperty':
+      return `${condition.path} ${condition.operator} ${condition.value}`;
   }
 }
 

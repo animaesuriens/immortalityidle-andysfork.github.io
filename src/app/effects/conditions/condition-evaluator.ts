@@ -11,6 +11,8 @@ import {
   CompareStatus,
   HasFurniture,
   HasInventory,
+  NoEnemies,
+  CompareProperty,
 } from '../types/condition.types';
 import { EffectContext, toFormulaContext } from '../types/context.types';
 import { assertNever } from '../utils/exhaustive';
@@ -150,6 +152,30 @@ function evaluateHasInventory(condition: HasInventory, context: EffectContext): 
 }
 
 /**
+ * Evaluate a CompareProperty condition.
+ * Generic property path comparison for extensible game state checks.
+ */
+function evaluateCompareProperty(condition: CompareProperty, context: EffectContext): boolean {
+  const actualValue = context.getPropertyValue(condition.path);
+  const expectedValue = condition.value;
+
+  // Handle null/undefined
+  if (actualValue === null || actualValue === undefined) {
+    return condition.operator === '!=' ? expectedValue !== null && expectedValue !== undefined : false;
+  }
+
+  switch (condition.operator) {
+    case '==': return actualValue === expectedValue;
+    case '!=': return actualValue !== expectedValue;
+    case '>': return (actualValue as number) > (expectedValue as number);
+    case '<': return (actualValue as number) < (expectedValue as number);
+    case '>=': return (actualValue as number) >= (expectedValue as number);
+    case '<=': return (actualValue as number) <= (expectedValue as number);
+    default: return false;
+  }
+}
+
+/**
  * Evaluate a condition against the current game state.
  * Uses exhaustive switch on condition.kind with assertNever for type safety.
  *
@@ -177,6 +203,10 @@ export function evaluateCondition(condition: Condition, context: EffectContext):
       return condition.conditions.some(c => evaluateCondition(c, context));
     case 'Not':
       return !evaluateCondition(condition.condition, context);
+    case 'NoEnemies':
+      return context.getEnemyCount() === 0;
+    case 'CompareProperty':
+      return evaluateCompareProperty(condition, context);
     default:
       return assertNever(condition);
   }
