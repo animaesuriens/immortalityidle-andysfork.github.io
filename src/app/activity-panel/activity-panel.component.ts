@@ -467,12 +467,15 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
 
   /**
    * Get structured effect data for an activity.
-   * Returns RenderedEffect[] for declarative activities, null for legacy.
+   * Returns only visible RenderedEffect[] for declarative activities, null for legacy.
+   * Pre-filters to visible effects so template can use @for with proper last tracking.
    */
   getActivityEffects(activity: Activity): RenderedEffect[] | null {
     if (isDeclarativeActivity(activity)) {
       const effects = activity.effects[activity.level] ?? [];
-      return this.effectShortPipe.transform(effects);
+      const rendered = this.effectShortPipe.transform(effects);
+      // Filter to visible effects only - solves trailing comma issue
+      return rendered.filter(e => e.visible);
     }
     return null;
   }

@@ -76,10 +76,8 @@
                 <div class="activityEffects">
                   @if (getActivityEffects(activity); as effects) {
                     @for (effect of effects; track $index; let last = $last) {
-                      @if (effect.visible) {
-                        <span [class.effect-positive]="effect.positive"
-                              [class.effect-negative]="!effect.positive">{{formatEffectShort(effect)}}</span>@if (!last && effect.visible) {<span>, </span>}
-                      }
+                      <span [class.effect-positive]="effect.positive"
+                            [class.effect-negative]="!effect.positive">{{formatEffectShort(effect)}}</span>@if (!last) {<span>, </span>}
                     }
                   } @else {
                     {{getLegacyEffects(activity)}}
