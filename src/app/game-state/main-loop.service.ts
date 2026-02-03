@@ -276,6 +276,10 @@ export class MainLoopService {
             bankedPassed = this.bankedTicks;
           }
           this.bankedTicks -= bankedPassed;
+          if (this.bankedTicks <= 0) {
+            this.bankedTicks = 0;
+            this.useBankedTicks = false;
+          }
           ticksPassed *= 11; // Include the normal tick
           usedBanked = true;
         } else if (!this.useBankedTicks) {
