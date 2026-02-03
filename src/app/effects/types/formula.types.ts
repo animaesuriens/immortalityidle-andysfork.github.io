@@ -15,6 +15,10 @@ export interface FormulaContext {
   readonly money: number;
   /** Custom variables set during effect execution (e.g., consumed item grade) */
   readonly variables: Record<string, number>;
+  /** Optional: Get follower count for a job (Phase 4 extension) */
+  readonly getFollowerCount?: (job: string) => number;
+  /** Optional: Get follower power for a job (Phase 4 extension) */
+  readonly getFollowerPower?: (job: string) => number;
 }
 
 /**

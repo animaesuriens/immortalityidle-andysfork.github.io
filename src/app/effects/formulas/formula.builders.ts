@@ -615,3 +615,69 @@ export function max(...operands: (Formula | number)[]): Formula {
     },
   };
 }
+
+// ============================================================
+// PHASE 4 - FOLLOWER FORMULAS
+// ============================================================
+
+/**
+ * Get total power of followers with a specific job.
+ *
+ * Evaluates to: context.getFollowerPower(job)
+ * Renders to: "hunter power", "builder power", etc.
+ *
+ * @param job The follower job to query
+ * @returns A formula that evaluates to the job's total power
+ *
+ * @example
+ * followerPower('hunter')  // Evaluates to hunter total power
+ */
+export function followerPower(job: string): Formula {
+  return {
+    evaluate(context: FormulaContext): number {
+      return context.getFollowerPower?.(job) ?? 0;
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      const value = context.getFollowerPower?.(job) ?? 0;
+      switch (format) {
+        case 'value':
+          return String(value);
+        case 'formula':
+          return `${job} power`;
+        case 'both':
+          return `${job} power (${value})`;
+      }
+    },
+  };
+}
+
+/**
+ * Get count of followers with a specific job.
+ *
+ * Evaluates to: context.getFollowerCount(job)
+ * Renders to: "hunter count", "builder count", etc.
+ *
+ * @param job The follower job to query
+ * @returns A formula that evaluates to the number of followers with that job
+ *
+ * @example
+ * followerCount('builder')  // Evaluates to number of builders
+ */
+export function followerCount(job: string): Formula {
+  return {
+    evaluate(context: FormulaContext): number {
+      return context.getFollowerCount?.(job) ?? 0;
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      const value = context.getFollowerCount?.(job) ?? 0;
+      switch (format) {
+        case 'value':
+          return String(value);
+        case 'formula':
+          return `${job} count`;
+        case 'both':
+          return `${job} count (${value})`;
+      }
+    },
+  };
+}
