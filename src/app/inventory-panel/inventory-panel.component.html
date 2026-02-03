@@ -143,7 +143,7 @@
   </div>
 
   <div class="overflow">
-    <div class="inventoryGrid" cdkDropList cdkDropListSortingDisabled>
+    <div class="inventoryGrid" cdkDropList cdkDropListSortingDisabled (pointerdown)="$event.stopPropagation()" (mousedown)="$event.stopPropagation()">
       @for (itemStack of inventoryService.itemStacks; track $index + '' + itemStack?.item?.name + itemStack?.quantity;) {
         <div>
           <div id="itemIndex{{$index}}" >

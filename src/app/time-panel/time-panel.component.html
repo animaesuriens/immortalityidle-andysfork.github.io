@@ -56,7 +56,7 @@
       <label for="useSavedTicks">Use banked time to accelerate reality (10x). {{mainLoopService.bankedTicks | bigNumber}} time ticks left.</label>
     </h6>
   </h3>
-  <div class="overflow" cdkDropList cdkDropListSortingDisabled>
+  <div class="overflow" cdkDropList cdkDropListSortingDisabled (pointerdown)="$event.stopPropagation()" (mousedown)="$event.stopPropagation()">
     @if (characterService.characterState.qiUnlocked) {
       <table class="spiritActivityPanel" id="spiritActivity"
         (drop)="spiritActivityDrop($event)">

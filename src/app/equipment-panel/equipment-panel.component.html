@@ -9,7 +9,7 @@
 </div>
 
 <div class="equipmentScrollWrapper">
-<div class="equipmentContainer" cdkDropList cdkDropListSortingDisabled>
+<div class="equipmentContainer" cdkDropList cdkDropListSortingDisabled (pointerdown)="$event.stopPropagation()" (mousedown)="$event.stopPropagation()">
     <div style="grid-area: head;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'head', 'brokenItem': isBroken('head')}" [class]="getEffectClass('head')"
       cdkDrag (cdkDragStarted)="dragStart()" (cdkDragEnded)="dragEnd()" (cdkDragMoved)="dragMoved($event)" (cdkDragReleased)="dragReleased($event)"
       [cdkDragData]="character.equipment.head" [cdkDragDisabled]="!character.equipment.head"
