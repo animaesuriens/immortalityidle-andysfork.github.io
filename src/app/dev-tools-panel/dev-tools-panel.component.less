@@ -1,0 +1,46 @@
+@import (reference) "../../styles.less";
+
+.devToolsContent {
+  padding: 8px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.devSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sectionHeader {
+  font-weight: bold;
+  font-size: 12px;
+  color: var(--bodyText);
+  border-bottom: 1px solid var(--tableDividerColor);
+  padding-bottom: 2px;
+}
+
+.devButton {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.attributeEditor {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-wrap: wrap;
+
+  select {
+    padding: 2px 4px;
+    font-size: 12px;
+  }
+
+  .attributeInput {
+    width: 80px;
+    padding: 2px 4px;
+    font-size: 12px;
+  }
+}

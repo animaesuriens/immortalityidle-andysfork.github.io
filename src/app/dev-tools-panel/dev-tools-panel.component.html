@@ -1,0 +1,25 @@
+<div cdkDragHandle [ngClass]="{'draggableCursor': !gameStateService.lockPanels}" class="panelHeader">
+  <mat-icon>build</mat-icon>
+  Dev Tools
+  <mat-icon class="panelHelp" [matTooltip]="panelHelp">help</mat-icon>
+</div>
+<div class="devToolsContent" (pointerdown)="$event.stopPropagation()" (mousedown)="$event.stopPropagation()">
+  <div class="devSection">
+    <div class="sectionHeader">Items</div>
+    <button class="devButton" (click)="addWoodenSword()">Add Wooden Sword</button>
+  </div>
+
+  <div class="devSection">
+    <div class="sectionHeader">Attributes</div>
+    <div class="attributeEditor">
+      <select [(ngModel)]="selectedAttribute" (change)="loadCurrentAttributeValue()">
+        @for (attr of attributeTypes; track attr) {
+          <option [value]="attr">{{attr}}</option>
+        }
+      </select>
+      <input type="number" [(ngModel)]="attributeValue" class="attributeInput">
+      <button class="devButton" (click)="updateAttribute()">Update</button>
+    </div>
+  </div>
+</div>
+<div class="panelResizeHandle"></div>

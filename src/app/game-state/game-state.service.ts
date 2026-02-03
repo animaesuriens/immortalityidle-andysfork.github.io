@@ -112,6 +112,7 @@ export class GameStateService {
     { id: 'portalPanel', x: 68, y: 20, w: 20, h: 40 },
     { id: 'petsPanel', x: 88, y: 0, w: 12, h: 20 },
     { id: 'logPanel', x: 0, y: 45, w: 60, h: 20 },
+    { id: 'devToolsPanel', x: 88, y: 20, w: 12, h: 20 },
   ];
 
   panels: Panel[] = [
@@ -127,6 +128,7 @@ export class GameStateService {
     { id: 'followersPanel', name: 'Followers', icon: 'groups', panelHelp: 'Your followers can aid you in many ways.', unlocked: false },
     { id: 'portalPanel', name: 'Portal', icon: 'door_front', panelHelp: 'Travel between realms.', unlocked: false },
     { id: 'petsPanel', name: 'Pets', icon: 'pets', panelHelp: 'Your loyal companions.', unlocked: false },
+    { id: 'devToolsPanel', name: 'Dev Tools', icon: 'build', panelHelp: 'Developer tools for testing.', unlocked: true },
   ];
 
   constructor(
@@ -443,6 +445,9 @@ export class GameStateService {
   }
 
   hardReset(): void {
+    // Clear the auto-save slot (where game loads from on startup)
+    window.localStorage.removeItem(LOCAL_STORAGE_GAME_STATE_KEY + this.getDeploymentFlavor() + 'auto');
+    // Also clear the legacy slot in case it exists
     window.localStorage.removeItem(LOCAL_STORAGE_GAME_STATE_KEY + this.getDeploymentFlavor() + this.saveSlot);
     // eslint-disable-next-line no-self-assign
     window.location.href = window.location.href;
