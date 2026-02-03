@@ -8,7 +8,7 @@ Transform Immortality Idle's ~50 activities from imperative consequence function
 
 - [x] **Phase 1: Duration Foundation** - Add duration field to all activities (default 1 day)
 - [x] **Phase 2: Interface Design** - Define all type contracts (no implementation)
-- [ ] **Phase 3: First Vertical Slice** - ONE activity (Resting) working end-to-end
+- [x] **Phase 3: First Vertical Slice** - ONE activity (Resting) working end-to-end
 - [ ] **Phase 4: Validation Slice** - 4 diverse activities stress-testing all effect types
 - [ ] **Phase 5: Full Migration** - Apply proven patterns to remaining ~45 activities
 - [ ] **Phase 6: Multi-day Logic** - Progress tracking, completion-based effects
@@ -69,10 +69,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 03-01-PLAN.md - Type system updates (kind, amount, condition naming) and formula builder implementations
-- [ ] 03-02-PLAN.md - Condition evaluator and effect handlers (4 implemented, 10 stubs)
-- [ ] 03-03-PLAN.md - GameContext, executor service, renderer service, and Angular pipes
-- [ ] 03-04-PLAN.md - Activity integration (DeclarativeActivity type, Resting definition, executeActivity)
+- [x] 03-01-PLAN.md - Type system updates (kind, amount, condition naming) and formula builder implementations
+- [x] 03-02-PLAN.md - Condition evaluator and effect handlers (4 implemented, 10 stubs)
+- [x] 03-03-PLAN.md - GameContext, executor service, renderer service, and Angular pipes
+- [x] 03-04-PLAN.md - Activity integration (DeclarativeActivity type, Resting definition, executeActivity)
 
 ### Phase 4: Validation Slice
 **Goal**: 4 diverse activities validate architecture handles all complexity
@@ -140,7 +140,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Duration Foundation | 1/1 | Complete | 2026-01-31 |
 | 2. Interface Design | 2/2 | Complete | 2026-01-31 |
-| 3. First Vertical Slice | 0/4 | Ready to execute | - |
+| 3. First Vertical Slice | 4/4 | Complete | 2026-02-03 |
 | 4. Validation Slice | 0/TBD | Not started | - |
 | 5. Full Migration | 0/TBD | Not started | - |
 | 6. Multi-day Logic | 0/TBD | Not started | - |
