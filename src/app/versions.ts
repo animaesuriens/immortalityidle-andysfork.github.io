@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.35.4', description: 'Activity cards now show unlock requirements when the activity is locked after reincarnation.' },
   { version: '1.35.3', description: 'Auto-disable "Use Banked Time" when banked time runs out.' },
   { version: '1.35.2', description: 'Internal: CSS cleanup - consolidate selectors, remove dead code, replace float with flexbox.' },
   { version: '1.35.1', description: 'Internal: Add Dev Tools panel for testing - includes item spawning and attribute editing.' },

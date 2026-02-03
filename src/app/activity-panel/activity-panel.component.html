@@ -109,10 +109,10 @@
                     attach_money
                   </mat-icon>
                 }
-                @if (canActivityLevelUp(activity)) {
+                @if (showRequirementsIcon(activity)) {
                   <mat-icon
-                    [matTooltip]="getNextLevelTooltip(activity)"
-                    aria-label="Can level up" aria-hidden="false">
+                    [matTooltip]="getRequirementsTooltip(activity)"
+                    aria-label="Requirements" aria-hidden="false">
                     arrow_circle_up
                   </mat-icon>
                 }

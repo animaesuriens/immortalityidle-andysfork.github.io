@@ -547,9 +547,34 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
-   * Get tooltip for the level-up indicator showing next level requirements.
+   * Check if the requirements icon should be shown for an activity.
+   * Shows when: activity is not unlocked OR activity can level up.
    */
-  getNextLevelTooltip(activity: Activity): string {
+  showRequirementsIcon(activity: Activity): boolean {
+    if (!activity.unlocked) {
+      return true;
+    }
+    return this.canActivityLevelUp(activity);
+  }
+
+  /**
+   * Get tooltip for the requirements icon.
+   * Shows unlock requirements if not unlocked, otherwise upgrade requirements.
+   */
+  getRequirementsTooltip(activity: Activity): string {
+    if (!activity.unlocked) {
+      // Show unlock requirements for current level
+      const activityName = activity.name[activity.level];
+      const requirements = activity.requirements[activity.level];
+
+      const reqLines = Object.entries(requirements)
+        .filter(([, value]) => value !== undefined && value > 0)
+        .map(([key, value]) => `${this.camelToTitle.transform(key)}: ${this.bigNumberPipe.transform(value!)}`);
+
+      return this.tooltips.canUnlock(activityName, reqLines.join('\n'));
+    }
+
+    // Show upgrade requirements for next level
     const nextLevel = activity.level + 1;
     const nextLevelName = activity.name[nextLevel];
     const requirements = activity.requirements[nextLevel];

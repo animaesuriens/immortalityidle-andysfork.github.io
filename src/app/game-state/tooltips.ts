@@ -210,6 +210,9 @@ It can depend on your attributes, but the last time you did this job you made ${
 
   canLevelUp: (nextLevelName: string, requirements: string) =>
     `This activity can be upgraded to "${nextLevelName}" when you have:\n\n${requirements}`,
+
+  canUnlock: (activityName: string, requirements: string) =>
+    `You can do "${activityName}" again when you have:\n\n${requirements}`,
 };
 
 // =============================================================================
