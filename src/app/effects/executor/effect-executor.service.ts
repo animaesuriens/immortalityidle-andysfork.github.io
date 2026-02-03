@@ -9,12 +9,18 @@
  */
 
 import { Injectable, inject } from '@angular/core';
+import { Subject } from 'rxjs';
 import { CharacterService } from '../../game-state/character.service';
 import { InventoryService } from '../../game-state/inventory.service';
+import { BattleService } from '../../game-state/battle.service';
+import { FollowersService } from '../../game-state/followers.service';
+import { HomeService } from '../../game-state/home.service';
+import { ImpossibleTaskService } from '../../game-state/impossibleTask.service';
 import { GameContext } from '../context/game-context';
 import { handlerRegistry } from '../handlers/handler-registry';
 import { Effect } from '../types/effect.types';
 import { EffectContext } from '../types/context.types';
+import { EffectEvent } from '../types/event.types';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +28,13 @@ import { EffectContext } from '../types/context.types';
 export class EffectExecutorService {
   private readonly characterService = inject(CharacterService);
   private readonly inventoryService = inject(InventoryService);
+  private readonly battleService = inject(BattleService);
+  private readonly followersService = inject(FollowersService);
+  private readonly homeService = inject(HomeService);
+  private readonly impossibleTaskService = inject(ImpossibleTaskService);
+
+  /** Observable stream of effect events for tracking/statistics */
+  readonly effectEvents$ = new Subject<EffectEvent>();
 
   /**
    * Execute all effects for an activity at its current level.
@@ -62,6 +75,14 @@ export class EffectExecutorService {
    * Create a fresh GameContext for this execution.
    */
   private createContext(): GameContext {
-    return new GameContext(this.characterService, this.inventoryService);
+    return new GameContext(
+      this.characterService,
+      this.inventoryService,
+      this.battleService,
+      this.followersService,
+      this.homeService,
+      this.impossibleTaskService,
+      (event: EffectEvent) => this.effectEvents$.next(event)
+    );
   }
 }

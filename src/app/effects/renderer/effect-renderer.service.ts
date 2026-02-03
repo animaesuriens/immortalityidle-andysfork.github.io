@@ -10,6 +10,10 @@
 import { Injectable, inject } from '@angular/core';
 import { CharacterService } from '../../game-state/character.service';
 import { InventoryService } from '../../game-state/inventory.service';
+import { BattleService } from '../../game-state/battle.service';
+import { FollowersService } from '../../game-state/followers.service';
+import { HomeService } from '../../game-state/home.service';
+import { ImpossibleTaskService } from '../../game-state/impossibleTask.service';
 import { GameContext } from '../context/game-context';
 import { handlerRegistry } from '../handlers/handler-registry';
 import { Effect } from '../types/effect.types';
@@ -23,6 +27,10 @@ import { EffectHandler } from '../handlers/handler.interface';
 export class EffectRendererService {
   private readonly characterService = inject(CharacterService);
   private readonly inventoryService = inject(InventoryService);
+  private readonly battleService = inject(BattleService);
+  private readonly followersService = inject(FollowersService);
+  private readonly homeService = inject(HomeService);
+  private readonly impossibleTaskService = inject(ImpossibleTaskService);
 
   /**
    * Render all effects to structured data.
@@ -67,8 +75,17 @@ export class EffectRendererService {
 
   /**
    * Create a fresh GameContext for this rendering.
+   * Note: Events emitted during rendering are discarded (noop emitter).
    */
   private createContext(): GameContext {
-    return new GameContext(this.characterService, this.inventoryService);
+    return new GameContext(
+      this.characterService,
+      this.inventoryService,
+      this.battleService,
+      this.followersService,
+      this.homeService,
+      this.impossibleTaskService,
+      () => {} // Noop emitter for rendering
+    );
   }
 }

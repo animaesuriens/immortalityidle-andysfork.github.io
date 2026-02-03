@@ -115,6 +115,7 @@ export interface EnemyConfig {
   readonly health: number;
   readonly attack: number;
   readonly defense: number;
+  readonly accuracy?: number;
   readonly loot?: string[];
 }
 

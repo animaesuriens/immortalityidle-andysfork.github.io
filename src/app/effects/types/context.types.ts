@@ -30,8 +30,9 @@ export interface StatusValue {
 
 /**
  * Furniture slot types.
+ * Matches FurniturePosition from home.service.ts (workbench2-9 for extra workbenches).
  */
-export type FurnitureSlot = 'workbench' | 'bed' | 'bathtub' | 'kitchen' | 'storage';
+export type FurnitureSlot = 'bed' | 'bathtub' | 'kitchen' | 'workbench' | 'workbench2' | 'workbench3' | 'workbench4' | 'workbench5' | 'workbench6' | 'workbench7' | 'workbench8' | 'workbench9';
 
 /**
  * Context object providing handlers access to game state.

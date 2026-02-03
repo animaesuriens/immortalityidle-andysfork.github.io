@@ -15,9 +15,14 @@ import {
 } from '../types/context.types';
 import { CharacterService } from '../../game-state/character.service';
 import { InventoryService, Equipment, Pill } from '../../game-state/inventory.service';
+import { BattleService } from '../../game-state/battle.service';
+import { FollowersService } from '../../game-state/followers.service';
+import { HomeService } from '../../game-state/home.service';
+import { ImpossibleTaskService, ImpossibleTaskType } from '../../game-state/impossibleTask.service';
 import { AttributeType, StatusType, EquipmentPosition } from '../../game-state/character';
 import { LogTopic } from '../../game-state/log.service';
 import { EnemyConfig } from '../types/effect.types';
+import { EffectEvent } from '../types/event.types';
 
 /**
  * Concrete implementation of EffectContext that bridges effect handlers to Angular services.
@@ -31,6 +36,11 @@ export class GameContext implements EffectContext {
   constructor(
     private readonly characterService: CharacterService,
     private readonly inventoryService: InventoryService,
+    private readonly battleService: BattleService,
+    private readonly followersService: FollowersService,
+    private readonly homeService: HomeService,
+    private readonly impossibleTaskService: ImpossibleTaskService,
+    private readonly eventEmitter: (event: EffectEvent) => void,
   ) {}
 
   // ============================================================
@@ -202,12 +212,34 @@ export class GameContext implements EffectContext {
   // ============================================================
 
   incrementProgress(progressType: string, amount = 1): void {
-    // TODO: Implement in Phase 4 when progress handler is built
-    console.warn(`GameContext.incrementProgress not yet implemented: ${progressType} +${amount}`);
+    const taskType = this.resolveProgressType(progressType);
+    if (taskType !== null) {
+      const progress = this.impossibleTaskService.taskProgress[taskType];
+      if (progress) {
+        progress.progress += amount;
+        this.emitEvent({ kind: 'progressUpdated', progressType, amount });
+      }
+    }
+  }
+
+  private resolveProgressType(progressType: string): ImpossibleTaskType | null {
+    // Map string names to enum values
+    const mapping: Record<string, ImpossibleTaskType> = {
+      'Swim': ImpossibleTaskType.Swim,
+      'RaiseIsland': ImpossibleTaskType.RaiseIsland,
+      'BuildTower': ImpossibleTaskType.BuildTower,
+      'TameWinds': ImpossibleTaskType.TameWinds,
+      'LearnToFly': ImpossibleTaskType.LearnToFly,
+      'BefriendDragon': ImpossibleTaskType.BefriendDragon,
+      'ConquerTheWorld': ImpossibleTaskType.ConquerTheWorld,
+      'RearrangeTheStars': ImpossibleTaskType.RearrangeTheStars,
+      'OvercomeDeath': ImpossibleTaskType.OvercomeDeath,
+    };
+    return mapping[progressType] ?? null;
   }
 
   checkProgressCompletion(): void {
-    // TODO: Implement in Phase 4 when progress handler is built
+    this.impossibleTaskService.checkCompletion();
   }
 
   // ============================================================
@@ -215,23 +247,30 @@ export class GameContext implements EffectContext {
   // ============================================================
 
   spawnEnemy(config: EnemyConfig): void {
-    // TODO: Implement in Phase 4 when spawn handlers are built
-    console.warn('GameContext.spawnEnemy not yet implemented:', config);
+    this.battleService.addEnemy({
+      name: config.name,
+      baseName: config.name, // Use name as baseName
+      health: config.health,
+      maxHealth: config.health,
+      accuracy: config.accuracy ?? 0.5,
+      attack: config.attack,
+      defense: config.defense,
+      loot: [], // Loot items are handled separately by the game
+    });
+    this.emitEvent({ kind: 'enemySpawned', enemyName: config.name });
   }
 
   spawnFollower(): void {
-    // TODO: Implement in Phase 4 when spawn handlers are built
-    console.warn('GameContext.spawnFollower not yet implemented');
+    this.followersService.generateFollower();
   }
 
   spawnPet(): void {
-    // TODO: Implement in Phase 4 when spawn handlers are built
-    console.warn('GameContext.spawnPet not yet implemented');
+    this.followersService.generateFollower(true);
   }
 
   triggerBattle(): void {
-    // TODO: Implement in Phase 4 when battle handler is built
-    console.warn('GameContext.triggerBattle not yet implemented');
+    // Add ticks to the battle counter to trigger a combat round
+    this.battleService.tickCounter += this.battleService.ticksPerFight;
   }
 
   // ============================================================
@@ -239,16 +278,14 @@ export class GameContext implements EffectContext {
   // ============================================================
 
   hasFurniture(slot: FurnitureSlot, furnitureId?: string): boolean {
-    // TODO: Implement when HomeService is wired up
-    // For now, return false (no furniture)
-    console.warn(`GameContext.hasFurniture not yet implemented: ${slot}, ${furnitureId}`);
-    return false;
+    const furniture = this.homeService.furniture[slot];
+    if (!furniture) return false;
+    if (furnitureId) return furniture.id === furnitureId;
+    return true;
   }
 
   getFurnitureId(slot: FurnitureSlot): string | undefined {
-    // TODO: Implement when HomeService is wired up
-    console.warn(`GameContext.getFurnitureId not yet implemented: ${slot}`);
-    return undefined;
+    return this.homeService.furniture[slot]?.id;
   }
 
   // ============================================================
@@ -263,5 +300,52 @@ export class GameContext implements EffectContext {
   logInjury(topic: LogTopic, message: string): void {
     // TODO: Wire up LogService when needed
     console.warn(`[${topic}] INJURY: ${message}`);
+  }
+
+  // ============================================================
+  // PHASE 4 ADDITIONS - QUERY METHODS
+  // ============================================================
+
+  getEnemyCount(): number {
+    return this.battleService.enemies.length;
+  }
+
+  getFollowerCount(job: string): number {
+    return this.followersService.followers.filter(f => f.job === job).length;
+  }
+
+  getFollowerPower(job: string): number {
+    const jobData = this.followersService.jobs[job];
+    return jobData?.totalPower ?? 0;
+  }
+
+  getPropertyValue(path: string): unknown {
+    const parts = path.split('.');
+    let current: unknown = this.getPropertyRoot(parts[0]);
+    for (let i = 1; i < parts.length && current != null; i++) {
+      current = (current as Record<string, unknown>)[parts[i]];
+    }
+    return current;
+  }
+
+  private getPropertyRoot(root: string): unknown {
+    switch (root) {
+      case 'furniture': return this.homeService.furniture;
+      case 'followerCount': {
+        // Build a count object for follower jobs
+        const counts: Record<string, number> = {};
+        for (const f of this.followersService.followers) {
+          counts[f.job] = (counts[f.job] ?? 0) + 1;
+        }
+        return counts;
+      }
+      case 'immortal': return this.characterService.characterState.immortal;
+      case 'god': return this.characterService.characterState.god;
+      default: return undefined;
+    }
+  }
+
+  emitEvent(event: EffectEvent): void {
+    this.eventEmitter(event);
   }
 }

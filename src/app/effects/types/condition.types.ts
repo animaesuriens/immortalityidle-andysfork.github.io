@@ -5,6 +5,7 @@
 
 import { AttributeType, StatusType } from '../../game-state/character';
 import { Formula } from './formula.types';
+import { FurnitureSlot } from './context.types';
 
 /**
  * Flag-based conditions (boolean properties on character state).
@@ -50,7 +51,7 @@ export interface CompareValues {
  */
 export interface HasFurniture {
   readonly kind: 'HasFurniture';
-  readonly slot: 'workbench' | 'bed' | 'bathtub' | 'kitchen' | 'storage';
+  readonly slot: FurnitureSlot;
   /** Specific furniture ID; if omitted, checks if slot has any furniture */
   readonly furnitureId?: string;
 }
