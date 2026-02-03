@@ -1,22 +1,55 @@
 /**
- * MoneyEffect handler for the declarative effects system.
- * Stub implementation - Phase 4.
+ * Money effect handler - adds or subtracts currency.
+ * Amount can be a number or Formula for dynamic calculations.
  */
 
 import { EffectHandler } from './handler.interface';
 import { MoneyEffect } from '../types/effect.types';
-import { EffectContext } from '../types/context.types';
-import { RenderedEffect } from '../types/render.types';
+import { EffectContext, toFormulaContext } from '../types/context.types';
+import { RenderedEffect, FormulaBreakdown } from '../types/render.types';
+import { evaluateAmount } from '../utils/render-helpers';
 
-/**
- * Handler for MoneyEffect.
- * Stub - not implemented until Phase 4.
- */
 export const moneyHandler: EffectHandler<MoneyEffect> = {
-  execute(_effect: MoneyEffect, _context: EffectContext): void {
-    throw new Error('MoneyHandler not implemented - Phase 4');
+  execute(effect: MoneyEffect, context: EffectContext): void {
+    const formulaContext = toFormulaContext(context);
+    const amount = evaluateAmount(effect.amount, formulaContext);
+    const rounded = Math.floor(amount);
+
+    context.updateMoney(rounded);
+    context.emitEvent({ kind: 'moneyEarned', amount: rounded });
   },
-  render(_effect: MoneyEffect, _context: EffectContext): RenderedEffect {
-    throw new Error('MoneyHandler not implemented - Phase 4');
+
+  render(effect: MoneyEffect, context: EffectContext): RenderedEffect {
+    const formulaContext = toFormulaContext(context);
+    const amount = evaluateAmount(effect.amount, formulaContext);
+    const rounded = Math.floor(amount);
+    const positive = rounded >= 0;
+
+    let formula: FormulaBreakdown;
+    if (typeof effect.amount === 'number') {
+      formula = { type: 'fixed', base: effect.amount };
+    } else {
+      formula = {
+        type: 'fixed',
+        expression: effect.amount.render(formulaContext, 'both'),
+      };
+    }
+
+    return {
+      kind: 'money',
+      visible: true,
+      positive,
+      short: {
+        sign: positive ? '+' : '',
+        amount: Math.abs(rounded),
+        label: 'Coins',
+      },
+      long: {
+        verb: positive ? 'Earns' : 'Costs',
+        amount: Math.abs(rounded),
+        name: 'coins',
+      },
+      formula,
+    };
   },
 };
