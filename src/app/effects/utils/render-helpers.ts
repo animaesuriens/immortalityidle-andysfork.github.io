@@ -6,15 +6,15 @@
 import { Formula, FormulaContext } from '../types/formula.types';
 
 /**
- * Render a formula or number for long format display.
- * - Numbers render as "Fixed: X"
- * - Formulas render using their render() method with 'both' format
+ * Render a formula with values substituted at leaf nodes.
+ * - Numbers render as the number itself
+ * - Formulas render using their render() method with 'substituted' format
  */
-export function renderFormulaLong(amount: number | Formula, context: FormulaContext): string {
+export function renderFormulaSubstituted(amount: number | Formula, context: FormulaContext): string {
   if (typeof amount === 'number') {
-    return `Fixed: ${amount}`;
+    return String(amount);
   }
-  return amount.render(context, 'both');
+  return amount.render(context, 'substituted');
 }
 
 /**
@@ -83,4 +83,21 @@ export function getStatusDisplayName(status: string): string {
     nourishment: 'Nourishment',
   };
   return names[status] ?? status;
+}
+
+/**
+ * Format a number for display with reasonable precision.
+ * Removes excessive decimal places while keeping meaningful precision.
+ */
+export function formatNumber(value: number): string {
+  // For integers or near-integers, show as integer
+  if (Math.abs(value - Math.round(value)) < 0.001) {
+    return String(Math.round(value));
+  }
+  // For small decimals, show 2 decimal places
+  if (Math.abs(value) < 100) {
+    return value.toFixed(2).replace(/\.?0+$/, '');
+  }
+  // For larger numbers, show fewer decimals
+  return value.toFixed(1).replace(/\.?0+$/, '');
 }

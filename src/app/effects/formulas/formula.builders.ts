@@ -22,6 +22,19 @@ import { ABBREVIATIONS } from '../utils/abbreviations';
 // ============================================================
 
 /**
+ * Format a number for display with reasonable precision.
+ * Removes excessive decimal places while keeping meaningful precision.
+ */
+function formatValue(value: number): string {
+  // For integers or near-integers, show as integer
+  if (Math.abs(value - Math.round(value)) < 0.005) {
+    return String(Math.round(value));
+  }
+  // Otherwise show 2 decimal places, trimming trailing zeros
+  return value.toFixed(2).replace(/\.?0+$/, '');
+}
+
+/**
  * Convert a Formula | number to a Formula.
  */
 function toFormula(value: Formula | number): Formula {
@@ -68,11 +81,10 @@ export function attr(attribute: AttributeType): Formula {
       const abbrev = attrAbbrev(attribute);
       switch (format) {
         case 'value':
-          return String(value);
+        case 'substituted':
+          return formatValue(value);
         case 'formula':
           return abbrev;
-        case 'both':
-          return `${abbrev} (${value})`;
       }
     },
   };
@@ -100,11 +112,10 @@ export function status(statusType: StatusType): Formula {
       const abbrev = statusAbbrev(statusType);
       switch (format) {
         case 'value':
-          return String(value);
+        case 'substituted':
+          return formatValue(value);
         case 'formula':
           return abbrev;
-        case 'both':
-          return `${abbrev} (${value})`;
       }
     },
   };
@@ -132,11 +143,10 @@ export function statusMax(statusType: StatusType): Formula {
       const abbrev = `Max ${statusAbbrev(statusType)}`;
       switch (format) {
         case 'value':
-          return String(value);
+        case 'substituted':
+          return formatValue(value);
         case 'formula':
           return abbrev;
-        case 'both':
-          return `${abbrev} (${value})`;
       }
     },
   };
@@ -160,7 +170,7 @@ export function fixed(value: number): Formula {
       return value;
     },
     render(_context: FormulaContext, _format: FormulaRenderFormat): string {
-      return String(value);
+      return formatValue(value);
     },
   };
 }
@@ -192,11 +202,10 @@ export function variable(name: string): Formula {
       const displayName = name.replace(/^consumed/, '').replace(/^./, c => c.toUpperCase());
       switch (format) {
         case 'value':
-          return String(value);
+        case 'substituted':
+          return formatValue(value);
         case 'formula':
           return displayName;
-        case 'both':
-          return `${displayName} (${value})`;
       }
     },
   };
@@ -227,14 +236,11 @@ export function add(...operands: (Formula | number)[]): Formula {
     },
     render(context: FormulaContext, format: FormulaRenderFormat): string {
       if (format === 'value') {
-        return String(this.evaluate(context));
+        return formatValue(this.evaluate(context));
       }
+      // 'formula' and 'substituted' both render children with the same format
       const parts = formulas.map(f => f.render(context, format));
-      const expr = parts.join(' + ');
-      if (format === 'both') {
-        return `${this.evaluate(context)} (${expr})`;
-      }
-      return expr;
+      return parts.join(' + ');
     },
   };
 }
@@ -261,15 +267,11 @@ export function sub(left: Formula | number, right: Formula | number): Formula {
     },
     render(context: FormulaContext, format: FormulaRenderFormat): string {
       if (format === 'value') {
-        return String(this.evaluate(context));
+        return formatValue(this.evaluate(context));
       }
       const leftStr = leftFormula.render(context, format);
       const rightStr = rightFormula.render(context, format);
-      const expr = `${leftStr} - ${rightStr}`;
-      if (format === 'both') {
-        return `${this.evaluate(context)} (${expr})`;
-      }
-      return expr;
+      return `${leftStr} - ${rightStr}`;
     },
   };
 }
@@ -295,14 +297,10 @@ export function mult(...operands: (Formula | number)[]): Formula {
     },
     render(context: FormulaContext, format: FormulaRenderFormat): string {
       if (format === 'value') {
-        return String(this.evaluate(context));
+        return formatValue(this.evaluate(context));
       }
       const parts = formulas.map(f => f.render(context, format));
-      const expr = parts.join(' x ');
-      if (format === 'both') {
-        return `${this.evaluate(context)} (${expr})`;
-      }
-      return expr;
+      return parts.join(' × ');
     },
   };
 }
@@ -334,15 +332,11 @@ export function div(left: Formula | number, right: Formula | number): Formula {
     },
     render(context: FormulaContext, format: FormulaRenderFormat): string {
       if (format === 'value') {
-        return String(this.evaluate(context));
+        return formatValue(this.evaluate(context));
       }
       const leftStr = leftFormula.render(context, format);
       const rightStr = rightFormula.render(context, format);
-      const expr = `${leftStr} / ${rightStr}`;
-      if (format === 'both') {
-        return `${this.evaluate(context)} (${expr})`;
-      }
-      return expr;
+      return `${leftStr} / ${rightStr}`;
     },
   };
 }
@@ -371,14 +365,10 @@ export function log2(operand: Formula | number): Formula {
     },
     render(context: FormulaContext, format: FormulaRenderFormat): string {
       if (format === 'value') {
-        return String(this.evaluate(context));
+        return formatValue(this.evaluate(context));
       }
       const inner = formula.render(context, format);
-      const expr = `log2(${inner})`;
-      if (format === 'both') {
-        return `${this.evaluate(context)} (${expr})`;
-      }
-      return expr;
+      return `log2(${inner})`;
     },
   };
 }
@@ -403,14 +393,10 @@ export function ln(operand: Formula | number): Formula {
     },
     render(context: FormulaContext, format: FormulaRenderFormat): string {
       if (format === 'value') {
-        return String(this.evaluate(context));
+        return formatValue(this.evaluate(context));
       }
       const inner = formula.render(context, format);
-      const expr = `ln(${inner})`;
-      if (format === 'both') {
-        return `${this.evaluate(context)} (${expr})`;
-      }
-      return expr;
+      return `ln(${inner})`;
     },
   };
 }
@@ -435,14 +421,10 @@ export function sqrt(operand: Formula | number): Formula {
     },
     render(context: FormulaContext, format: FormulaRenderFormat): string {
       if (format === 'value') {
-        return String(this.evaluate(context));
+        return formatValue(this.evaluate(context));
       }
       const inner = formula.render(context, format);
-      const expr = `sqrt(${inner})`;
-      if (format === 'both') {
-        return `${this.evaluate(context)} (${expr})`;
-      }
-      return expr;
+      return `√(${inner})`;
     },
   };
 }
@@ -467,14 +449,10 @@ export function floor(operand: Formula | number): Formula {
     },
     render(context: FormulaContext, format: FormulaRenderFormat): string {
       if (format === 'value') {
-        return String(this.evaluate(context));
+        return formatValue(this.evaluate(context));
       }
       const inner = formula.render(context, format);
-      const expr = `floor(${inner})`;
-      if (format === 'both') {
-        return `${this.evaluate(context)} (${expr})`;
-      }
-      return expr;
+      return `floor(${inner})`;
     },
   };
 }
@@ -501,15 +479,11 @@ export function pow(base: Formula | number, exponent: Formula | number): Formula
     },
     render(context: FormulaContext, format: FormulaRenderFormat): string {
       if (format === 'value') {
-        return String(this.evaluate(context));
+        return formatValue(this.evaluate(context));
       }
       const baseStr = baseFormula.render(context, format);
       const expStr = expFormula.render(context, format);
-      const expr = `${baseStr}^${expStr}`;
-      if (format === 'both') {
-        return `${this.evaluate(context)} (${expr})`;
-      }
-      return expr;
+      return `${baseStr}^${expStr}`;
     },
   };
 }
@@ -534,14 +508,10 @@ export function exp(operand: Formula | number): Formula {
     },
     render(context: FormulaContext, format: FormulaRenderFormat): string {
       if (format === 'value') {
-        return String(this.evaluate(context));
+        return formatValue(this.evaluate(context));
       }
       const inner = formula.render(context, format);
-      const expr = `e^${inner}`;
-      if (format === 'both') {
-        return `${this.evaluate(context)} (${expr})`;
-      }
-      return expr;
+      return `e^${inner}`;
     },
   };
 }
@@ -571,14 +541,10 @@ export function min(...operands: (Formula | number)[]): Formula {
     },
     render(context: FormulaContext, format: FormulaRenderFormat): string {
       if (format === 'value') {
-        return String(this.evaluate(context));
+        return formatValue(this.evaluate(context));
       }
       const parts = formulas.map(f => f.render(context, format));
-      const expr = `min(${parts.join(', ')})`;
-      if (format === 'both') {
-        return `${this.evaluate(context)} (${expr})`;
-      }
-      return expr;
+      return `min(${parts.join(', ')})`;
     },
   };
 }
@@ -604,14 +570,10 @@ export function max(...operands: (Formula | number)[]): Formula {
     },
     render(context: FormulaContext, format: FormulaRenderFormat): string {
       if (format === 'value') {
-        return String(this.evaluate(context));
+        return formatValue(this.evaluate(context));
       }
       const parts = formulas.map(f => f.render(context, format));
-      const expr = `max(${parts.join(', ')})`;
-      if (format === 'both') {
-        return `${this.evaluate(context)} (${expr})`;
-      }
-      return expr;
+      return `max(${parts.join(', ')})`;
     },
   };
 }
@@ -641,11 +603,10 @@ export function followerPower(job: string): Formula {
       const value = context.getFollowerPower?.(job) ?? 0;
       switch (format) {
         case 'value':
-          return String(value);
+        case 'substituted':
+          return formatValue(value);
         case 'formula':
           return `${job} power`;
-        case 'both':
-          return `${job} power (${value})`;
       }
     },
   };
@@ -672,11 +633,10 @@ export function followerCount(job: string): Formula {
       const value = context.getFollowerCount?.(job) ?? 0;
       switch (format) {
         case 'value':
-          return String(value);
+        case 'substituted':
+          return formatValue(value);
         case 'formula':
           return `${job} count`;
-        case 'both':
-          return `${job} count (${value})`;
       }
     },
   };

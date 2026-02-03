@@ -10,6 +10,8 @@ import { RenderedEffect, FormulaBreakdown } from '../types/render.types';
 import { ABBREVIATIONS } from '../utils/abbreviations';
 import {
   evaluateAmount,
+  renderFormulaOnly,
+  renderFormulaSubstituted,
   getStatusDisplayName,
 } from '../utils/render-helpers';
 
@@ -42,8 +44,10 @@ export const statusHandler: EffectHandler<StatusEffect> = {
       formula = { type: 'fixed', base: effect.amount };
     } else {
       formula = {
-        type: 'fixed',
-        expression: effect.amount.render(formulaContext, 'both'),
+        type: 'formula',
+        symbolic: renderFormulaOnly(effect.amount, formulaContext),
+        substituted: renderFormulaSubstituted(effect.amount, formulaContext),
+        result: Math.floor(amount),
       };
     }
 

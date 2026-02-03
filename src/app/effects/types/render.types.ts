@@ -30,23 +30,20 @@ export type RenderedEffectKind =
  * Formula breakdown for showing calculations in long format.
  */
 export interface FormulaBreakdown {
-  /** Type of formula: 'fixed' for constants, 'multiplied' for gain multiplier formulas */
-  type: 'fixed' | 'multiplied';
+  /** Type of formula: 'fixed' for constants, 'formula' for dynamic formulas */
+  type: 'fixed' | 'formula';
 
-  /** Base value before any multiplier */
+  /** Base value (used by 'fixed' type) */
   base?: number;
 
-  /** Name of the multiplier (e.g., "Strength Gain Multiplier") */
-  multiplierName?: string;
-
-  /** The multiplier value */
-  multiplier?: number;
-
-  /** Final result after multiplication */
+  /** Final result after calculation (used by 'formula' type) */
   result?: number;
 
-  /** Formula expression string (e.g., "log2(Spirituality) + 1") */
-  expression?: string;
+  /** Symbolic formula with variable names (e.g., "3 + log2(Cha)") - used by 'formula' type */
+  symbolic?: string;
+
+  /** Formula with values substituted (e.g., "3 + log2(5.44)") - used by 'formula' type */
+  substituted?: string;
 }
 
 /**

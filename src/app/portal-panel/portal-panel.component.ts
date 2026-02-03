@@ -93,11 +93,18 @@ export class PortalPanelComponent {
         if (e.formula) {
           let formulaText: string;
           if (e.formula.type === 'fixed') {
-            formulaText = e.formula.expression ?? `Fixed: ${e.formula.base}`;
+            const value = `<span class="formula-result">${this.bigNumberPipe.transform(e.formula.base ?? 0)}</span>`;
+            formulaText = `Fixed: ${value}`;
           } else {
-            // Multiplied formula
-            const base = e.formula.expression ?? String(e.formula.base);
-            formulaText = `${base} × ${e.formula.multiplierName} = ${base} × ${this.bigNumberPipe.transform(e.formula.multiplier ?? 1)} = ${this.bigNumberPipe.transform(e.formula.result ?? 0)}`;
+            // Formula type - show symbolic = substituted = result with color coding
+            const symbolic = `<span class="formula-symbolic">${e.formula.symbolic}</span>`;
+            const substituted = `<span class="formula-substituted">${e.formula.substituted}</span>`;
+            const result = `<span class="formula-result">${this.bigNumberPipe.transform(e.formula.result ?? 0)}</span>`;
+            if (e.formula.substituted && e.formula.substituted !== e.formula.symbolic) {
+              formulaText = `${symbolic} = ${substituted} = ${result}`;
+            } else {
+              formulaText = `${symbolic} = ${result}`;
+            }
           }
           if (e.condition) {
             formulaText += `; ${e.condition}`;

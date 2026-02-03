@@ -11,7 +11,9 @@ import { ABBREVIATIONS } from '../utils/abbreviations';
 import {
   evaluateAmount,
   renderFormulaOnly,
+  renderFormulaSubstituted,
   getAttributeDisplayName,
+  formatNumber,
 } from '../utils/render-helpers';
 
 /**
@@ -46,8 +48,10 @@ export const attributeHandler: EffectHandler<AttributeEffect> = {
         formula = { type: 'fixed', base: effect.amount };
       } else {
         formula = {
-          type: 'fixed',
-          expression: effect.amount.render(formulaContext, 'both'),
+          type: 'formula',
+          symbolic: renderFormulaOnly(effect.amount, formulaContext),
+          substituted: renderFormulaSubstituted(effect.amount, formulaContext),
+          result: amount,
         };
       }
     } else {
@@ -55,15 +59,14 @@ export const attributeHandler: EffectHandler<AttributeEffect> = {
       const gainMult = context.attributes[effect.attribute].aptitudeMult;
       const baseAmount = evaluateAmount(effect.amount, formulaContext);
       const baseStr = renderFormulaOnly(effect.amount, formulaContext);
+      const substitutedBase = renderFormulaSubstituted(effect.amount, formulaContext);
       const result = baseAmount * gainMult;
 
       formula = {
-        type: 'multiplied',
-        base: baseAmount,
-        multiplierName: `${name} Gain Multiplier`,
-        multiplier: gainMult,
+        type: 'formula',
+        symbolic: `${baseStr} × ${name} Gain Multiplier`,
+        substituted: `${substitutedBase} × ${formatNumber(gainMult)}`,
         result,
-        expression: baseStr,
       };
     }
 

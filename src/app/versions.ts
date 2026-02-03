@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.34.0', description: 'Internal: Consolidate formula system - removed redundant "multiplied" type, unified all formulas under "formula" type with symbolic/substituted/result breakdown. Added color-coded formula display in activity modals (purple=formula, blue=values, green=result).' },
   { version: '1.33.1', description: 'Fix: Dragging items within panels (time, equipment, inventory) no longer moves the panel itself.' },
   { version: '1.33.0', description: 'Internal: Add Phase 4 infrastructure - EffectEvent types, NoEnemies/CompareProperty conditions, GameContext wired to all services, Money handler with formula support, Begging activity converted to declarative effects (Phase 4 plan 1).' },
   { version: '1.32.1', description: 'Fix trailing comma in activity effect display when conditional effects (yin/yang) are hidden due to unmet conditions.' },

@@ -23,11 +23,11 @@ export interface FormulaContext {
 
 /**
  * Render format for formula output.
- * - 'value': Just the computed number (e.g., "127")
- * - 'formula': The formula expression (e.g., "log2(Cha) + Water Lore x 5")
- * - 'both': Value with formula (e.g., "127 (log2(Cha) + Water Lore x 5)")
+ * - 'value': Just the computed number (e.g., "5")
+ * - 'formula': Symbolic expression with variable names (e.g., "3 + log2(Cha)")
+ * - 'substituted': Expression with values at leaf nodes (e.g., "3 + log2(5.44)")
  */
-export type FormulaRenderFormat = 'value' | 'formula' | 'both';
+export type FormulaRenderFormat = 'value' | 'formula' | 'substituted';
 
 /**
  * A formula that can be evaluated to a number and rendered to a string.
