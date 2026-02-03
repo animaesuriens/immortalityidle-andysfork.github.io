@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.35.2', description: 'Internal: CSS cleanup - consolidate selectors, remove dead code, replace float with flexbox.' },
   { version: '1.35.1', description: 'Internal: Add Dev Tools panel for testing - includes item spawning and attribute editing.' },
   { version: '1.35.0', description: 'Activity cards now show an arrow icon when the activity can level up. Hover to see the attribute requirements for the next level.' },
   { version: '1.34.0', description: 'Internal: Consolidate formula system - removed redundant "multiplied" type, unified all formulas under "formula" type with symbolic/substituted/result breakdown. Added color-coded formula display in activity modals (purple=formula, blue=values, green=result).' },

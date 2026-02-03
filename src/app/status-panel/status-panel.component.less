@@ -7,22 +7,6 @@
   overflow: hidden;
 }
 
-.health > .progress-bar > span {
-  background-color: var(--healthColor);
-}
-
-.stamina > .progress-bar > span {
-  background-color: var(--staminaColor);
-}
-
-.nourishment > .progress-bar > span {
-  background-color: var(--nutritionColor);
-}
-
-.qi > .progress-bar > span {
-  background-color: var(--qiColor);
-}
-
 h3 {
   padding-left: 8px;
   margin-top: 4px;
@@ -92,7 +76,16 @@ td {
 .health, .stamina, .nourishment, .qi {
   display: flex;
   align-items: center;
+
+  > .progress-bar > span {
+    background-color: var(--bar-color);
+  }
 }
+
+.health { --bar-color: var(--healthColor); }
+.stamina { --bar-color: var(--staminaColor); }
+.nourishment { --bar-color: var(--nutritionColor); }
+.qi { --bar-color: var(--qiColor); }
 
 .flash {
   box-shadow: 0 0 5px 5px #48abe0;

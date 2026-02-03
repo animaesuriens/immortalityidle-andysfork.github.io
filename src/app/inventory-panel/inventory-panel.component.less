@@ -45,9 +45,8 @@
   line-height: 12px;
 }
 
-.itemQuantity {
+.itemBadge() {
   position: absolute;
-  bottom: 0;
   right: 0;
   line-height: 15px;
   padding: 0 4px;
@@ -59,18 +58,14 @@
   z-index: 1;
 }
 
+.itemQuantity {
+  .itemBadge();
+  bottom: 0;
+}
+
 .itemTier {
-  position: absolute;
+  .itemBadge();
   top: 0;
-  right: 0;
-  line-height: 15px;
-  padding: 0 4px;
-  width: fit-content;
-  height: fit-content;
-  background: inherit;
-  filter: brightness(80%);
-  border-radius: 3px;
-  z-index: 1;
 }
 
 .overflow {
