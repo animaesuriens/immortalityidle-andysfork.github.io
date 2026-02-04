@@ -2,7 +2,7 @@
 import { inject, Injectable, Injector } from '@angular/core';
 import { BattleService } from './battle.service';
 import { Activity, ActivityLoopEntry, ActivityType, isDeclarativeActivity } from '../game-state/activity';
-import { EffectExecutorService, add, log2, attr, fixed, mult } from '../effects';
+import { EffectExecutorService, add, log2, attr, fixed, mult, statusMax } from '../effects';
 import { AttributeType, CharacterAttribute, StatusType, SPIRIT_PROJECTION_QI_COST } from '../game-state/character';
 import { CharacterService } from '../game-state/character.service';
 import { HomeService, HomeType } from '../game-state/home.service';
@@ -1248,80 +1248,86 @@ export class ActivityService {
       description: [
         'Assemble 1000 bricks, 100 barrels of mortar, and your scaffolding to construct the next level of your tower. You will need a lot of expert help for this.',
       ],
-      consequenceDescription: [
-        'Uses 1000 Stamina. If you have the right followers and materials you will build the next level.',
-      ],
-      effectsLegacy: ['+Tower Level (requires 10 Builders, Scaffolding, 100 Mortar, 1000 Bricks)'],
-      consequence: [
-        () => {
-          this.characterService.characterState.status.stamina.value -= 1000;
-          let numBuilders = 0;
-          for (const follower of this.followerService.followers) {
-            if (follower.job === 'builder') {
-              numBuilders++;
-            }
-          }
-          if (numBuilders < 10) {
-            this.logService.injury([LogTopic.IMPOSSIBLE_TASK, LogTopic.DAMAGE], 'You fumble without the proper help and hurt yourself.');
-            this.characterService.characterState.status.health.value -=
-              this.characterService.characterState.status.health.max * 0.05;
-            if (this.pauseOnImpossibleFail) {
-              this.mainLoopService.pause = true;
-            }
-            return;
-          }
-          let value = 0;
-          value = this.inventoryService.consume('scaffolding');
-          if (value < 1) {
-            this.logService.injury(
-              [LogTopic.IMPOSSIBLE_TASK, LogTopic.DAMAGE],
-              'You try building without a scaffolding, but it ends in a disaster and you are badly hurt.'
-            );
-            this.characterService.characterState.status.health.value -=
-              this.characterService.characterState.status.health.max * 0.2;
-            if (this.pauseOnImpossibleFail) {
-              this.mainLoopService.pause = true;
-            }
-            return;
-          }
-          value = 0;
-          value = this.inventoryService.consume('mortar', 100);
-          if (value < 1) {
-            this.logService.injury(
-              [LogTopic.IMPOSSIBLE_TASK, LogTopic.DAMAGE],
-              'You try building without enough mortar, but it ends in a disaster and you are badly hurt.'
-            );
-            this.characterService.characterState.status.health.value -=
-              this.characterService.characterState.status.health.max * 0.2;
-            if (this.pauseOnImpossibleFail) {
-              this.mainLoopService.pause = true;
-            }
-            return;
-          }
-          value = 0;
-          value = this.inventoryService.consume('brick', 1000);
-          if (value < 1) {
-            this.logService.injury(
-              [LogTopic.IMPOSSIBLE_TASK, LogTopic.DAMAGE],
-              'You try building without enough bricks, but it ends in a disaster and you are badly hurt.'
-            );
-            this.characterService.characterState.status.health.value -=
-              this.characterService.characterState.status.health.max * 0.2;
-            if (this.pauseOnImpossibleFail) {
-              this.mainLoopService.pause = true;
-            }
-            return;
-          }
-          this.impossibleTaskService.taskProgress[ImpossibleTaskType.BuildTower].progress++;
-          this.impossibleTaskService.checkCompletion();
-          if (this.impossibleTaskService.taskProgress[ImpossibleTaskType.BuildTower].complete) {
-            this.logService.log(
-              LogTopic.IMPOSSIBLE_TASK,
-              'You have acheived the impossible and built a tower beyond the heavens.'
-            );
-          }
-        },
-      ],
+      effects: {
+        0: [
+          // Stamina cost (always applied via resourceUse)
+          // FAILURE 1: <10 builders -> 5% max health damage
+          {
+            kind: 'conditional',
+            condition: { kind: 'CompareProperty', path: 'followerCount.builder', operator: '<', value: 10 },
+            then: [
+              { kind: 'status', status: 'health', amount: mult(statusMax('health'), fixed(-0.05)) },
+            ],
+          },
+          // FAILURE 2: >=10 builders but no scaffolding -> 20% damage
+          {
+            kind: 'conditional',
+            condition: {
+              kind: 'And',
+              conditions: [
+                { kind: 'CompareProperty', path: 'followerCount.builder', operator: '>=', value: 10 },
+                { kind: 'Not', condition: { kind: 'HasInventory', check: 'hasItem', itemId: 'scaffolding', quantity: 1 } },
+              ],
+            },
+            then: [
+              { kind: 'status', status: 'health', amount: mult(statusMax('health'), fixed(-0.2)) },
+            ],
+          },
+          // FAILURE 3: has scaffolding but <100 mortar -> consume scaffolding, 20% damage
+          {
+            kind: 'conditional',
+            condition: {
+              kind: 'And',
+              conditions: [
+                { kind: 'CompareProperty', path: 'followerCount.builder', operator: '>=', value: 10 },
+                { kind: 'HasInventory', check: 'hasItem', itemId: 'scaffolding', quantity: 1 },
+                { kind: 'Not', condition: { kind: 'HasInventory', check: 'hasItem', itemId: 'mortar', quantity: 100 } },
+              ],
+            },
+            then: [
+              { kind: 'item.consume', itemType: 'scaffolding', onError: 'continue' },
+              { kind: 'status', status: 'health', amount: mult(statusMax('health'), fixed(-0.2)) },
+            ],
+          },
+          // FAILURE 4: has mortar but <1000 bricks -> consume scaffolding+mortar, 20% damage
+          {
+            kind: 'conditional',
+            condition: {
+              kind: 'And',
+              conditions: [
+                { kind: 'CompareProperty', path: 'followerCount.builder', operator: '>=', value: 10 },
+                { kind: 'HasInventory', check: 'hasItem', itemId: 'scaffolding', quantity: 1 },
+                { kind: 'HasInventory', check: 'hasItem', itemId: 'mortar', quantity: 100 },
+                { kind: 'Not', condition: { kind: 'HasInventory', check: 'hasItem', itemId: 'brick', quantity: 1000 } },
+              ],
+            },
+            then: [
+              { kind: 'item.consume', itemType: 'scaffolding', onError: 'continue' },
+              { kind: 'item.consume', itemType: 'mortar', quantity: 100, onError: 'continue' },
+              { kind: 'status', status: 'health', amount: mult(statusMax('health'), fixed(-0.2)) },
+            ],
+          },
+          // SUCCESS: all requirements met -> consume all, increment progress
+          {
+            kind: 'conditional',
+            condition: {
+              kind: 'And',
+              conditions: [
+                { kind: 'CompareProperty', path: 'followerCount.builder', operator: '>=', value: 10 },
+                { kind: 'HasInventory', check: 'hasItem', itemId: 'scaffolding', quantity: 1 },
+                { kind: 'HasInventory', check: 'hasItem', itemId: 'mortar', quantity: 100 },
+                { kind: 'HasInventory', check: 'hasItem', itemId: 'brick', quantity: 1000 },
+              ],
+            },
+            then: [
+              { kind: 'item.consume', itemType: 'scaffolding', onError: 'continue' },
+              { kind: 'item.consume', itemType: 'mortar', quantity: 100, onError: 'continue' },
+              { kind: 'item.consume', itemType: 'brick', quantity: 1000, onError: 'continue' },
+              { kind: 'progress', progressType: 'BuildTower' },
+            ],
+          },
+        ],
+      },
       resourceUse: [
         {
           stamina: 1000,
