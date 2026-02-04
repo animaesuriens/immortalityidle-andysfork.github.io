@@ -147,6 +147,17 @@ export const STARVATION_SPIRITUALITY_GAIN = 0.1;
 // Spirit Projection
 export const SPIRIT_PROJECTION_QI_COST = 5;
 
+// Combat Ability Costs
+export const QI_STRIKE_COST = 10;
+export const QI_SHIELD_COST = 10;
+export const PYROCLASM_COST = 10000;
+export const METAL_FIST_COST = 10000;
+export const FIRE_SHIELD_COST = 10000;
+export const ICE_SHIELD_COST = 10000;
+
+// Nourishment
+export const NOURISHMENT_DAILY_COST = 1;
+
 // Base Status Values
 export const BASE_HEALTH = 100;
 export const BASE_STAMINA = 100;
@@ -474,7 +485,7 @@ export class Character {
             this.bigNumberPipe.transform(addedValue) +
             '\n    New aptitude: ' +
             this.bigNumberPipe.transform(this.attributes[keys[key]].aptitude);
-          this.logService.log(LogTopic.MILESTONE, message);
+          this.logService.log(LogTopic.IMPROVEMENT, message);
           attributeGains +=
             message +
             '\n    New starting value: ' +

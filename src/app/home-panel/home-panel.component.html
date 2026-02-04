@@ -26,19 +26,19 @@
       <div class="buyLandSection">
         <div class="buyLandLabel">Buy Land</div>
         <div class="buyLandButtons">
-          <button class="buyLandButton" (click)="homeService.buyLand(1)" matTooltip="Buy 1 plot of land">
+          <button class="buyLandButton" (click)="homeService.buyLand(1)" [matTooltip]="tooltips.buyLandCount('1')">
             <span class="buyLandAmount">1</span>
             <span class="buyLandPrice">{{homeService.landPrice | bigNumber}}</span>
           </button>
-          <button class="buyLandButton" (click)="homeService.buyLand(10)" matTooltip="Buy 10 plots of land">
+          <button class="buyLandButton" (click)="homeService.buyLand(10)" [matTooltip]="tooltips.buyLandCount('10')">
             <span class="buyLandAmount">10</span>
             <span class="buyLandPrice">{{getLandPrice(10)}}</span>
           </button>
-          <button class="buyLandButton" (click)="homeService.buyLand(100)" matTooltip="Buy 100 plots of land">
+          <button class="buyLandButton" (click)="homeService.buyLand(100)" [matTooltip]="tooltips.buyLandCount('100')">
             <span class="buyLandAmount">100</span>
             <span class="buyLandPrice">{{getLandPrice(100)}}</span>
           </button>
-          <button class="buyLandButton" (click)="homeService.buyLand(-1)" matTooltip="Buy half the land you can afford">
+          <button class="buyLandButton" (click)="homeService.buyLand(-1)" [matTooltip]="tooltips.buyLandHalf">
             <span class="buyLandAmount">50%</span>
             <span class="buyLandPrice">{{getHalfAffordableLandPrice()}}</span>
           </button>
@@ -62,7 +62,7 @@
                     @for (slot of getBasicFurnitureSlots(); track slot) {
                       <div>
                         @if (!$any(homeService.furniture)[slot]) {
-                          <div class="itemSlot" matTooltip="You don't own a {{getSlotDisplayName(slot)}}, but your home could hold one." (click)="storeClicked()"></div>
+                          <div class="itemSlot" [matTooltip]="tooltips.emptyFurnitureSlot(getSlotDisplayName(slot))" (click)="storeClicked()"></div>
                         }
                         @if ($any(homeService.furniture)[slot]) {
                           <div class="itemSlot textOverflow" [matTooltip]="$any(homeService.furniture)[slot]?.description + '\n\n' + $any(homeService.furniture)[slot]?.effects" (click)="storeClicked()">{{$any(homeService.furniture)[slot]?.name | titlecase}}</div>
@@ -79,7 +79,7 @@
                     @for (slot of getWorkbenchSlots(); track slot) {
                       <div>
                         @if (!$any(homeService.furniture)[slot]) {
-                          <div class="itemSlot" matTooltip="You don't own a {{getSlotDisplayName(slot)}}, but your home could hold one." (click)="workbenchStoreClicked(slot)"></div>
+                          <div class="itemSlot" [matTooltip]="tooltips.emptyFurnitureSlot(getSlotDisplayName(slot))" (click)="workbenchStoreClicked(slot)"></div>
                         }
                         @if ($any(homeService.furniture)[slot]) {
                           <div class="itemSlot textOverflow" [matTooltip]="$any(homeService.furniture)[slot]?.description + '\n\n' + $any(homeService.furniture)[slot]?.effects" (click)="workbenchStoreClicked(slot)">{{$any(homeService.furniture)[slot]?.name | titlecase}}</div>
@@ -131,11 +131,11 @@
             <div class="button-group">
               <mat-icon [matTooltip]="tooltips.viewFarm" class="iconButton" (click)="farmClicked()" aria-label="View Farm" aria-hidden="false">grass</mat-icon>
               <mat-icon (click)="plowClicked($event)" class="iconButton" aria-label="Plow Field" aria-hidden="false"
-                [matTooltip]="homeService.plowTooltip">
+                [matTooltip]="tooltips.plowField">
                 waves
               </mat-icon>
               <mat-icon (click)="clearClicked($event)" class="iconButton" aria-label="Clear Field" aria-hidden="false"
-                [matTooltip]="homeService.clearTooltip">
+                [matTooltip]="tooltips.clearField">
                 delete_sweep
               </mat-icon>
               <mat-icon (click)="resetFieldsClicked($event)" class="iconButton" aria-label="Reset Fields" aria-hidden="false"

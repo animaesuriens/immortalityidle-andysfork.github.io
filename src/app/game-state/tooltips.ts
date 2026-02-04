@@ -11,6 +11,13 @@ import {
   STARVATION_DAMAGE_MIN,
   STARVATION_SPIRITUALITY_GAIN,
   SPIRIT_PROJECTION_QI_COST,
+  QI_STRIKE_COST,
+  QI_SHIELD_COST,
+  PYROCLASM_COST,
+  METAL_FIST_COST,
+  FIRE_SHIELD_COST,
+  ICE_SHIELD_COST,
+  NOURISHMENT_DAILY_COST,
 } from './character';
 
 // =============================================================================
@@ -88,6 +95,7 @@ export const TOP_BAR = {
   credits: 'Who made this awesome free game?',
   reincarnate: 'Voluntarily end this life, allowing your current attributes to strengthen your aptitudes in the next life.',
   discord: 'Have questions? Try the Immortality Idle Discord.',
+  togglePanelLocking: 'Toggle panel locking',
 };
 
 // =============================================================================
@@ -95,6 +103,8 @@ export const TOP_BAR = {
 // =============================================================================
 
 export const STATUS = {
+  viewLifespan: 'View lifespan details',
+
   health: {
     name: 'Health',
     description: 'If this reaches 0, you die.',
@@ -110,7 +120,7 @@ export const STATUS = {
   },
   nourishment: {
     name: 'Nutrition',
-    description: 'Decreases by 1 each day.\n\nWhen empty:',
+    description: `Decreases by ${NOURISHMENT_DAILY_COST} each day.\n\nWhen empty:`,
     starvationWithSpirituality: [
       `Take ${STARVATION_DAMAGE_PERCENT * 100}% health as starvation damage (min ${STARVATION_DAMAGE_MIN})`,
       `Gain ${STARVATION_SPIRITUALITY_GAIN} spirituality`,
@@ -162,7 +172,7 @@ Hotkey: Alt-0 to pause or spacebar to toggle.
 Clicking this again while paused will step time forward a single day.
 When paused, you can also advance one day by pressing the Enter key.`,
 
-  slowSpeed: 'Slow Game Speed (1 day/sec).\nHotkey: Alt-1',
+  slowSpeed: (tps: string) => `Slow Game Speed (${tps} days/sec).\nHotkey: Alt-1`,
   standardSpeed: (tps: string) => `Standard Game Speed (${tps} days/sec).\nHotkey: Alt-2`,
   fastSpeed: (tps: string) => `Fast Game Speed (${tps} days/sec).\nHotkey: Alt-3`,
   fasterSpeed: (tps: string) => `Faster Game Speed (${tps} days/sec).\nHotkey: Alt-4`,
@@ -187,6 +197,11 @@ Shift-Ctrl-click to remove 100x`,
 
 Shift- or Ctrl-click to add 10x
 Shift-Ctrl-click to add 100x`,
+
+  saveSchedule: (slot: number) => `Save your current schedule of activities (Schedule #${slot}).`,
+  loadSchedule: (slot: number) =>
+    `Load your saved schedule of activities (Schedule #${slot}). Note that activities that you cannot do right now will not be loaded.`,
+  clearSchedule: 'Clear your current schedule.',
 };
 
 // =============================================================================
@@ -213,6 +228,19 @@ It can depend on your attributes, but the last time you did this job you made ${
 
   canUnlock: (activityName: string, requirements: string) =>
     `You can do "${activityName}" again when you have:\n\n${requirements}`,
+
+  doNow: 'Spend a day doing this activity',
+
+  schedule: `Add this activity to your schedule
+
+Shift- or Ctrl-click to repeat it 10x
+Shift-Ctrl-click to repeat it 100x
+Alt-click to add it to the top`,
+
+  spiritualProjectionSuffix: '\nRight-click to set this as your spiritual projection activity',
+
+  locked: (requirements: string) =>
+    `This activity is locked until you have the attributes required for it. You will need:\n\n${requirements}`,
 };
 
 // =============================================================================
@@ -273,6 +301,9 @@ You can change this in the options menu later if you change your mind.`,
 You will spend ${cost} tael per day on a bowl of rice to avoid starvation.`,
     noAutoBuy: `You have no food in your inventory and have chosen not to buy food to prevent starvation.`,
   },
+
+  favorite: (isFavorite: boolean) =>
+    `${isFavorite ? 'Remove from favorites' : 'Add to favorites'} - Favorited equipment is protected from being used as auto-merge material`,
 };
 
 // =============================================================================
@@ -281,6 +312,7 @@ You will spend ${cost} tael per day on a bowl of rice to avoid starvation.`,
 
 export const EQUIPMENT = {
   favorite: (isFavorite: boolean) => `Click to ${isFavorite ? 'unfavorite' : 'favorite'} this equipment`,
+  unequipAll: 'Unequip all items',
 };
 
 // =============================================================================
@@ -298,6 +330,21 @@ export const HOME = {
 Shift-click to buy 10 plots for ${price10} taels.
 Ctrl+Shift-click to buy 100 plots for ${price100} taels.
 Ctrl-click to buy ${halfCount} plots (half the land you can afford).`,
+
+  buyLandCount: (count: string) => `Buy ${count} plots of land`,
+  buyLandHalf: 'Buy half the land you can afford',
+
+  plowField: `Plow a field. Converts a plot of land to a field. You'll need to work at farming it to make it produce more food. Once the harvest is over, you will get the food you've grown and the land will be available again.
+
+\u2022 Shift-click to plow 10 fields.
+\u2022 Ctrl+Shift-click to plow 100 fields.
+\u2022 Ctrl-click to plow all your land.`,
+
+  clearField: `Clear a field. Converts the field back into an open plot of land.
+
+\u2022 Shift-click to clear 10 fields.
+\u2022 Ctrl+Shift-click to clear 100 fields.
+\u2022 Ctrl-click to clear all your fields.`,
 
   resetFields: `Reset all fields.
 
@@ -396,6 +443,7 @@ Shift-click for save options.
 Ctrl-shift-click to load backup save.`,
 
   hardReset: 'Completely restart your journey toward immortality.',
+  viewPreviousLife: 'View the summary from your previous life.',
 };
 
 // =============================================================================
@@ -435,6 +483,11 @@ Ctrl-click to set the current number as the limit without dismissing.`,
 
 Shift-click to automatically dismiss every pet of this type.
 Ctrl-click to set the current number as the limit without dismissing.`,
+
+  keepLimit: (followerType: string) =>
+    `This value will only apply to new ${followerType}s. You'll have to dismiss current ${followerType}s yourself.`,
+
+  changeAllLimits: 'Set a number to change all of the limits to.',
 };
 
 // =============================================================================
@@ -451,4 +504,25 @@ export const LOG = {
 
 export const BATTLE = {
   options: 'Options',
+
+  qiStrike: `You can focus your qi around your weapon or fist to project greater power into your attacks. Doing this will double the damage that you inflict. Each use of this ability requires ${QI_STRIKE_COST.toLocaleString()} qi.`,
+  pyroclasm: `Focus your qi and blast your enemies with heat so intense their children's children will get burned. Each use of this ability requires ${PYROCLASM_COST.toLocaleString()} qi.`,
+  metalFist: `Focus your qi and summon a massive metal fist to crush your enemy. Each use of this ability requires ${METAL_FIST_COST.toLocaleString()} qi.`,
+  qiShield: `Your qi can form a protective shroud around your body, protecting you and decreasing the damage that you take. It requires ${QI_SHIELD_COST.toLocaleString()} qi each time the qi shield protects you.`,
+  fireShield: `Bring forth your inner fire to form a blistering barrier around you. Each use of this ability requires ${FIRE_SHIELD_COST.toLocaleString()} qi.`,
+  iceShield: `Bring forth the ice inside you to form a freezing barrier around you that will stop your enemy's next attack. Each use of this ability requires ${ICE_SHIELD_COST.toLocaleString()} qi.`,
+};
+
+// =============================================================================
+// ATTRIBUTES TOOLTIPS
+// =============================================================================
+
+export const ATTRIBUTES = {
+  aptitudeSuffix: (aptitude: string, aptitudeMult: string) =>
+    `Your aptitude of ${aptitude} multiplies your gains by ${aptitudeMult}.`,
+
+  columnApt: 'Aptitude',
+  columnMult: 'Gain Multiplier',
+  columnHv: 'Highest Value',
+  columnCv: 'Current Value',
 };

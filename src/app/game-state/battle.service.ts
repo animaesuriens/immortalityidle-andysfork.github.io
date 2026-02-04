@@ -7,6 +7,14 @@ import { ReincarnationService } from './reincarnation.service';
 import { ItemRepoService } from '../game-state/item-repo.service';
 import { HellService } from './hell.service';
 import { BigNumberPipe } from '../app.component';
+import {
+  QI_STRIKE_COST,
+  QI_SHIELD_COST,
+  PYROCLASM_COST,
+  METAL_FIST_COST,
+  FIRE_SHIELD_COST,
+  ICE_SHIELD_COST,
+} from './character';
 
 export interface Enemy {
   name: string;
@@ -208,12 +216,12 @@ export class BattleService {
           if (damage < 0.3) {
             damage = 0.3;
           }
-          if (this.enableQiShield && this.characterService.characterState.status.qi.value > 10) {
+          if (this.enableQiShield && this.characterService.characterState.status.qi.value > QI_SHIELD_COST) {
             damage /= 2;
-            this.characterService.characterState.status.qi.value -= 10;
+            this.characterService.characterState.status.qi.value -= QI_SHIELD_COST;
           }
           let damageBack = false;
-          if (this.enableFireShield && this.characterService.characterState.status.qi.value > 10000) {
+          if (this.enableFireShield && this.characterService.characterState.status.qi.value > FIRE_SHIELD_COST) {
             let fireDivisor = Math.log(this.characterService.characterState.attributes.fireLore.value) / Math.log(100);
             if (fireDivisor < 1) {
               fireDivisor = 1;
@@ -222,10 +230,10 @@ export class BattleService {
               fireDivisor = 10;
             }
             damage /= fireDivisor;
-            this.characterService.characterState.status.qi.value -= 10000;
+            this.characterService.characterState.status.qi.value -= FIRE_SHIELD_COST;
             damageBack = true;
           }
-          if (this.enableIceShield && this.characterService.characterState.status.qi.value > 10000) {
+          if (this.enableIceShield && this.characterService.characterState.status.qi.value > ICE_SHIELD_COST) {
             let waterDivisor =
               Math.log(this.characterService.characterState.attributes.waterLore.value) / Math.log(100);
             if (waterDivisor < 1) {
@@ -235,7 +243,7 @@ export class BattleService {
               waterDivisor = 10;
             }
             damage /= waterDivisor;
-            this.characterService.characterState.status.qi.value -= 10000;
+            this.characterService.characterState.status.qi.value -= ICE_SHIELD_COST;
             this.skipEnemyAttack++;
           }
           if (this.characterService.characterState.yinYangUnlocked) {
@@ -280,14 +288,14 @@ export class BattleService {
           if (this.characterService.characterState.status.health.value <= 0) {
             if (enemyStack.enemy.name === 'Death itself') {
               this.logService.injury(
-                LogTopic.DEATH,
+                [LogTopic.COMBAT, LogTopic.DEATH],
                 enemyStack.enemy.name +
                   ' overkilled you by ' +
                   Math.floor(-this.characterService.characterState.status.health.value) +
                   ' damage. You were defeated.'
               );
             } else {
-              this.logService.injury(LogTopic.DEATH, 'You were defeated by ' + enemyStack.enemy.name);
+              this.logService.injury([LogTopic.COMBAT, LogTopic.DEATH], 'You were defeated by ' + enemyStack.enemy.name);
             }
             if (!this.characterService.characterState.immortal) {
               this.characterService.characterState.dead = true;
@@ -316,7 +324,7 @@ export class BattleService {
     if (this.currentEnemy && this.characterService.characterState.status.health.value > 0) {
       // Check health for immortals
       if (Math.random() > this.characterService.characterState.accuracy) {
-        this.logService.log(LogTopic.COMBAT, 'You attack ' + this.currentEnemy.enemy.name + ' but miss.');
+        this.logService.injury(LogTopic.COMBAT, 'You attack ' + this.currentEnemy.enemy.name + ' but miss.');
         return;
       }
 
@@ -329,12 +337,12 @@ export class BattleService {
       if (damage < 1) {
         damage = 1;
       }
-      if (this.enableQiAttack && this.characterService.characterState.status.qi.value > 10) {
+      if (this.enableQiAttack && this.characterService.characterState.status.qi.value > QI_STRIKE_COST) {
         damage *= 2;
-        this.characterService.characterState.status.qi.value -= 10;
+        this.characterService.characterState.status.qi.value -= QI_STRIKE_COST;
       }
       let blowthrough = false;
-      if (this.enableMetalFist && this.characterService.characterState.status.qi.value > 10000) {
+      if (this.enableMetalFist && this.characterService.characterState.status.qi.value > METAL_FIST_COST) {
         let metalMultiplier = Math.log(this.characterService.characterState.attributes.metalLore.value) / Math.log(50);
         if (metalMultiplier < 1) {
           metalMultiplier = 1;
@@ -343,9 +351,9 @@ export class BattleService {
           metalMultiplier = 100;
         }
         damage *= metalMultiplier;
-        this.characterService.characterState.status.qi.value -= 10000;
+        this.characterService.characterState.status.qi.value -= METAL_FIST_COST;
       }
-      if (this.enablePyroclasm && this.characterService.characterState.status.qi.value > 10000) {
+      if (this.enablePyroclasm && this.characterService.characterState.status.qi.value > PYROCLASM_COST) {
         let fireMultiplier = Math.log(this.characterService.characterState.attributes.fireLore.value) / Math.log(100);
         if (fireMultiplier < 1) {
           fireMultiplier = 1;
@@ -354,7 +362,7 @@ export class BattleService {
           fireMultiplier = 10;
         }
         damage *= fireMultiplier;
-        this.characterService.characterState.status.qi.value -= 10000;
+        this.characterService.characterState.status.qi.value -= PYROCLASM_COST;
         blowthrough = true;
       }
       if (this.characterService.characterState.yinYangUnlocked) {
@@ -542,7 +550,7 @@ export class BattleService {
   }
 
   addEnemy(enemy: Enemy) {
-    this.logService.log(LogTopic.COMBAT, 'A new enemy comes along to trouble your sleep: ' + enemy.name);
+    this.logService.injury(LogTopic.COMBAT, 'A new enemy comes along to trouble your sleep: ' + enemy.name);
     for (const enemyIterator of this.enemies) {
       if (enemyIterator.enemy.name === enemy.name) {
         // it matches an existing enemy, add it to the stack and bail out
@@ -668,7 +676,7 @@ export class BattleService {
     }
     if (enemy.defeatEffect === 'respawnDouble') {
       // add two more of the same enemy
-      this.logService.log(LogTopic.COMBAT, 'They just keep coming! Two more ' + enemy.name + ' appear!');
+      this.logService.injury(LogTopic.COMBAT, 'They just keep coming! Two more ' + enemy.name + ' appear!');
       this.addEnemy({
         name: enemy.name,
         baseName: enemy.baseName,

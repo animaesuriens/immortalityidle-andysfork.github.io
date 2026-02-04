@@ -12,10 +12,10 @@
     <thead>
       <tr>
         <th>Name</th>
-        <th>SV</th>
-        <th>Aptitude</th>
-        <th>Gain Mult.</th>
-        <th class="growColumn">Value</th>
+        <th [matTooltip]="attrTooltips.columnApt">Apt</th>
+        <th [matTooltip]="attrTooltips.columnMult">Mult</th>
+        <th [matTooltip]="attrTooltips.columnHv">HV</th>
+        <th class="growColumn" [matTooltip]="attrTooltips.columnCv">CV</th>
       </tr>
     </thead>
     <tbody>
@@ -27,13 +27,17 @@
           @for (key of group.keys; track key) {
             @if (isAttributeVisible(key)) {
               <tr class="attributeLine">
-                <td matTooltip="{{character.attributes[key].description}} Your aptitude of {{character.attributes[key].aptitude | bigNumber}} multiplies your gains by {{character.attributes[key].aptitudeMult | bigNumber}}.">
+                <td [matTooltip]="character.attributes[key].description + ' ' + attrTooltips.aptitudeSuffix((character.attributes[key].aptitude | bigNumber) + '', (character.attributes[key].aptitudeMult | bigNumber) + '')">
                   <mat-icon>{{character.attributes[key].icon}}</mat-icon>
                   <span>{{key | camelToTitle}}:</span>
                 </td>
-                <td>{{character.attributes[key].lifeStartValue | bigNumber}}</td>
                 <td>{{character.attributes[key].aptitude | bigNumber}}</td>
                 <td>{{character.attributes[key].aptitudeMult | bigNumber}}</td>
+                <td>
+                  @if (character.highestAttributes[key] > character.attributes[key].value) {
+                    {{character.highestAttributes[key] | bigNumber}}
+                  }
+                </td>
                 <td class="growColumn">
                   {{character.attributes[key].value | bigNumber}}
                   @for (update of getAttributeUpdates(key); track update) {

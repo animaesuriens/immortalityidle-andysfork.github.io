@@ -5,7 +5,7 @@ import { Character, AttributeType } from '../game-state/character';
 import { CharacterService } from '../game-state/character.service';
 import { MainLoopService } from '../game-state/main-loop.service';
 import { GameStateService } from '../game-state/game-state.service';
-import { PANEL_HELP } from '../game-state/tooltips';
+import { PANEL_HELP, ATTRIBUTES } from '../game-state/tooltips';
 
 export type AttributeUpdatesArrays = {
   [key in AttributeType]: number[];
@@ -37,6 +37,7 @@ export class AttributesPanelComponent {
   character: Character;
   popupCounter = 0;
   panelHelp = PANEL_HELP.attributes;
+  attrTooltips = ATTRIBUTES;
 
   attributeGroups: AttributeGroup[] = [
     {

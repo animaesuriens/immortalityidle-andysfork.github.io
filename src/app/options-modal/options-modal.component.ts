@@ -16,6 +16,7 @@ import { LifeSummaryComponent } from '../life-summary/life-summary.component';
 import { ChangelogPanelComponent } from '../changelog-panel/changelog-panel.component';
 import { environment } from '../../environments/environment';
 import { CURRENT_VERSION, VERSIONS, VersionEntry } from '../versions';
+import { OPTIONS } from '../game-state/tooltips';
 
 @Component({
   selector: 'app-options-modal',
@@ -23,6 +24,7 @@ import { CURRENT_VERSION, VERSIONS, VersionEntry } from '../versions';
   styleUrls: ['./options-modal.component.less'],
 })
 export class OptionsModalComponent {
+  tooltips = OPTIONS;
   applicationVersion = CURRENT_VERSION;
   versions: VersionEntry[] = VERSIONS;
   tutorialTabDirection: 'up' | 'down' = 'down';

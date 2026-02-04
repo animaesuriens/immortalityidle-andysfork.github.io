@@ -5,7 +5,7 @@ import { MainLoopService } from '../game-state/main-loop.service';
 import { GameStateService } from '../game-state/game-state.service';
 import { BigNumberPipe } from '../app.component';
 import { BASE_HEALTH, BASE_STAMINA, BASE_NOURISHMENT, BASE_QI } from '../game-state/character';
-import { PANEL_HELP, STATUS } from '../game-state/tooltips';
+import { PANEL_HELP, STATUS, YIN_YANG } from '../game-state/tooltips';
 import { LifespanModalComponent } from '../lifespan-modal/lifespan-modal.component';
 
 @Component({
@@ -22,6 +22,8 @@ export class StatusPanelComponent {
   flashQi = false;
   flashNutrition = false;
   panelHelp = PANEL_HELP.status;
+  statusTooltips = STATUS;
+  yinYangTooltips = YIN_YANG;
 
   Math: Math;
   private bigNumberPipe: BigNumberPipe;

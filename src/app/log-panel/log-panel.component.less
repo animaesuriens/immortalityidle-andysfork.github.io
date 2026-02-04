@@ -8,19 +8,37 @@
 
 .STANDARD {
   color: var(--bodyText);
+
+  .logMessage {
+    color: var(--bodyText);
+  }
 }
 
 .INJURY {
   color: var(--healthColor);
+
+  .logMessage {
+    color: var(--healthColor);
+  }
 }
 
 .logEntryDiv {
   border-top: 1px var(--tableDividerColor) dotted;
   white-space: nowrap;
   font-size: 12px;
-  line-height: 12px;
-  margin-left: 2px;
+  line-height: 14px;
   margin-top: 1px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 8px;
+}
+
+.logMessage {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .logBoxContainer {
@@ -35,11 +53,37 @@
   flex-wrap: nowrap;
 }
 
+.logToolbar {
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  margin-bottom: 2px;
+  gap: 6px;
+}
+
 .headerNote {
-  margin-left: 100px;
   font-size: x-small;
+  opacity: 0.7;
 }
 
 .highlightText {
   color: var(--healthColor);
+}
+
+.logTags {
+  display: flex;
+  flex-shrink: 0;
+  margin-left: 8px;
+  padding-right: 8px;
+}
+
+.logTag {
+  display: inline-block;
+  font-size: 9px;
+  padding: 1px 3px;
+  margin-left: 2px;
+  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: var(--bodyText);
+  opacity: 0.7;
 }

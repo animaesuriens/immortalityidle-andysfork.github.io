@@ -1,6 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { FollowersService, Follower } from '../game-state/followers.service';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { FOLLOWERS } from '../game-state/tooltips';
 
 @Component({
   selector: 'app-follower-management-panel',
@@ -8,6 +9,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
   styleUrls: ['./follower-management-panel.component.less', '../app.component.less'],
 })
 export class FollowerManagementPanelComponent {
+  tooltips = FOLLOWERS;
   changeAll = 0;
   pets = false;
   followerType = 'Follower';

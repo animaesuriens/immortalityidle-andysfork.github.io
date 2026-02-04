@@ -468,7 +468,7 @@ export class FollowersService {
           if (newFollower) {
             newFollower.power = Math.round(follower.power / 2);
             newFollower.cost = 100 * newFollower.power;
-            this.logService.log(
+            this.logService.injury(
               LogTopic.FOLLOWER,
               'Your follower ' +
                 follower.name +
@@ -477,7 +477,7 @@ export class FollowersService {
                 '.'
             );
           }
-          this.logService.log(
+          this.logService.injury(
             LogTopic.FOLLOWER,
             'Your follower ' +
               follower.name +
@@ -727,7 +727,7 @@ export class FollowersService {
       capNumber = this.maxPetsByType[job] !== undefined ? this.maxPetsByType[job] : 1000;
     }
     if (this.numFollowersOnJob(job, followersList) >= capNumber) {
-      this.logService.log(
+      this.logService.injury(
         LogTopic.BLOCKED,
         'A new follower shows up, but they were a ' +
           this.camelToTitle.transform(job) +

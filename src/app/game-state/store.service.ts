@@ -75,6 +75,7 @@ export class StoreService {
         if (this.selectedItem.type === 'manual' && this.selectedItem.use) {
           // use manuals immediately
           this.selectedItem.use();
+          this.logService.log(LogTopic.MILESTONE, "The teachings of the " + this.selectedItem.name + " sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations.");
         } else {
           this.inventoryService.addItem(this.selectedItem);
         }

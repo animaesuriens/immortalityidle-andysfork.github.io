@@ -27,7 +27,7 @@
   </table>
 </h3>
 <div class="statusPanelContents">
-  <mat-icon class="lifespanIcon" (click)="openLifespanModal()" matTooltip="View lifespan details">
+  <mat-icon class="lifespanIcon" (click)="openLifespanModal()" [matTooltip]="statusTooltips.viewLifespan">
     timer
   </mat-icon>
   <div class="statusBarsGrid">
@@ -86,9 +86,7 @@
   </div>
   @if (this.characterService.characterState.yinYangUnlocked) {
     <div class="yinYang"
-    matTooltip="Yang: {{characterService.characterState.yang | bigNumber}}
-    Yin: {{characterService.characterState.yin | bigNumber}}
-    Your balance is {{balanceString}}.">
+    [matTooltip]="yinYangTooltips.template((characterService.characterState.yang | bigNumber) + '', (characterService.characterState.yin | bigNumber) + '', balanceString)">
       <svg xmlns="http://www.w3.org/2000/svg" width="250" height="250" viewBox="0 0 1250 1250" [style.fill]="yinColor">
         <defs>
           <filter id="f">

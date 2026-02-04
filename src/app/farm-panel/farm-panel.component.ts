@@ -3,6 +3,7 @@ import { CharacterService } from '../game-state/character.service';
 import { GameStateService } from '../game-state/game-state.service';
 import { FieldBatch, HomeService } from '../game-state/home.service';
 import { BigNumberPipe } from '../app.component';
+import { HOME } from '../game-state/tooltips';
 
 export interface DisplayBatch {
   count: number;
@@ -17,6 +18,8 @@ export interface DisplayBatch {
   styleUrls: ['./farm-panel.component.less', '../app.component.less'],
 })
 export class FarmPanelComponent {
+  tooltips = HOME;
+
   constructor(
     public homeService: HomeService,
     private characterService: CharacterService,

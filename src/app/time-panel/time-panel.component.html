@@ -19,7 +19,7 @@
     </mat-icon>
 
     <mat-icon (click)="slowClick()" [ngClass]="{'iconActive': (mainLoopService.tickDivider === 40 && !this.mainLoopService.pause)}"
-      [matTooltip]="tooltips.slowSpeed" class="iconButton" aria-label="Slow Speed" aria-hidden="false">
+      [matTooltip]="getSpeedTooltip(40)" class="iconButton" aria-label="Slow Speed" aria-hidden="false">
       slow_motion_video
     </mat-icon>
     <mat-icon (click)="standardClick()" [ngClass]="{'iconActive': (mainLoopService.tickDivider === 10 && !this.mainLoopService.pause)}"

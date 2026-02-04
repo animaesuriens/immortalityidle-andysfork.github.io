@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { BattleService } from '../game-state/battle.service';
 import { CharacterService } from '../game-state/character.service';
+import { BATTLE } from '../game-state/tooltips';
 
 @Component({
   selector: 'app-battle-options-panel',
@@ -8,6 +9,8 @@ import { CharacterService } from '../game-state/character.service';
   styleUrls: ['./battle-options-panel.component.less', '../app.component.less'],
 })
 export class BattleOptionsPanelComponent {
+  tooltips = BATTLE;
+
   constructor(public battleService: BattleService, public characterService: CharacterService) {}
 
   noAttackToggle() {

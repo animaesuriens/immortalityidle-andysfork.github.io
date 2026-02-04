@@ -10,6 +10,7 @@ import {
   STARVATION_DAMAGE_PERCENT,
   STARVATION_DAMAGE_MIN,
   STARVATION_SPIRITUALITY_GAIN,
+  NOURISHMENT_DAILY_COST,
 } from './character';
 import { ActivityService } from './activity.service';
 import { Subscription } from 'rxjs';
@@ -68,7 +69,7 @@ export class CharacterService {
     mainLoopService.tickSubject.subscribe(() => {
       if (!this.characterState.dead) {
         this.characterState.age++;
-        this.characterState.status.nourishment.value--;
+        this.characterState.status.nourishment.value -= NOURISHMENT_DAILY_COST;
       }
       // check for death
       let deathMessage = '';
@@ -122,7 +123,7 @@ export class CharacterService {
         if (!this.characterState.immortal) {
           this.logService.injury(LogTopic.DEATH, deathMessage);
           if (!this.forceRebirth) {
-            this.logService.log(
+            this.logService.injury(
               LogTopic.DEATH,
               "You have failed to achieve immortality and your life has ended. Don't worry, I'm sure you'll achieve immortality in your next life."
             );

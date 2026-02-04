@@ -28,6 +28,7 @@ export class ItemRepoService {
   gameStateService?: GameStateService;
   hellService?: HellService;
 
+
   colorByRank: string[] = [
     'darkgray',
     'gray',
@@ -1975,10 +1976,6 @@ export class ItemRepoService {
       use: () => {
         this.mainLoopService.unlockFastSpeed = true;
         this.mainLoopService.topDivider = this.mainLoopService.topDivider > 5 ? 5 : this.mainLoopService.topDivider;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         return this.mainLoopService.unlockFastSpeed;
@@ -1996,10 +1993,6 @@ export class ItemRepoService {
       use: () => {
         this.mainLoopService.unlockFasterSpeed = true;
         this.mainLoopService.topDivider = this.mainLoopService.topDivider > 2 ? 2 : this.mainLoopService.topDivider;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         return this.mainLoopService.unlockFasterSpeed;
@@ -2017,10 +2010,6 @@ export class ItemRepoService {
       use: () => {
         this.mainLoopService.unlockFastestSpeed = true;
         this.mainLoopService.topDivider = 1;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         return this.mainLoopService.unlockFastestSpeed;
@@ -2042,10 +2031,6 @@ export class ItemRepoService {
           this.activityService = this.injector.get(ActivityService);
         }
         this.activityService.autoRestart = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if actvityService is injected yet, if not, inject it (circular dependency issues)
@@ -2070,10 +2055,6 @@ export class ItemRepoService {
           this.inventoryService = this.injector.get(InventoryService);
         }
         this.inventoryService.autoSellUnlocked = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2098,10 +2079,6 @@ export class ItemRepoService {
           this.inventoryService = this.injector.get(InventoryService);
         }
         this.inventoryService.autoUseUnlocked = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2126,10 +2103,6 @@ export class ItemRepoService {
           this.inventoryService = this.injector.get(InventoryService);
         }
         this.inventoryService.autoBalanceUnlocked = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2153,10 +2126,6 @@ export class ItemRepoService {
           this.homeService = this.injector.get(HomeService);
         }
         this.homeService.autoBuyLandUnlocked = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         if (!this.homeService) {
@@ -2179,10 +2148,6 @@ export class ItemRepoService {
           this.homeService = this.injector.get(HomeService);
         }
         this.homeService.autoBuyHomeUnlocked = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         if (!this.homeService) {
@@ -2206,10 +2171,6 @@ export class ItemRepoService {
           this.homeService = this.injector.get(HomeService);
         }
         this.homeService.autoBuyFurnitureUnlocked = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         if (!this.homeService) {
@@ -2232,10 +2193,6 @@ export class ItemRepoService {
           this.autoBuyerService = this.injector.get(AutoBuyerService);
         }
         this.autoBuyerService.autoBuyerSettingsUnlocked = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         if (!this.autoBuyerService) {
@@ -2258,10 +2215,6 @@ export class ItemRepoService {
           this.homeService = this.injector.get(HomeService);
         }
         this.homeService.autoFieldUnlocked = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         if (!this.homeService) {
@@ -2291,10 +2244,6 @@ export class ItemRepoService {
             this.inventoryService.autoUseEntries.splice(index, 1);
           }
         }
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2325,10 +2274,6 @@ export class ItemRepoService {
             this.inventoryService.autoUseEntries.splice(index, 1);
           }
         }
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2353,10 +2298,6 @@ export class ItemRepoService {
           this.battleService = this.injector.get(BattleService);
         }
         this.battleService.autoTroubleUnlocked = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if battleService is injected yet, if not, inject it (circular dependency issues)
@@ -2381,10 +2322,6 @@ export class ItemRepoService {
           this.inventoryService = this.injector.get(InventoryService);
         }
         this.inventoryService.autoWeaponMergeUnlocked = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2409,10 +2346,6 @@ export class ItemRepoService {
           this.inventoryService = this.injector.get(InventoryService);
         }
         this.inventoryService.autoArmorMergeUnlocked = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2439,10 +2372,6 @@ export class ItemRepoService {
         this.inventoryService.useSpiritGemUnlocked = true;
         this.inventoryService.useSpiritGemWeapons = true;
         this.inventoryService.useSpiritGemPotions = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2468,10 +2397,6 @@ export class ItemRepoService {
         }
         this.inventoryService.autoSellOldHerbs = true;
         this.inventoryService.autoSellOldHerbsEnabled = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2497,10 +2422,6 @@ export class ItemRepoService {
         }
         this.inventoryService.autoSellOldWood = true;
         this.inventoryService.autoSellOldWoodEnabled = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2528,10 +2449,6 @@ export class ItemRepoService {
         this.inventoryService.autoSellOldOre = true;
         this.inventoryService.autoSellOldOreEnabled = true;
         this.inventoryService.autoSellOldBarsEnabled = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2557,10 +2474,6 @@ export class ItemRepoService {
         }
         this.inventoryService.autoSellOldHides = true;
         this.inventoryService.autoSellOldHidesEnabled = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2585,10 +2498,6 @@ export class ItemRepoService {
           this.inventoryService = this.injector.get(InventoryService);
         }
         this.inventoryService.autoequipBestWeapon = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2613,10 +2522,6 @@ export class ItemRepoService {
           this.inventoryService = this.injector.get(InventoryService);
         }
         this.inventoryService.autoequipBestArmor = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2641,10 +2546,6 @@ export class ItemRepoService {
           this.inventoryService = this.injector.get(InventoryService);
         }
         this.inventoryService.favoritesUnlocked = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2669,10 +2570,6 @@ export class ItemRepoService {
           this.inventoryService = this.injector.get(InventoryService);
         }
         this.inventoryService.favoritePriorityUnlocked = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2698,10 +2595,6 @@ export class ItemRepoService {
           this.inventoryService = this.injector.get(InventoryService);
         }
         this.inventoryService.maxStackSize *= 10;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2727,10 +2620,6 @@ export class ItemRepoService {
           this.inventoryService = this.injector.get(InventoryService);
         }
         this.inventoryService.maxStackSize *= 10;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2756,10 +2645,6 @@ export class ItemRepoService {
           this.inventoryService = this.injector.get(InventoryService);
         }
         this.inventoryService.maxStackSize *= 10;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2785,10 +2670,6 @@ export class ItemRepoService {
           this.followerService = this.injector.get(FollowersService);
         }
         this.followerService.autoDismissUnlocked = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2815,10 +2696,6 @@ export class ItemRepoService {
         }
         this.inventoryService.autoSellOldGemsUnlocked = true;
         this.inventoryService.autoSellOldGemsEnabled = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         // check if inventoryService is injected yet, if not, inject it (circular dependency issues)
@@ -2842,10 +2719,6 @@ export class ItemRepoService {
           this.activityService = this.injector.get(ActivityService);
         }
         this.activityService.autoPauseUnlocked = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         if (!this.activityService) {
@@ -2865,10 +2738,6 @@ export class ItemRepoService {
       useConsumes: true,
       use: () => {
         this.mainLoopService.offlineDivider = 2;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         return this.mainLoopService.offlineDivider <= 2;
@@ -2888,10 +2757,6 @@ export class ItemRepoService {
           this.activityService = this.injector.get(ActivityService);
         }
         this.activityService.autoRestUnlocked = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         if (!this.activityService) {
@@ -2911,10 +2776,6 @@ export class ItemRepoService {
       useConsumes: true,
       use: () => {
         this.mainLoopService.unlockAgeSpeed = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         return this.mainLoopService.unlockAgeSpeed;
@@ -2931,10 +2792,6 @@ export class ItemRepoService {
       useConsumes: true,
       use: () => {
         this.mainLoopService.unlockPlaytimeSpeed = true;
-        this.logService.log(
-          LogTopic.CRAFTING,
-          "The teachings of the manual sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations."
-        );
       },
       owned: () => {
         return this.mainLoopService.unlockPlaytimeSpeed;

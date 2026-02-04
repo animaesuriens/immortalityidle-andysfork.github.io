@@ -255,7 +255,7 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
 
   doActivity(activity: Activity) {
     if (!this.activityService.meetsRequirements(activity)) {
-      this.logService.log(LogTopic.BLOCKED, activity.name[activity.level] + ' is unavailable now.');
+      this.logService.injury(LogTopic.BLOCKED, activity.name[activity.level] + ' is unavailable now.');
       return;
     }
 
@@ -267,7 +267,7 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
     const failedStatus = this.activityService.checkResourceUse(activity);
     if (failedStatus !== '') {
       this.characterService.characterState.flashStatus(failedStatus);
-      this.logService.log(
+      this.logService.injury(
         LogTopic.BLOCKED,
         "You don't meet the requirements to do " + activity.name[activity.level] + ' right now.'
       );
@@ -358,26 +358,22 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
       return '';
     } else if (activity.unlocked) {
       if (doNow) {
-        return 'Spend a day doing this activity';
+        return ACTIVITY.doNow;
       } else {
         let projectionString = '';
         if (this.characterService.characterState.qiUnlocked) {
-          projectionString = '\nRight-click to set this as your spriritual projection activity';
+          projectionString = ACTIVITY.spiritualProjectionSuffix;
         }
-        return (
-          'Add this activity to your schedule\n\nShift- or Ctrl-click to repeat it 10x\nShift-Ctrl-click to repeat it 100x\nAlt-click to add it to the top' +
-          projectionString
-        );
+        return ACTIVITY.schedule + projectionString;
       }
     } else {
-      return [
-        'This activity is locked until you have the attributes required for it. You will need:\n',
-        ...Object.entries(activity.requirements[0]).map(entry =>
+      const requirements = Object.entries(activity.requirements[0])
+        .map(entry =>
           entry[1] ? `${this.camelToTitle.transform(entry[0])}: ${this.bigNumberPipe.transform(entry[1])}` : undefined
-        ),
-      ]
+        )
         .filter(line => line)
         .join('\n');
+      return ACTIVITY.locked(requirements);
     }
   }
 

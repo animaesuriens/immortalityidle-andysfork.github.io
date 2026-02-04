@@ -97,7 +97,7 @@
       </span>
       <span class="topBarRightGroup">
         <span class="topBarButtonWrapper">
-          <button (click)="lockPanelsToggle()" matTooltip="Toggle panel locking">
+          <button (click)="lockPanelsToggle()" [matTooltip]="tooltips.togglePanelLocking">
             <mat-icon class="buttonIcon">{{gameStateService.lockPanels ? 'lock' : 'lock_open'}}</mat-icon>
             {{gameStateService.lockPanels ? 'Unlock Panels' : 'Lock Panels'}}
           </button>

@@ -33,38 +33,38 @@
       <span class="inventoryButtons">
         @if (isFinite(inventoryService.selectedItem.item.value) && !hellService.inHell) {
           <mat-icon (click)="sell(1)" class="iconButton" aria-label="Sell" aria-hidden="false"
-            matTooltip="Sell one {{inventoryService.selectedItem.item.name}} for {{inventoryService.selectedItem.item.value}} taels. Right-click items to sell.">
+            [matTooltip]="tooltips.sell(inventoryService.selectedItem.item.name, inventoryService.selectedItem.item.value)">
             attach_money
           </mat-icon>
         }
         @if (isFinite(inventoryService.selectedItem.item.value) && !hellService.inHell) {
           <mat-icon  (click)="sellStack()" class="iconButton" aria-label="Sell Stack" aria-hidden="false"
-            matTooltip="Sell all the {{inventoryService.selectedItem.item.name}} in this inventory slot for {{inventoryService.selectedItem.item.value * inventoryService.selectedItem.quantity}} taels.  Shift-right-click items to sell the stack.">
+            [matTooltip]="tooltips.sellStack(inventoryService.selectedItem.item.name, (inventoryService.selectedItem.item.value * inventoryService.selectedItem.quantity | bigNumber) + '')">
             paid
           </mat-icon>
         }
         @if (isFinite(inventoryService.selectedItem.item.value) && !hellService.inHell) {
           <mat-icon (click)="sellAll()" class="iconButton" aria-label="Sell All" aria-hidden="false"
-            matTooltip="Sell all the {{inventoryService.selectedItem.item.name}} in the whole inventory.">
+            [matTooltip]="tooltips.sellAll(inventoryService.selectedItem.item.name)">
             shopping_basket
           </mat-icon>
         }
         @if (inventoryService.autoSellUnlocked && isFinite(inventoryService.selectedItem.item.value) && !instanceOfEquipment(inventoryService.selectedItem.item) && !hellService.inHell) {
           <mat-icon class="iconButton" (click)="autoSell()"
-            matTooltip="Automatically sell this kind of item whenever you get one. You can change this in the options menu later if you change your mind. Ctrl-right-click items to autosell.">
+            [matTooltip]="tooltips.autoSell">
             currency_exchange
           </mat-icon>
         }
         @if ((inventoryService.selectedItem.item.useLabel !== undefined)) {
           <mat-icon (click)="use($event)" class="iconButton" aria-label="Use" aria-hidden="false"
-            matTooltip="{{inventoryService.selectedItem.item.useLabel}}. {{inventoryService.selectedItem.item.useDescription}} Shift-click items to use them. Shift-click or Ctrl-click this button to use more of them.">
+            [matTooltip]="tooltips.use(inventoryService.selectedItem.item.useLabel!, inventoryService.selectedItem.item.useDescription ?? '')">
             auto_awesome
           </mat-icon>
         }
         @if ((inventoryService.selectedItem.item.useLabel !== undefined && inventoryService.autoUseUnlocked)) {
           <mat-icon
             (click)="autoUse()" class="iconButton" aria-label="Auto Use" aria-hidden="false"
-            matTooltip="Auto-{{inventoryService.selectedItem.item.useLabel}}. {{inventoryService.selectedItem.item.useDescription}} You can change this in the options menu later if you change your mind. Ctrl-click items to auto-use.">
+            [matTooltip]="tooltips.autoUse(inventoryService.selectedItem.item.useLabel!, inventoryService.selectedItem.item.useDescription ?? '')">
             auto_mode
           </mat-icon>
         }
@@ -83,7 +83,7 @@
         @if (inventoryService.favoritesUnlocked && instanceOfEquipment(inventoryService.selectedItem.item)) {
           <mat-icon (click)="toggleFavorite()" class="iconButton" aria-label="Favorite" aria-hidden="false"
             [ngClass]="{'favoriteActive': inventoryService.isFavorite(inventoryService.selectedItem.item)}"
-            matTooltip="{{inventoryService.isFavorite(inventoryService.selectedItem.item) ? 'Remove from favorites' : 'Add to favorites'}} - Favorited equipment is protected from being used as auto-merge material">
+            [matTooltip]="tooltips.favorite(inventoryService.isFavorite(inventoryService.selectedItem.item))">
             {{inventoryService.isFavorite(inventoryService.selectedItem.item) ? 'star' : 'star_border'}}
           </mat-icon>
         }
@@ -103,7 +103,7 @@
     }
       @if (inventoryService.noFood) {
         <mat-icon class="noFood"
-          matTooltip="{{hellService.inHell ? 'You have no food, and no one in hell sells rice.' : inventoryService.autoBuyFood ? 'You have no food in your inventory. You will spend ' + inventoryService.riceCost + ' tael per day on a bowl of rice to avoid starvation.' : 'You have no food in your inventory and have chosen not to buy food to prevent starvation.'}}">
+          [matTooltip]="hellService.inHell ? tooltips.noFood.hell : inventoryService.autoBuyFood ? tooltips.noFood.autoBuy(inventoryService.riceCost) : tooltips.noFood.noAutoBuy">
           soup_kitchen
         </mat-icon>
       }

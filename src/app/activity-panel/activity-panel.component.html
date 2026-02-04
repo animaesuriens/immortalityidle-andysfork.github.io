@@ -104,7 +104,7 @@
                   </mat-icon>
                 }
                 @if (activity.lastIncome && activity.lastIncome > 0) {
-                  <mat-icon matTooltip="Exactly how much will you make doing this job? It can depend on your attributes, but the last time you did this job you made {{activity.lastIncome | bigNumber}} taels."
+                  <mat-icon [matTooltip]="tooltips.lastIncome((activity.lastIncome | bigNumber) + '')"
                     aria-label="Earns money" aria-hidden="false">
                     attach_money
                   </mat-icon>

@@ -34,16 +34,18 @@ export const attributeHandler: EffectHandler<AttributeEffect> = {
 
   render(effect: AttributeEffect, context: EffectContext): RenderedEffect {
     const formulaContext = toFormulaContext(context);
-    const amount = evaluateAmount(effect.amount, formulaContext);
-    const positive = amount >= 0;
+    const baseAmount = evaluateAmount(effect.amount, formulaContext);
     const abbrev = ABBREVIATIONS.attributes[effect.attribute];
     const aptSuffix = effect.aptitude ? ' Apt' : '';
     const name = getAttributeDisplayName(effect.attribute);
 
-    // Build formula breakdown
+    // Build formula breakdown and calculate display amount
     let formula: FormulaBreakdown;
+    let displayAmount: number;
+
     if (effect.aptitude) {
       // Aptitude changes are not multiplied
+      displayAmount = baseAmount;
       if (typeof effect.amount === 'number') {
         formula = { type: 'fixed', base: effect.amount };
       } else {
@@ -51,24 +53,25 @@ export const attributeHandler: EffectHandler<AttributeEffect> = {
           type: 'formula',
           symbolic: renderFormulaOnly(effect.amount, formulaContext),
           substituted: renderFormulaSubstituted(effect.amount, formulaContext),
-          result: amount,
+          result: baseAmount,
         };
       }
     } else {
       // Attribute gains are multiplied by gain multiplier
       const gainMult = context.attributes[effect.attribute].aptitudeMult;
-      const baseAmount = evaluateAmount(effect.amount, formulaContext);
       const baseStr = renderFormulaOnly(effect.amount, formulaContext);
       const substitutedBase = renderFormulaSubstituted(effect.amount, formulaContext);
-      const result = baseAmount * gainMult;
+      displayAmount = baseAmount * gainMult;
 
       formula = {
         type: 'formula',
         symbolic: `${baseStr} × ${name} Gain Multiplier`,
         substituted: `${substitutedBase} × ${formatNumber(gainMult)}`,
-        result,
+        result: displayAmount,
       };
     }
+
+    const positive = displayAmount >= 0;
 
     return {
       kind: 'attribute',
@@ -76,12 +79,12 @@ export const attributeHandler: EffectHandler<AttributeEffect> = {
       positive,
       short: {
         sign: positive ? '+' : '',
-        amount: Math.abs(amount),
+        amount: Math.abs(displayAmount),
         label: `${abbrev}${aptSuffix}`,
       },
       long: {
         verb: positive ? 'Increases' : 'Decreases',
-        amount: Math.abs(amount),
+        amount: Math.abs(displayAmount),
         name,
         suffix: effect.aptitude ? 'aptitude' : undefined,
       },

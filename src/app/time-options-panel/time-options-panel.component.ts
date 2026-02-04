@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivityService } from '../game-state/activity.service';
+import { TIME_PANEL } from '../game-state/tooltips';
 
 @Component({
   selector: 'app-time-options-panel',
@@ -7,6 +8,8 @@ import { ActivityService } from '../game-state/activity.service';
   styleUrls: ['./time-options-panel.component.less', '../app.component.less'],
 })
 export class TimeOptionsPanelComponent {
+  tooltips = TIME_PANEL;
+
   constructor(public activityService: ActivityService) {}
 
   pauseOnDeath(event: Event) {

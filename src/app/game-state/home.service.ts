@@ -165,9 +165,7 @@ export class HomeService {
   homeUnlocked = false;
   smoothFarming = false;
 
-  // Shared tooltip strings for plow and clear buttons
-  plowTooltip = "Plow a field. Converts a plot of land to a field. You'll need to work at farming it to make it produce more food. Once the harvest is over, you will get the food you've grown and the land will be available again.\n\n\u2022 Shift-click to plow 10 fields.\n\u2022 Ctrl+Shift-click to plow 100 fields.\n\u2022 Ctrl-click to plow all your land.";
-  clearTooltip = "Clear a field. Converts the field back into an open plot of land.\n\n\u2022 Shift-click to clear 10 fields.\n\u2022 Ctrl+Shift-click to clear 100 fields.\n\u2022 Ctrl-click to clear all your fields.";
+  private troublemakerMessage = 'Some troublemakers stole some money while you were sleeping. It might be time to get some walls.';
 
   homesList: Home[] = [
     {
@@ -183,8 +181,8 @@ export class HomeService {
       consequence: () => {
         if (Math.random() < 0.05) {
           this.logService.injury(
-            LogTopic.HOME,
-            'Some troublemakers stole some money while you were sleeping. It might be time to get some walls.'
+            [LogTopic.HOME, LogTopic.DAMAGE],
+            this.troublemakerMessage
           );
           this.characterService.characterState.updateMoney(0 - this.characterService.characterState.money / 10);
         }
@@ -222,8 +220,8 @@ export class HomeService {
         this.characterService.characterState.status.stamina.value += 1;
         if (Math.random() < 0.03) {
           this.logService.injury(
-            LogTopic.HOME,
-            'Some troublemakers stole some money while you were sleeping. It might be time to get some walls.'
+            [LogTopic.HOME, LogTopic.DAMAGE],
+            this.troublemakerMessage
           );
           this.characterService.characterState.updateMoney(0 - this.characterService.characterState.money / 10);
         }
@@ -626,7 +624,7 @@ export class HomeService {
       if (!this.hellService?.inHell && !this.characterService.characterState.god) {
         if (this.home.costPerDay > this.characterService.characterState.money) {
           this.logService.injury(
-            LogTopic.HOME,
+            [LogTopic.HOME, LogTopic.DAMAGE],
             "You can't afford the upkeep on your home. Some thugs rough you up over the debt. You better get some money, fast."
           );
           if (this.thugPause) {
@@ -680,7 +678,7 @@ export class HomeService {
         }
       } else if (this.grandfatherTent) {
         this.logService.log(
-          LogTopic.HOME,
+          LogTopic.MILESTONE,
           'Your grandfather gives you a bit of land and helps you set up a tent on it.'
         );
         //and a few coins so you don't immediately get beat up for not having upkeep money for your house
@@ -830,7 +828,7 @@ export class HomeService {
       this.houseBuildingProgress = 1;
       this.upgrading = false;
       this.setCurrentHome(this.nextHome);
-      this.logService.log(LogTopic.HOME, 'You finished upgrading your home. You now live in a ' + this.home.name);
+      this.logService.log([LogTopic.HOME, LogTopic.IMPROVEMENT], 'You finished upgrading your home. You now live in a ' + this.home.name);
     }
   }
 

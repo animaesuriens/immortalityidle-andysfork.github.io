@@ -17,7 +17,7 @@
       id="equipmentSlothead"
       [matTooltip]="character.equipment.head | itemTooltip">
       @if (inventoryService.favoritesUnlocked && character.equipment.head) {
-        <mat-icon class="favoriteIcon" [ngClass]="{'favorited': inventoryService.isFavorite(character.equipment.head)}" (click)="inventoryService.toggleFavorite(character.equipment.head); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isFavorite(character.equipment.head) ? 'unfavorite' : 'favorite'}} this equipment">
+        <mat-icon class="favoriteIcon" [ngClass]="{'favorited': inventoryService.isFavorite(character.equipment.head)}" (click)="inventoryService.toggleFavorite(character.equipment.head); $event.stopPropagation()" [matTooltip]="tooltips.equipment.favorite(inventoryService.isFavorite(character.equipment.head))">
           {{inventoryService.isFavorite(character.equipment.head) ? 'star' : 'star_border'}}
         </mat-icon>
       }
@@ -42,7 +42,7 @@
       id="equipmentSlotrightHand"
       [matTooltip]="character.equipment.rightHand | itemTooltip">
       @if (inventoryService.favoritesUnlocked && character.equipment.rightHand) {
-        <mat-icon class="favoriteIcon" [ngClass]="{'favorited': inventoryService.isFavorite(character.equipment.rightHand)}" (click)="inventoryService.toggleFavorite(character.equipment.rightHand); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isFavorite(character.equipment.rightHand) ? 'unfavorite' : 'favorite'}} this equipment">
+        <mat-icon class="favoriteIcon" [ngClass]="{'favorited': inventoryService.isFavorite(character.equipment.rightHand)}" (click)="inventoryService.toggleFavorite(character.equipment.rightHand); $event.stopPropagation()" [matTooltip]="tooltips.equipment.favorite(inventoryService.isFavorite(character.equipment.rightHand))">
           {{inventoryService.isFavorite(character.equipment.rightHand) ? 'star' : 'star_border'}}
         </mat-icon>
       }
@@ -66,7 +66,7 @@
       id="equipmentSlotbody"
       [matTooltip]="character.equipment.body | itemTooltip">
       @if (inventoryService.favoritesUnlocked && character.equipment.body) {
-        <mat-icon class="favoriteIcon" [ngClass]="{'favorited': inventoryService.isFavorite(character.equipment.body)}" (click)="inventoryService.toggleFavorite(character.equipment.body); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isFavorite(character.equipment.body) ? 'unfavorite' : 'favorite'}} this equipment">
+        <mat-icon class="favoriteIcon" [ngClass]="{'favorited': inventoryService.isFavorite(character.equipment.body)}" (click)="inventoryService.toggleFavorite(character.equipment.body); $event.stopPropagation()" [matTooltip]="tooltips.equipment.favorite(inventoryService.isFavorite(character.equipment.body))">
           {{inventoryService.isFavorite(character.equipment.body) ? 'star' : 'star_border'}}
         </mat-icon>
       }
@@ -90,7 +90,7 @@
       id="equipmentSlotleftHand"
       [matTooltip]="character.equipment.leftHand | itemTooltip">
       @if (inventoryService.favoritesUnlocked && character.equipment.leftHand) {
-        <mat-icon class="favoriteIcon" [ngClass]="{'favorited': inventoryService.isFavorite(character.equipment.leftHand)}" (click)="inventoryService.toggleFavorite(character.equipment.leftHand); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isFavorite(character.equipment.leftHand) ? 'unfavorite' : 'favorite'}} this equipment">
+        <mat-icon class="favoriteIcon" [ngClass]="{'favorited': inventoryService.isFavorite(character.equipment.leftHand)}" (click)="inventoryService.toggleFavorite(character.equipment.leftHand); $event.stopPropagation()" [matTooltip]="tooltips.equipment.favorite(inventoryService.isFavorite(character.equipment.leftHand))">
           {{inventoryService.isFavorite(character.equipment.leftHand) ? 'star' : 'star_border'}}
         </mat-icon>
       }
@@ -115,7 +115,7 @@
       <span tabindex="0" [ngClass]="{'highlightSpan': character.righteousWrathUnlocked}" [matTooltip]="getDefenseTooltip()" matTooltipClass="multiline-tooltip"><mat-icon>shield</mat-icon>{{character.defense | bigNumber}}</span>
       @if (hasAnyEquipment()) {
         <br/>
-        <mat-icon class="iconButton unequipAllButton" matTooltip="Unequip all items" (click)="unequipAll()" aria-label="Unequip All" aria-hidden="false">backpack</mat-icon>
+        <mat-icon class="iconButton unequipAllButton" [matTooltip]="tooltips.equipment.unequipAll" (click)="unequipAll()" aria-label="Unequip All" aria-hidden="false">backpack</mat-icon>
       }
     </div>
     <div style="grid-area: legs;" class="itemSlot textOverflow" [ngClass]="{'highlightSlot': getSelectedItemSlot() === 'legs', 'brokenItem': isBroken('legs')}" [class]="getEffectClass('legs')"
@@ -125,7 +125,7 @@
       id="equipmentSlotlegs"
       [matTooltip]="character.equipment.legs | itemTooltip">
       @if (inventoryService.favoritesUnlocked && character.equipment.legs) {
-        <mat-icon class="favoriteIcon" [ngClass]="{'favorited': inventoryService.isFavorite(character.equipment.legs)}" (click)="inventoryService.toggleFavorite(character.equipment.legs); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isFavorite(character.equipment.legs) ? 'unfavorite' : 'favorite'}} this equipment">
+        <mat-icon class="favoriteIcon" [ngClass]="{'favorited': inventoryService.isFavorite(character.equipment.legs)}" (click)="inventoryService.toggleFavorite(character.equipment.legs); $event.stopPropagation()" [matTooltip]="tooltips.equipment.favorite(inventoryService.isFavorite(character.equipment.legs))">
           {{inventoryService.isFavorite(character.equipment.legs) ? 'star' : 'star_border'}}
         </mat-icon>
       }
@@ -149,7 +149,7 @@
       id="equipmentSlotfeet"
       [matTooltip]="character.equipment.feet | itemTooltip">
       @if (inventoryService.favoritesUnlocked && character.equipment.feet) {
-        <mat-icon class="favoriteIcon" [ngClass]="{'favorited': inventoryService.isFavorite(character.equipment.feet)}" (click)="inventoryService.toggleFavorite(character.equipment.feet); $event.stopPropagation()" matTooltip="Click to {{inventoryService.isFavorite(character.equipment.feet) ? 'unfavorite' : 'favorite'}} this equipment">
+        <mat-icon class="favoriteIcon" [ngClass]="{'favorited': inventoryService.isFavorite(character.equipment.feet)}" (click)="inventoryService.toggleFavorite(character.equipment.feet); $event.stopPropagation()" [matTooltip]="tooltips.equipment.favorite(inventoryService.isFavorite(character.equipment.feet))">
           {{inventoryService.isFavorite(character.equipment.feet) ? 'star' : 'star_border'}}
         </mat-icon>
       }

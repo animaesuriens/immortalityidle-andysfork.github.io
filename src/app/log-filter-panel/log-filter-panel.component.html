@@ -1,16 +1,60 @@
 <div class="darkMode">
   <h3>Log Filters</h3>
-  <span class="filters">
-    @for (topic of logTopics; track topic) {
-      <input
-        type="checkbox"
-        (change)="topicFilter($event, topic)"
-        [id]="'filter' + topic"
-        [checked]="logService.topicProperties[topic].enabled" />
-      <label [for]="'filter' + topic">
-        Show {{topic}} Log Entries
-      </label>
-      <br/>
+  <p class="filterHelp">Logs can have multiple tags. A log will appear if any of its tags are enabled.</p>
+  <div class="filterGroups">
+    <div class="filterGroup">
+      <h4>Story & Progress</h4>
+      @for (topic of storyTopics; track topic) {
+        <div class="filterRow">
+          <input
+            type="checkbox"
+            (change)="topicFilter($event, topic)"
+            [id]="'filter' + topic"
+            [checked]="logService.topicProperties[topic].enabled" />
+          <label [for]="'filter' + topic">{{topic}}</label>
+        </div>
+      }
+    </div>
+    <div class="filterGroup">
+      <h4>Combat & Damage</h4>
+      @for (topic of combatTopics; track topic) {
+        <div class="filterRow">
+          <input
+            type="checkbox"
+            (change)="topicFilter($event, topic)"
+            [id]="'filter' + topic"
+            [checked]="logService.topicProperties[topic].enabled" />
+          <label [for]="'filter' + topic">{{topic}}</label>
+        </div>
+      }
+    </div>
+    <div class="filterGroup">
+      <h4>Activities & Items</h4>
+      @for (topic of activityTopics; track topic) {
+        <div class="filterRow">
+          <input
+            type="checkbox"
+            (change)="topicFilter($event, topic)"
+            [id]="'filter' + topic"
+            [checked]="logService.topicProperties[topic].enabled" />
+          <label [for]="'filter' + topic">{{topic}}</label>
+        </div>
+      }
+    </div>
+    @if (impossibleTaskService.impossibleTasksUnlocked || hellService.inHell || hellService.completedHellTasks.length > 0) {
+    <div class="filterGroup">
+      <h4>Others</h4>
+      @for (topic of otherTopics; track topic) {
+        <div class="filterRow">
+          <input
+            type="checkbox"
+            (change)="topicFilter($event, topic)"
+            [id]="'filter' + topic"
+            [checked]="logService.topicProperties[topic].enabled" />
+          <label [for]="'filter' + topic">{{topic}}</label>
+        </div>
+      }
+    </div>
     }
-  </span>
+  </div>
 </div>

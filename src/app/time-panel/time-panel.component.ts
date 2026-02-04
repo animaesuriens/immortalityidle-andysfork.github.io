@@ -34,6 +34,7 @@ export class TimePanelComponent {
   getSpeedTooltip(divider: number): string {
     const tps = this.mainLoopService.getTPS(divider).toFixed(2);
     switch (divider) {
+      case 40: return this.tooltips.slowSpeed(tps);
       case 10: return this.tooltips.standardSpeed(tps);
       case 5: return this.tooltips.fastSpeed(tps);
       case 2: return this.tooltips.fasterSpeed(tps);

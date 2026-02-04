@@ -10,8 +10,7 @@
       </ng-template>
       <!-- Easy Mode -->
       <div class="optionField">
-        <span matTooltip="This game is much too hard and takes much too long to play to the end. Click this to make it easier and allow you to rush through the game.
-          Be warned: you will forever be known as a cultivator who took the easy path to immortality.">
+        <span [matTooltip]="tooltips.easyMode">
           <input type="checkbox" id="easyMode" [checked]="characterService.characterState.easyMode" (change)="easyModeChange($event)">
           <label for="easyMode">Easy Mode</label>
         </span>
@@ -47,7 +46,7 @@
       </div>
       <!-- Background Music -->
       <div class="optionField">
-        <span matTooltip="Enable background music (this allows the game to run in the background more efficiently).">
+        <span [matTooltip]="tooltips.backgroundMusic">
           <input type="checkbox" id="backgroundMusic" [checked]="mainLoopService.playMusic" (change)="playMusicChange($event)">
           <label for="backgroundMusic">Background Music (also improves background play) - <a href="/assets/music/Shaolin-Dub-Rising-Sun-Beat.mp3" download>Rising Sun Beat by Shaolin Dub</a> (<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">Creative Commons License</a>)</label>
         </span>
@@ -71,7 +70,7 @@
         </span>
       </div>
       <div class="optionField">
-        <button matTooltip="View the summary from your previous life." (click)="openPreviousLifeSummary()" [disabled]="!characterService.characterState.lastCauseOfDeath">
+        <button [matTooltip]="tooltips.viewPreviousLife" (click)="openPreviousLifeSummary()" [disabled]="!characterService.characterState.lastCauseOfDeath">
           Open Previous Life Summary
         </button>
       </div>
@@ -100,7 +99,7 @@
       <!-- Danger Zone Section -->
       <h1 class="dangerZone">Danger Zone</h1>
       <div class="optionField">
-        <button matTooltip="Completely restart your journey toward immortality." class="warning" (click)="hardResetClicked($event)">Hard Reset</button>
+        <button [matTooltip]="tooltips.hardReset" class="warning" (click)="hardResetClicked($event)">Hard Reset</button>
       </div>
     </mat-tab>
     <mat-tab>

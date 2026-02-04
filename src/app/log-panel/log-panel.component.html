@@ -8,21 +8,20 @@
   </mat-icon>
 </div>
 <div class="log">
-  <h3>
+  <div class="logToolbar">
     <mat-icon class="iconButton optionsIcon" aria-label="Filter Log" aria-hidden="false" (click)="logFilterClicked()" [matTooltip]="tooltips.manageFilters">
       filter_alt
     </mat-icon>
     <span class="headerNote">Newest messages appear at the top.</span>
-  </h3>
+  </div>
   <div class="logBoxContainer">
     <div class="logBox">
       @for (logMsg of logService.currentLog; track logMsg) {
         <div [ngClass]="logMsg.type" class="logEntryDiv">
-          {{logMsg.message}}@if (logMsg.repeat) {
-          <span> ({{logMsg.repeat}} times)</span>
-        }
-      </div>
-    }
+          <span class="logMessage">{{logMsg.message}}@if (logMsg.repeat) {<span> ({{logMsg.repeat}} times)</span>}</span>
+          <span class="logTags">@for (topic of logMsg.topics; track topic) {<span class="logTag">{{topic}}</span>}</span>
+        </div>
+      }
   </div>
 </div>
 </div>

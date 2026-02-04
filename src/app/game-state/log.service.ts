@@ -12,7 +12,7 @@ export enum LogType {
 export interface Log {
   message: string;
   type: LogType;
-  topic: LogTopic;
+  topics: LogTopic[];
   timestamp: number;
   repeat?: number;
 }
@@ -24,8 +24,10 @@ export interface LogProperties {
 
 export enum LogTopic {
   MILESTONE = 'Milestone',
+  IMPROVEMENT = 'Improvements',
+  UNLOCK = 'Unlocks',
   COMBAT = 'Combat',
-  DAMAGE = 'Non-combat Damage',
+  DAMAGE = 'Misc. Damage',
   CRAFTING = 'Crafting',
   FOLLOWER = 'Follower',
   HOME = 'Home',
@@ -33,6 +35,7 @@ export enum LogTopic {
   BLOCKED = 'Blocked',
   DEATH = 'Death',
   HELL = 'Hell',
+  IMPOSSIBLE_TASK = 'Impossible Task',
 }
 
 // Migration mapping from old topics to new topics
@@ -57,7 +60,7 @@ export class LogService {
     (result, topic) => ({
       ...result,
       [topic]: {
-        enabled: [LogTopic.MILESTONE, LogTopic.BLOCKED, LogTopic.DEATH].includes(topic),
+        enabled: [LogTopic.MILESTONE, LogTopic.IMPROVEMENT, LogTopic.UNLOCK, LogTopic.BLOCKED, LogTopic.DEATH, LogTopic.IMPOSSIBLE_TASK, LogTopic.HELL].includes(topic),
         hasNewMessages: false,
       },
     }),
@@ -90,16 +93,20 @@ export class LogService {
     this.log(LogTopic.MILESTONE, 'Be careful, the world can be a dangerous place.');
   }
 
-  log(topic: LogTopic, message: string): void {
-    this.fullLog(topic, LogType.Standard, message);
+  /** Log a standard message with one or more topics */
+  log(topics: LogTopic | LogTopic[], message: string): void {
+    this.fullLog(topics, LogType.Standard, message);
   }
 
-  injury(topic: LogTopic, message: string): void {
-    this.fullLog(topic, LogType.Injury, message);
+  /** Log an injury message with one or more topics */
+  injury(topics: LogTopic | LogTopic[], message: string): void {
+    this.fullLog(topics, LogType.Injury, message);
   }
 
-  fullLog(topic: LogTopic, type: LogType, message: string): void {
-    const log = this.logs[topic];
+  fullLog(topicsInput: LogTopic | LogTopic[], type: LogType, message: string): void {
+    const topics = Array.isArray(topicsInput) ? topicsInput : [topicsInput];
+    const primaryTopic = topics[0];
+    const log = this.logs[primaryTopic];
     const timestamp = Date.now();
     if (this.isRepeat(message, timestamp, log)) {
       log[log.length - 1].repeat = (log[log.length - 1].repeat || 1) + 1;
@@ -107,13 +114,16 @@ export class LogService {
       log.push({
         message: message,
         type: type,
-        topic: topic,
+        topics: topics,
         timestamp: timestamp,
       });
     }
 
-    if (!this.topicProperties[topic].enabled) {
-      this.topicProperties[topic].hasNewMessages = true;
+    // Mark all topics with new message indicator if disabled
+    for (const topic of topics) {
+      if (!this.topicProperties[topic].enabled) {
+        this.topicProperties[topic].hasNewMessages = true;
+      }
     }
   }
 
@@ -136,9 +146,18 @@ export class LogService {
   }
 
   setProperties(properties: LogProperties) {
-    this.logs[LogTopic.MILESTONE] = properties.storyLog || [];
+    // Migrate old logs that have 'topic' instead of 'topics'
+    const storyLog = (properties.storyLog || []).map(log => ({
+      ...log,
+      topics: log.topics || [(log as unknown as { topic: LogTopic }).topic || LogTopic.MILESTONE],
+    }));
+    this.logs[LogTopic.MILESTONE] = storyLog;
 
     if (properties.logTopics) {
+      // Reset all to disabled, then enable only saved topics
+      for (const topic of Object.values(LogTopic)) {
+        this.topicProperties[topic].enabled = false;
+      }
       properties.logTopics.forEach(topic => {
         // Check if this is a legacy topic that needs migration
         const legacyTopic = LEGACY_TOPIC_MIGRATION[topic];
@@ -152,8 +171,12 @@ export class LogService {
     } else {
       // Default enabled topics for new games
       this.topicProperties[LogTopic.MILESTONE].enabled = true;
+      this.topicProperties[LogTopic.IMPROVEMENT].enabled = true;
+      this.topicProperties[LogTopic.UNLOCK].enabled = true;
       this.topicProperties[LogTopic.BLOCKED].enabled = true;
       this.topicProperties[LogTopic.DEATH].enabled = true;
+      this.topicProperties[LogTopic.IMPOSSIBLE_TASK].enabled = true;
+      this.topicProperties[LogTopic.HELL].enabled = true;
     }
 
     this.updateLogTopics();
@@ -174,10 +197,10 @@ export class LogService {
       }
     });
 
-    this.currentLog = Object.keys(this.logs)
-      .map(topic => topic as LogTopic)
-      .filter(topic => this.topicProperties[topic].enabled)
-      .flatMap(topic => this.logs[topic])
+    // Collect all logs and filter by whether ANY of their topics are enabled
+    this.currentLog = Object.values(this.logs)
+      .flat()
+      .filter(log => log.topics.some(topic => this.topicProperties[topic].enabled))
       .sort((a, b) => b.timestamp - a.timestamp)
       .slice(0, 299);
   }

@@ -22,8 +22,6 @@ export class LogPanelComponent {
 
   logFilterClicked(): void {
     this.dialog.open(LogFilterPanelComponent, {
-      width: '700px',
-      data: { someField: 'foo' },
       autoFocus: false,
     });
   }

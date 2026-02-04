@@ -651,7 +651,7 @@ export class InventoryService {
       name = prefix + ' ' + materialPrefix + ' ' + baseName + suffix;
     }
     this.logService.log(
-      LogTopic.CRAFTING,
+      [LogTopic.CRAFTING, LogTopic.INVENTORY],
       'Your hard work paid off! You created a new weapon: ' + this.titleCasePipe.transform(name) + '!'
     );
     // Track highest equipment value per slot
@@ -774,6 +774,13 @@ export class InventoryService {
     );
   }
 
+  private alchemySuccess(name: string): void {
+    this.logService.log(
+      [LogTopic.CRAFTING, LogTopic.INVENTORY],
+      'Alchemy Success! Created a ' + this.titleCasePipe.transform(name) + '. Keep up the good work.'
+    );
+  }
+
   generatePotion(grade: number, masterLevel: boolean): void {
     if (this.useSpiritGemUnlocked && this.useSpiritGemPotions) {
       // consume a spirit gem and increase the grade
@@ -799,10 +806,7 @@ export class InventoryService {
     // randomly choose any of the first five stats
     const key = keys[Math.floor(Math.random() * 5)];
     const name = 'Potion of ' + key + ' +' + grade;
-    this.logService.log(
-      LogTopic.CRAFTING,
-      'Alchemy Success! Created a ' + this.titleCasePipe.transform(name) + '. Keep up the good work.'
-    );
+    this.alchemySuccess(name);
 
     this.addItem({
       name: name,
@@ -837,16 +841,13 @@ export class InventoryService {
       name = 'Empowerment Pill';
       imageFileName = 'empowermentPill';
       this.logService.log(
-        LogTopic.CRAFTING,
+        [LogTopic.CRAFTING, LogTopic.INVENTORY],
         'Alchemy Success! Created a ' +
           this.titleCasePipe.transform(name) +
           '. Its effect gets worse the more you take.'
       );
     } else {
-      this.logService.log(
-        LogTopic.CRAFTING,
-        'Alchemy Success! Created a ' + this.titleCasePipe.transform(name) + '. Keep up the good work.'
-      );
+      this.alchemySuccess(name);
     }
     this.addItem({
       name: name,
@@ -973,7 +974,7 @@ export class InventoryService {
     const baseName = defaultName ?? namePicker[Math.floor(Math.random() * namePicker.length)];
     const name = prefix + ' ' + baseName + suffix;
     this.logService.log(
-      LogTopic.CRAFTING,
+      [LogTopic.CRAFTING, LogTopic.INVENTORY],
       'Your hard work paid off! You created some armor: ' + this.titleCasePipe.transform(name) + '!'
     );
     const durability = grade * 10;
