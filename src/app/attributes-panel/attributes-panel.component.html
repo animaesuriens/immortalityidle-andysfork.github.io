@@ -33,11 +33,7 @@
                 </td>
                 <td>{{character.attributes[key].aptitude | bigNumber}}</td>
                 <td>{{character.attributes[key].aptitudeMult | bigNumber}}</td>
-                <td>
-                  @if (character.highestAttributes[key] > character.attributes[key].value) {
-                    {{character.highestAttributes[key] | bigNumber}}
-                  }
-                </td>
+                <td>{{character.highestAttributes[key] | bigNumber}}</td>
                 <td class="growColumn">
                   {{character.attributes[key].value | bigNumber}}
                   @for (update of getAttributeUpdates(key); track update) {
