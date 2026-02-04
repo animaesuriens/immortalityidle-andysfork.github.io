@@ -157,6 +157,14 @@ export interface EffectContext {
    */
   hasInventorySlots(): boolean;
 
+  /**
+   * Check if inventory has a specific item type, optionally with minimum quantity.
+   * @param itemType The item type to check for
+   * @param quantity Minimum quantity required (default: 1)
+   * @returns true if the item exists with sufficient quantity
+   */
+  hasItem(itemType: string, quantity?: number): boolean;
+
   // ============================================================
   // PROGRESS OPERATIONS
   // ============================================================

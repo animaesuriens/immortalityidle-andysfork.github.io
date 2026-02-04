@@ -137,15 +137,14 @@ function evaluateHasFurniture(condition: HasFurniture, context: EffectContext): 
 
 /**
  * Evaluate a HasInventory condition.
- * Stub returning true for now - Phase 4.
+ * Checks for open inventory slots or specific item types with quantity.
  */
 function evaluateHasInventory(condition: HasInventory, context: EffectContext): boolean {
   switch (condition.check) {
     case 'hasSlots':
       return context.hasInventorySlots();
     case 'hasItem':
-      // TODO: Phase 4 - implement hasItem check
-      return true;
+      return context.hasItem(condition.itemId ?? '', condition.quantity ?? 1);
     default:
       return assertNever(condition.check);
   }

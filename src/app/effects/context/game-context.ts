@@ -207,6 +207,10 @@ export class GameContext implements EffectContext {
     return this.inventoryService.openInventorySlots() > 0;
   }
 
+  hasItem(itemType: string, quantity = 1): boolean {
+    return this.inventoryService.getQuantityByType(itemType) >= quantity;
+  }
+
   // ============================================================
   // PROGRESS OPERATIONS
   // ============================================================
