@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-01-31)
 
 ## Current Position
 
-Phase: 3 of 7 (First Vertical Slice) - COMPLETE
-Plan: 4 of 4 in current phase - COMPLETE
-Status: Phase complete
-Last activity: 2026-02-03 - Completed 03-04-PLAN.md (Activity Integration)
+Phase: 4 of 7 (Validation Slice) - IN PROGRESS
+Plan: 1 of 4 in current phase - COMPLETE
+Status: In progress
+Last activity: 2026-02-04 - Completed 04-01-PLAN.md (Begging Infrastructure)
 
-Progress: [███████░░░] 70%
+Progress: [████████░░] 73%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
+- Total plans completed: 8
 - Average duration: 12min
-- Total execution time: 1.4 hours
+- Total execution time: 1.7 hours
 
 **By Phase:**
 
@@ -30,9 +30,10 @@ Progress: [███████░░░] 70%
 | 01-duration-foundation | 1 | 12min | 12min |
 | 02-interface-design | 2 | 17min | 8.5min |
 | 03-first-vertical-slice | 4 | 53min | 13min |
+| 04-validation-slice | 1 | 18min | 18min |
 
 **Recent Trend:**
-- Last 5 plans: 8min, 7min, 8min, 30min (checkpoint)
+- Last 5 plans: 7min, 8min, 30min (checkpoint), 18min
 - Trend: Checkpoint plans take longer due to user verification
 
 *Updated after each plan completion*
@@ -62,6 +63,10 @@ Decisions are logged in DECISIONS.md. Key decisions affecting current work:
 - **Activity union type**: DeclarativeActivity | LegacyActivity allows gradual migration
 - **Level-keyed effects**: effects: { [level: number]: Effect[] } mirrors consequence array pattern
 - **Pre-filter visible effects**: Filter before template iteration to fix comma-joining edge cases
+- **FINAL GameContext constructor**: Modified ONCE with ALL Phase 4 services (no future constructor changes)
+- **Event emission pattern**: RxJS Subject in executor, callback in GameContext for decoupling
+- **Property path resolution**: CompareProperty uses dot notation for extensible game state queries
+- **Math.floor rounding**: Money amounts from formulas floored to ensure integer coin values
 
 ### Pending Todos
 
@@ -76,8 +81,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-03T09:56:39Z
-Stopped at: Completed 03-04-PLAN.md (Activity Integration) - Phase 3 Complete
+Last session: 2026-02-04T15:30:00Z
+Stopped at: Completed 04-01-PLAN.md (Begging Infrastructure)
 Resume file: None
 
 ## Completed Phases
@@ -109,26 +114,32 @@ Resume file: None
 - **Summary:** `.planning/phases/03-first-vertical-slice/03-04-SUMMARY.md`
 - **Commits:** 12e16c3, 34f7abf, 47d2d54, e654853, 119d113
 
+### Phase 4: Validation Slice (In Progress)
+- **Plan 04-01:** EffectEvent types, NoEnemies and CompareProperty conditions, GameContext wired to all Phase 4 services (FINAL constructor), event emission system, followerPower/followerCount formula builders, Money handler fully implemented, Begging activity converted to declarative effects
+- **Summary:** `.planning/phases/04-validation-slice/04-01-SUMMARY.md`
+- **Commits:** 2ca249c, 00e40e0, 62e1acc, 037f37f, 9f29212, 32f312e
+
 ## Effects Module Structure
 
-After Phase 3 completion, the effects module is fully integrated:
+After Phase 4 Plan 01, the effects module has complete Phase 4 infrastructure:
 
 ```
 src/app/effects/
 ├── types/
-│   ├── effect.types.ts      # 14 effect variants (kind discriminator)
-│   ├── condition.types.ts   # 9 condition variants (kind discriminator)
+│   ├── effect.types.ts      # 14 effect variants + onError field
+│   ├── condition.types.ts   # 11 condition variants (NoEnemies, CompareProperty added)
 │   ├── formula.types.ts     # Formula interface
 │   ├── render.types.ts      # RenderedEffect structured data
-│   └── context.types.ts     # EffectContext interface
+│   ├── context.types.ts     # EffectContext with Phase 4 methods
+│   └── event.types.ts       # EffectEvent discriminated union (5 event kinds)
 ├── formulas/
-│   └── formula.builders.ts  # 17 implemented formula builders
+│   └── formula.builders.ts  # 19 formula builders (followerPower, followerCount added)
 ├── conditions/
-│   └── condition-evaluator.ts # evaluateCondition function (9 kinds)
+│   └── condition-evaluator.ts # evaluateCondition function (11 kinds)
 ├── context/
-│   └── game-context.ts      # GameContext implementing EffectContext
+│   └── game-context.ts      # GameContext with FINAL constructor + all services
 ├── executor/
-│   └── effect-executor.service.ts # EffectExecutorService
+│   └── effect-executor.service.ts # EffectExecutorService + effectEvents$ Subject
 ├── renderer/
 │   └── effect-renderer.service.ts # EffectRendererService
 ├── pipes/
@@ -142,7 +153,7 @@ src/app/effects/
 │   ├── attribute.handler.ts   # Implemented
 │   ├── yinyang.handler.ts     # Implemented
 │   ├── conditional.handler.ts # Implemented
-│   ├── money.handler.ts       # Stub
+│   ├── money.handler.ts       # Implemented (Phase 4)
 │   ├── item-add.handler.ts    # Stub
 │   ├── item-consume.handler.ts    # Stub
 │   ├── item-generate.handler.ts   # Stub
@@ -156,17 +167,17 @@ src/app/effects/
 │   ├── exhaustive.ts        # assertNever helper
 │   ├── abbreviations.ts     # ABBREVIATIONS constant
 │   └── render-helpers.ts    # FLAG_DISPLAY_NAMES, rendering utilities
-└── index.ts                 # Barrel export
+└── index.ts                 # Barrel export (includes event.types.ts)
 
 src/app/game-state/
 ├── activity.ts              # DeclarativeActivity | LegacyActivity union, isDeclarativeActivity guard
-└── activity.service.ts      # Resting declarative, executeActivity helper
+└── activity.service.ts      # Resting and Begging declarative, executeActivity helper
 
 src/app/activity-panel/
 ├── activity-panel.component.ts   # getActivityEffects, formatEffectsLong
 └── activity-panel.component.html # @for loop for effect rendering
 ```
 
-**Vertical slice complete:** Resting activity is fully declarative with end-to-end execution and rendering.
+**Phase 4 infrastructure complete:** Event emission system, follower formulas, property path queries, money handler, and Begging activity fully declarative.
 
-Ready for Phase 4: Migration (converting remaining 68 activities)
+**Declarative activities:** Resting (Phase 3), Begging (Phase 4) - 67 activities remaining
