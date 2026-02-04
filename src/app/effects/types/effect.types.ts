@@ -62,6 +62,8 @@ export interface ItemAddEffect extends BaseEffect {
 export interface ItemConsumeEffect extends BaseEffect {
   readonly kind: 'item.consume';
   readonly itemType: string;
+  /** Number of items to consume (default: 1) */
+  readonly quantity?: number;
   readonly minGrade?: number;
   /** Variable name to store consumed item's grade */
   readonly storeGradeAs?: string;

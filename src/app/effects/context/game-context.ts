@@ -155,10 +155,10 @@ export class GameContext implements EffectContext {
     console.warn(`GameContext.addItem not yet implemented: ${itemId} x${quantity}`);
   }
 
-  consumeItem(itemType: string, minGrade = 0): number {
+  consumeItem(itemType: string, quantity = 1, minGrade = 0): number {
     // Uses inventory service's consume method
     // Returns the grade/value of the consumed item, or 0 if none found
-    const value = this.inventoryService.consume(itemType, 1, false);
+    const value = this.inventoryService.consume(itemType, quantity, false);
     if (value >= minGrade) {
       return value;
     }

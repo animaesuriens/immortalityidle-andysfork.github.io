@@ -123,10 +123,13 @@ export interface EffectContext {
   addItem(itemId: string, quantity?: number): void;
 
   /**
-   * Consume an item by type (e.g., 'metal', 'wood').
+   * Consume item(s) by type (e.g., 'metal', 'wood').
+   * @param itemType The item type to consume
+   * @param quantity Number of items to consume (default: 1)
+   * @param minGrade Minimum grade required (default: 0)
    * @returns The grade of the consumed item, or 0 if none found
    */
-  consumeItem(itemType: string, minGrade?: number): number;
+  consumeItem(itemType: string, quantity?: number, minGrade?: number): number;
 
   /**
    * Generate a weapon.
