@@ -21,5 +21,17 @@
       <button class="devButton" (click)="updateAttribute()">Update</button>
     </div>
   </div>
+
+  <div class="devSection">
+    <div class="sectionHeader">Home</div>
+    <div class="homeEditor">
+      <select [(ngModel)]="selectedHomeType">
+        @for (home of homeService.homesList; track home.type) {
+          <option [ngValue]="home.type">{{home.name}}</option>
+        }
+      </select>
+      <button class="devButton" (click)="updateHome()">Update</button>
+    </div>
+  </div>
 </div>
 <div class="panelResizeHandle"></div>

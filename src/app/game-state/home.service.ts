@@ -216,8 +216,7 @@ export class HomeService {
       costPerDay: 1,
       landRequired: 1,
       maxInventory: 12,
-      upgradeToTooltip:
-        'Upgrade Home\n\n A better home will cost 100 taels and take up 1 land. The new home will restore 1 stamina and a bit of health per day.',
+      upgradeToTooltip: '',
       consequence: () => {
         this.characterService.characterState.status.health.value += 0.5;
         this.characterService.characterState.status.stamina.value += 1;
@@ -257,8 +256,7 @@ export class HomeService {
       costPerDay: 5,
       landRequired: 5,
       maxInventory: 15,
-      upgradeToTooltip:
-        'Upgrade Home\n\n A better home will cost 1,000 taels and take up 5 land. The new home will restore 3 stamina and a bit of health per day. It also has walls and space to properly sleep.',
+      upgradeToTooltip: 'It also has walls and space to properly sleep.',
       consequence: () => {
         this.characterService.characterState.status.health.value += 0.5;
         this.characterService.characterState.status.stamina.value += 3;
@@ -278,8 +276,7 @@ export class HomeService {
       costPerDay: 10,
       landRequired: 10,
       maxInventory: 18,
-      upgradeToTooltip:
-        'Upgrade Home\n\n A better home will cost 10,000 taels and take up 10 land. The new home will restore 5 stamina and a bit of health per day. It has enough room to properly bathe.',
+      upgradeToTooltip: 'It has enough room to properly bathe.',
       consequence: () => {
         this.characterService.characterState.status.health.value += 0.7;
         this.characterService.characterState.status.stamina.value += 5;
@@ -300,8 +297,7 @@ export class HomeService {
       costPerDay: 20,
       landRequired: 20,
       maxInventory: 20,
-      upgradeToTooltip:
-        'Upgrade Home\n\n A better home will cost 100,000 taels and take up 20 land. The new home will restore 10 stamina and 1 health and a bit of qi per day. It also has room to let you cook.',
+      upgradeToTooltip: 'It also has room to let you cook.',
       consequence: () => {
         this.characterService.characterState.status.qi.value += 0.1;
         this.characterService.characterState.status.health.value += 1;
@@ -323,8 +319,7 @@ export class HomeService {
       costPerDay: 50,
       landRequired: 50,
       maxInventory: 24,
-      upgradeToTooltip:
-        'Upgrade Home\n\n A better home will cost 1M taels and take up 50 land. The new home will restore 15 stamina, 2 health, and a bit of qi per day. It has room to practice your craft.',
+      upgradeToTooltip: 'It has room to practice your craft.',
       consequence: () => {
         this.characterService.characterState.status.qi.value += 0.2;
         this.characterService.characterState.status.health.value += 2;
@@ -346,8 +341,7 @@ export class HomeService {
       costPerDay: 80,
       landRequired: 80,
       maxInventory: 28,
-      upgradeToTooltip:
-        'Upgrade Home\n\n A better home will cost 10m taels and take up 80 land. The new home will restore 20 stamina, 3 health, and a bit of qi per day.',
+      upgradeToTooltip: '',
       consequence: () => {
         this.characterService.characterState.status.qi.value += 0.3;
         this.characterService.characterState.status.health.value += 3;
@@ -369,8 +363,7 @@ export class HomeService {
       costPerDay: 100,
       landRequired: 100,
       maxInventory: 30,
-      upgradeToTooltip:
-        'Upgrade Home\n\n A better home will cost 100m taels and take up 100 land. The new home will restore 25 stamina, 4 health, and a bit of qi per day.',
+      upgradeToTooltip: '',
       consequence: () => {
         this.characterService.characterState.status.qi.value += 0.4;
         this.characterService.characterState.status.health.value += 4;
@@ -391,8 +384,7 @@ export class HomeService {
       costPerDay: 120,
       landRequired: 120,
       maxInventory: 32,
-      upgradeToTooltip:
-        'Upgrade Home\n\n A better home will cost 1B taels and take up 120 land. The new home will restore 30 stamina, 5 health, and a bit of qi per day.',
+      upgradeToTooltip: '',
       consequence: () => {
         this.characterService.characterState.status.qi.value += 0.5;
         this.characterService.characterState.status.health.value += 5;
@@ -413,8 +405,7 @@ export class HomeService {
       costPerDay: 150,
       landRequired: 150,
       maxInventory: 36,
-      upgradeToTooltip:
-        'Upgrade Home\n\n A better home will cost 10B taels and take up 150 land. The new home will restore 35 stamina, 10 health, and 1 qi per day.',
+      upgradeToTooltip: '',
       consequence: () => {
         this.characterService.characterState.status.qi.value += 1;
         this.characterService.characterState.status.health.value += 10;
@@ -435,8 +426,7 @@ export class HomeService {
       costPerDay: 150,
       landRequired: 150,
       maxInventory: 40,
-      upgradeToTooltip:
-        'Upgrade Home\n\n A better home will cost 100B taels and take up 150 land. The new home will restore 40 stamina, 15 health, and 2 qi per day.',
+      upgradeToTooltip: '',
       consequence: () => {
         this.characterService.characterState.status.qi.value += 2;
         this.characterService.characterState.status.health.value += 15;
@@ -457,8 +447,7 @@ export class HomeService {
       costPerDay: 180,
       landRequired: 180,
       maxInventory: 50,
-      upgradeToTooltip:
-        'Upgrade Home\n\n A better home will cost 1T taels and take up 180 land. The new home will restore 50 stamina, 20 health, and 3 qi per day.',
+      upgradeToTooltip: '',
       consequence: () => {
         this.characterService.characterState.status.qi.value += 3;
         this.characterService.characterState.status.health.value += 20;
@@ -479,8 +468,7 @@ export class HomeService {
       costPerDay: 500,
       landRequired: 500,
       maxInventory: 60,
-      upgradeToTooltip:
-        'Upgrade Home\n\n A better home will cost 10T taels and take up 500 land. The new home will restore 100 stamina, 30 health, and 4 qi per day.',
+      upgradeToTooltip: '',
       consequence: () => {
         this.characterService.characterState.status.qi.value += 4;
         this.characterService.characterState.status.health.value += 30;
@@ -501,8 +489,7 @@ export class HomeService {
       costPerDay: 1000,
       landRequired: 1000,
       maxInventory: 80,
-      upgradeToTooltip:
-        'Upgrade Home\n\n A better home will cost 100T taels and take up 1,000 land. The new home will restore 200 stamina, 50 health, and 5 qi per day.',
+      upgradeToTooltip: '',
       consequence: () => {
         this.characterService.characterState.status.qi.value += 5;
         this.characterService.characterState.status.health.value += 50;
@@ -524,8 +511,7 @@ export class HomeService {
       costPerDay: 10000,
       landRequired: 10000,
       maxInventory: 100,
-      upgradeToTooltip:
-        'Upgrade Home\n\n A better home will cost 1q taels and take up 10,000 land. The new home will restore 300 stamina, 80 health, and 10 qi per day.',
+      upgradeToTooltip: '',
       consequence: () => {
         this.characterService.characterState.status.qi.value += 10;
         this.characterService.characterState.status.health.value += 80;
@@ -547,8 +533,7 @@ export class HomeService {
       costPerDay: 1e6,
       landRequired: 1e6,
       maxInventory: 125,
-      upgradeToTooltip:
-        'Upgrade Home\n\n A better home will cost 10q taels and take up 1,000,000 land. The new home will restore 500 stamina, 100 health, and 20 qi per day.',
+      upgradeToTooltip: '',
       consequence: () => {
         this.characterService.characterState.status.qi.value += 20;
         this.characterService.characterState.status.health.value += 100;
@@ -570,8 +555,7 @@ export class HomeService {
       costPerDay: 1e7,
       landRequired: 1e7,
       maxInventory: 150,
-      upgradeToTooltip:
-        'Upgrade Home\n\n A better home will cost 100q taels and take up 10,000,000 land. The new home will restore 1000 stamina, 150 health, and 30 qi per day.',
+      upgradeToTooltip: '',
       consequence: () => {
         this.characterService.characterState.status.qi.value += 30;
         this.characterService.characterState.status.health.value += 150;

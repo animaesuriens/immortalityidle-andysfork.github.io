@@ -305,6 +305,35 @@ Clears all fields and replants the same number with fresh crops.`,
 
   upgradingHome: 'Upgrading your home.',
 
+  upgradeHome: (cost: string, plots: string, stamina: number, health: number, qi: number, extra?: string) => {
+    // Build restoration text dynamically
+    const parts: string[] = [];
+    if (stamina > 0) parts.push(`${stamina} stamina`);
+    if (health >= 1) {
+      parts.push(`${health} health`);
+    } else if (health > 0) {
+      parts.push('a bit of health');
+    }
+    if (qi >= 1) {
+      parts.push(`${qi} qi`);
+    } else if (qi > 0) {
+      parts.push('a bit of qi');
+    }
+
+    let regenText = '';
+    if (parts.length > 0) {
+      regenText = `The new home will restore ${parts.join(', ')} per day.`;
+    }
+
+    const extraText = extra ? ` ${extra}` : '';
+
+    return `Upgrade Home
+
+Cost: ${cost} taels and ${plots} plots.
+
+${regenText}${extraText}`;
+  },
+
   mouseWarning: `Tent living is rough.
 
 All these pesky mice could become a real problem. You might want to buy some land and get a better home.`,

@@ -3,6 +3,7 @@ import { GameStateService } from '../game-state/game-state.service';
 import { CharacterService } from '../game-state/character.service';
 import { InventoryService } from '../game-state/inventory.service';
 import { AttributeType } from '../game-state/character';
+import { HomeService, HomeType } from '../game-state/home.service';
 
 @Component({
   selector: 'app-dev-tools-panel',
@@ -21,11 +22,17 @@ export class DevToolsPanelComponent {
   selectedAttribute: AttributeType = 'strength';
   attributeValue: number = 0;
 
+  // Home editor
+  selectedHomeType: HomeType = HomeType.SquatterTent;
+
   constructor(
     public gameStateService: GameStateService,
     public characterService: CharacterService,
-    public inventoryService: InventoryService
-  ) {}
+    public inventoryService: InventoryService,
+    public homeService: HomeService
+  ) {
+    this.selectedHomeType = this.homeService.homeValue;
+  }
 
   addWoodenSword(): void {
     const sword = this.inventoryService.generateWeapon(1, 'wood', false, 'sword');
@@ -38,5 +45,14 @@ export class DevToolsPanelComponent {
 
   loadCurrentAttributeValue(): void {
     this.attributeValue = this.characterService.characterState.attributes[this.selectedAttribute].value;
+  }
+
+  updateHome(): void {
+    const home = this.homeService.getHomeFromValue(this.selectedHomeType);
+    this.homeService.setCurrentHome(home);
+  }
+
+  loadCurrentHomeValue(): void {
+    this.selectedHomeType = this.homeService.homeValue;
   }
 }

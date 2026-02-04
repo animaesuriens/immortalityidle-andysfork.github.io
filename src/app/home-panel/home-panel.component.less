@@ -5,14 +5,97 @@ h3 {
   margin-bottom: 4px;
 }
 
+.homeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.homeHeaderText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+
+  h3 {
+    margin-bottom: 0;
+  }
+
+  .homeInfo {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+.buyLandSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  padding-right: 12px;
+}
+
+.buyLandLabel {
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--bodyText);
+  margin-bottom: 2px;
+}
+
+.buyLandButtons {
+  display: flex;
+  gap: 3px;
+}
+
+.buyLandButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px 6px;
+  min-width: 40px;
+  font-size: 11px;
+  line-height: 1.2;
+  cursor: pointer;
+  background: var(--panelBg);
+  border: 1px solid var(--panelBorder);
+  color: var(--bodyText);
+
+  &:hover {
+    background: var(--buttonHoverBg);
+  }
+}
+
+.buyLandAmount {
+  font-weight: bold;
+}
+
+.buyLandPrice {
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.buyLandInfo {
+  font-size: 11px;
+  margin-top: 2px;
+  text-align: center;
+}
+
 .homeContainer{
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding-left: 2px;
+  padding-top: 6px;
+  padding-left: 8px;
   padding-right: 2px;
+}
+
+.homeContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
 .homeInfo {
@@ -32,11 +115,23 @@ h3 {
   display: flex;
   justify-content: space-between;
   white-space: nowrap;
+  margin-left: -8px;
+  margin-right: -2px;
+  padding-left: 8px;
   padding-right: 16px;
 }
 
 .button-group {
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+.buttons mat-icon {
+  height: 24px;
+  width: 24px;
+  font-size: 24px;
+  vertical-align: middle;
 }
 
 mat-icon {
@@ -46,6 +141,14 @@ mat-icon {
   margin-top: 2px;
   margin-bottom: 2px;
   vertical-align: middle;
+}
+
+.upgradeCost {
+  display: flex;
+  flex-direction: column;
+  font-size: 11px;
+  line-height: 1.2;
+  margin-left: 4px;
 }
 
 .furnitureSlots {

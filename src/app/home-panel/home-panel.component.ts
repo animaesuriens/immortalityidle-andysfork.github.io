@@ -57,6 +57,25 @@ export class HomePanelComponent {
     return this.bignumber.transform(Math.floor(max / 2));
   }
 
+  getHalfAffordableLandPrice(): string {
+    const max = this.homeService.calculateAffordableLand(this.characterService.characterState.money);
+    const count = Math.floor(max / 2);
+    const price = this.homeService.landPrice * count + 10 * ((count * (count - 1)) / 2);
+    return this.bignumber.transform(price);
+  }
+
+  getUpgradeHomeTooltip(): string {
+    const next = this.homeService.nextHome;
+    return HOME.upgradeHome(
+      this.bignumber.transform(this.homeService.nextHomeCost),
+      this.bignumber.transform(next.landRequired),
+      next.staminaRegen,
+      next.healthRegen,
+      next.qiRegen,
+      next.upgradeToTooltip
+    );
+  }
+
   storeClicked(): void {
     this.storeService.setStoreInventory();
     this.dialog.open(FurnitureStoreModalComponent, {

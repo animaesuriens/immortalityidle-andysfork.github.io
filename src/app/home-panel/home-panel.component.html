@@ -8,21 +8,48 @@
   </mat-icon>
 </div>
 <div class="homeContainer">
-  <h3 >
-    <div matTooltip="{{homeService.home.description}}" [ngClass]="{'hellDisabled': hellService.inHell}">
-      You live in a {{homeService.home.name}}
+  <div class="homeHeader">
+    <div class="homeHeaderText">
+      <h3>
+        <div matTooltip="{{homeService.home.description}}" [ngClass]="{'hellDisabled': hellService.inHell}">
+          You live in a {{homeService.home.name}}
+        </div>
+      </h3>
+      @if (homeService.home.healthRegen > 0 || homeService.home.staminaRegen > 0 || homeService.home.qiRegen > 0) {
+        <div class="homeInfo"><span>Your home restores {{homeService.home.healthRegen}} health, {{homeService.home.staminaRegen}} stamina{{homeService.home.qiRegen > 0 ? ', ' + homeService.home.qiRegen + ' qi' : ''}} per day.</span></div>
+      }
+      @if (!hellService.inHell && !characterService.characterState.god) {
+        <div class="homeInfo"><span>It costs {{homeService.home.costPerDay | bigNumber}} {{homeService.home.costPerDay === 1 ? "tael" : "taels"}} per day to maintain your home.</span></div>
+      }
     </div>
-  </h3>
+    @if ((!hellService.inHell || homeService.hellFood)) {
+      <div class="buyLandSection">
+        <div class="buyLandLabel">Buy Land</div>
+        <div class="buyLandButtons">
+          <button class="buyLandButton" (click)="homeService.buyLand(1)" matTooltip="Buy 1 plot of land">
+            <span class="buyLandAmount">1</span>
+            <span class="buyLandPrice">{{homeService.landPrice | bigNumber}}</span>
+          </button>
+          <button class="buyLandButton" (click)="homeService.buyLand(10)" matTooltip="Buy 10 plots of land">
+            <span class="buyLandAmount">10</span>
+            <span class="buyLandPrice">{{getLandPrice(10)}}</span>
+          </button>
+          <button class="buyLandButton" (click)="homeService.buyLand(100)" matTooltip="Buy 100 plots of land">
+            <span class="buyLandAmount">100</span>
+            <span class="buyLandPrice">{{getLandPrice(100)}}</span>
+          </button>
+          <button class="buyLandButton" (click)="homeService.buyLand(-1)" matTooltip="Buy half the land you can afford">
+            <span class="buyLandAmount">50%</span>
+            <span class="buyLandPrice">{{getHalfAffordableLandPrice()}}</span>
+          </button>
+        </div>
+        <div class="buyLandInfo">You own {{homeService.land | bigNumber}} {{homeService.land === 1 ? "plot" : "plots"}} and {{homeService.fields.length + homeService.extraFields | bigNumber}} {{homeService.fields.length + homeService.extraFields === 1 ? "field" : "fields"}}.</div>
+      </div>
+    }
+  </div>
   @if ((!hellService.inHell || homeService.hellHome || homeService.hellFood)) {
-    <div class="homeContainer">
+    <div class="homeContent">
       <div class="overflow">
-        @if (homeService.home.healthRegen > 0 || homeService.home.staminaRegen > 0 || homeService.home.qiRegen > 0) {
-          <div class="homeInfo"><span>Your home restores {{homeService.home.healthRegen}} health, {{homeService.home.staminaRegen}} stamina{{homeService.home.qiRegen > 0 ? ', ' + homeService.home.qiRegen + ' qi' : ''}} per day.</span></div>
-        }
-        @if (!hellService.inHell && !characterService.characterState.god) {
-          <div class="homeInfo"><span>It costs {{homeService.home.costPerDay | bigNumber}} {{homeService.home.costPerDay === 1 ? "tael" : "taels"}} per day to maintain your home.</span></div>
-        }
-        <div class="homeInfo"><span>You own {{homeService.land | bigNumber}} open {{homeService.land === 1 ? "plot" : "plots"}} of land and {{homeService.fields.length + homeService.extraFields | bigNumber}} fields.</span></div>
         @if (homeService.fields.length + homeService.extraFields > 0) {
           <div class="homeInfo"><span>Your fields produced an average of {{homeService.averageYield | bigNumber}} food per day over the last year.</span></div>
         }
@@ -83,9 +110,13 @@
             <div class="button-group">
               @if ((homeService.home.name !== homeService.nextHome.name)) {
                 <mat-icon (click)="homeService.upgradeToNextHome()" class="iconButton" aria-label="Upgrade Home" aria-hidden="false"
-                  matTooltip="{{homeService.nextHome.upgradeToTooltip}}">
+                  [matTooltip]="getUpgradeHomeTooltip()">
                   add_business
                 </mat-icon>
+                <div class="upgradeCost">
+                  <span>{{homeService.nextHomeCost | bigNumber}} taels</span>
+                  <span>{{homeService.nextHome.landRequired | bigNumber}} plots</span>
+                </div>
               }
               @if (homeService.upgrading) {
                 <div class="progress-bar" style="height:20px;" [matTooltip]="tooltips.upgradingHome"
@@ -99,9 +130,6 @@
           @if (!hellService.inHell || homeService.hellFood) {
             <div class="button-group">
               <mat-icon [matTooltip]="tooltips.viewFarm" class="iconButton" (click)="farmClicked()" aria-label="View Farm" aria-hidden="false">grass</mat-icon>
-              <mat-icon (click)="buyClicked($event)" [matTooltip]="'• Click to buy a plot of land for ' + (homeService.landPrice | bigNumber) + ' taels.\n• Shift-click to buy 10 plots for ' + getLandPrice(10) + ' taels.\n• Ctrl+Shift-click to buy 100 plots for ' + getLandPrice(100) + ' taels.\n• Ctrl-click to buy ' + getHalfAffordableLand() + ' plots (half the land you can afford).'" class="iconButton" aria-label="Buy Land" aria-hidden="false">
-                add
-              </mat-icon>
               <mat-icon (click)="plowClicked($event)" class="iconButton" aria-label="Plow Field" aria-hidden="false"
                 [matTooltip]="homeService.plowTooltip">
                 waves
