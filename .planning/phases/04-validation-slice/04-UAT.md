@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 04-validation-slice
 source: [04-01-SUMMARY.md, 04-02 commits]
 started: 2026-02-05T12:00:00Z
@@ -79,37 +79,52 @@ skipped: 0
   reason: "User reported: Only the matching conditional branch renders. User expects to see all outcomes — what's needed for success and what happens on failure — at all times. Conditions shown only in formula as raw paths (followerCount.builder >= 10), not in descriptive text."
   severity: major
   test: 7
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "conditional.handler.ts render() sets visible based on conditionMet — `visible: conditionMet && r.visible` (line ~122) and `visible: !conditionMet && r.visible` (line ~138). Only the matching branch gets visible:true, hiding all other paths."
+  artifacts:
+    - path: "src/app/effects/handlers/conditional.handler.ts"
+      issue: "render() filters visibility by condition evaluation state"
+  missing:
+    - "Remove conditionMet filtering from visible flag — all branches should be visible"
+    - "Add readable condition text to each rendered effect's description"
 
 - truth: "Effect wording matches effect type — statuses use 'Reduces HP by #', items use 'Consumes 1x Scaffolding'"
   status: failed
   reason: "User reported: Status reductions say 'Consumes' instead of 'Reduces HP by #'. Item consumption says 'Consumes Scaffolding by 1' instead of 'Consumes 1x Scaffolding'."
   severity: major
   test: 7
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "status.handler.ts uses verb 'Uses' for negative effects (line ~64). item-consume.handler.ts uses long format {verb:'Consumes', amount:quantity, name:displayName} which the template renders as 'Consumes Scaffolding by 1' instead of 'Consumes 1x Scaffolding'."
+  artifacts:
+    - path: "src/app/effects/handlers/status.handler.ts"
+      issue: "Wrong verb 'Uses' for negative status effects — should be 'Reduces'"
+    - path: "src/app/effects/handlers/item-consume.handler.ts"
+      issue: "Long format produces 'Consumes X by N' instead of 'Consumes Nx X'"
+  missing:
+    - "Change status handler negative verb to 'Reduces'"
+    - "Change item-consume long format to put quantity before name: 'Consumes 1x Scaffolding'"
 
 - truth: "Condition formulas render human-readable text, not raw property paths. If conditions are rendered in the descriptive part, formula section should only show value calculations."
   status: failed
   reason: "User reported: Formula shows 'followerCount.builder >= 10' instead of readable 'If you have 10+ Builders'. Conditions need to be translated to player-facing language. If descriptive part handles conditions properly, formula section doesn't need to repeat them."
   severity: major
   test: 7
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "conditional.handler.ts renderCondition() for CompareProperty just does `${condition.path} ${condition.operator} ${condition.value}` (line ~78) — no translation layer for property paths. activity-panel.component.ts (line ~436) appends condition to formula string, duplicating it."
+  artifacts:
+    - path: "src/app/effects/handlers/conditional.handler.ts"
+      issue: "CompareProperty renders raw path strings without translation"
+    - path: "src/app/activity-panel/activity-panel.component.ts"
+      issue: "Formula section duplicates condition text that should only be in descriptive part"
+  missing:
+    - "Add property path translation (followerCount.builder → 'Builders', etc.)"
+    - "Move condition text to descriptive part only, remove from formula section"
 
 - truth: "BuildTower declarative effects include stamina cost"
   status: failed
   reason: "User reported: Stamina does not get reduced when executing BuildTower. The stamina cost was not included in the declarative effects definition at all."
   severity: major
   test: 8
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "BuildTower definition in activity.service.ts has resourceUse: [{stamina: 1000}] but NO top-level stamina status effect in the effects array. resourceUse is only used for pre-check validation (can player afford it), never deducted during execution. Begging works because it has explicit {kind:'status', status:'stamina', amount:-5} in effects. BuildTower's effects are all inside conditionals with no unconditional stamina deduction."
+  artifacts:
+    - path: "src/app/game-state/activity.service.ts"
+      issue: "BuildTower effects array missing top-level stamina status effect"
+  missing:
+    - "Add { kind: 'status', status: 'stamina', amount: -1000 } as first effect in BuildTower's effects[0] array, outside all conditionals"
