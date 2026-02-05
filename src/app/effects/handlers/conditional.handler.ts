@@ -11,6 +11,29 @@ import { evaluateCondition } from '../conditions/condition-evaluator';
 import { FLAG_DISPLAY_NAMES } from '../utils/render-helpers';
 
 /**
+ * Human-readable property names for CompareProperty conditions.
+ */
+const PROPERTY_DISPLAY_NAMES: Record<string, string> = {
+  'followerCount.builder': 'Builders',
+  'followerCount.hunter': 'Hunters',
+  'followerCount.farmer': 'Farmers',
+  'followerCount.soldier': 'Soldiers',
+  'followerCount.researcher': 'Researchers',
+};
+
+/**
+ * Human-readable operator text for condition rendering.
+ */
+const OPERATOR_TEXT: Record<string, string> = {
+  '>=': 'at least',
+  '>': 'more than',
+  '<=': 'at most',
+  '<': 'fewer than',
+  '==': 'exactly',
+  '!=': 'not',
+};
+
+/**
  * Late-bound reference to the handler registry.
  * Set by handler-registry.ts after all handlers are created.
  * This breaks the circular dependency between conditional.handler and registry.
@@ -64,18 +87,26 @@ function renderCondition(condition: ConditionalEffect['condition']): string {
       return `${condition.status} ${condition.operator} ${condition.value}`;
     case 'HasFurniture':
       return condition.furnitureId ? `has ${condition.furnitureId}` : `has ${condition.slot}`;
-    case 'HasInventory':
-      return condition.check === 'hasSlots' ? 'has slots' : `has ${condition.itemId}`;
+    case 'HasInventory': {
+      if (condition.check === 'hasSlots') return 'inventory has open slots';
+      const itemName = (condition.itemId ?? 'item').replace(/([A-Z])/g, ' $1').trim();
+      const displayName = itemName.charAt(0).toUpperCase() + itemName.slice(1);
+      const qty = condition.quantity ?? 1;
+      return qty > 1 ? `have ${qty}+ ${displayName}` : `have ${displayName}`;
+    }
     case 'And':
-      return condition.conditions.map(c => renderCondition(c)).join(' and ');
+      return condition.conditions.map(c => renderCondition(c)).join(', ');
     case 'Or':
       return condition.conditions.map(c => renderCondition(c)).join(' or ');
     case 'Not':
-      return `not (${renderCondition(condition.condition)})`;
+      return `don't ${renderCondition(condition.condition)}`;
     case 'NoEnemies':
       return 'no enemies';
-    case 'CompareProperty':
-      return `${condition.path} ${condition.operator} ${condition.value}`;
+    case 'CompareProperty': {
+      const name = PROPERTY_DISPLAY_NAMES[condition.path] ?? condition.path;
+      const op = OPERATOR_TEXT[condition.operator] ?? condition.operator;
+      return `${op} ${condition.value} ${name}`;
+    }
   }
 }
 
@@ -118,8 +149,8 @@ export const conditionalHandler: EffectHandler<ConditionalEffect> = {
       for (const r of rendered) {
         results.push({
           ...r,
-          // Show effect only if condition is met
-          visible: conditionMet && r.visible,
+          // Show ALL branches always - user sees all possible outcomes
+          visible: r.visible,
           // Add condition hint
           condition: conditionStr,
         });
@@ -128,14 +159,14 @@ export const conditionalHandler: EffectHandler<ConditionalEffect> = {
 
     // Render 'else' branch effects if present
     if (effect.else && effect.else.length > 0) {
-      const elseConditionStr = `if not ${renderCondition(effect.condition)}`;
+      const elseConditionStr = `if don't ${renderCondition(effect.condition)}`;
       for (const nested of effect.else) {
         const rendered = flattenEffects(renderEffect(nested, context));
         for (const r of rendered) {
           results.push({
             ...r,
-            // Show effect only if condition is NOT met
-            visible: !conditionMet && r.visible,
+            // Show ALL branches always - user sees all possible outcomes
+            visible: r.visible,
             condition: elseConditionStr,
           });
         }

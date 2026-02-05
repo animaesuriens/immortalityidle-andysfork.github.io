@@ -1250,7 +1250,8 @@ export class ActivityService {
       ],
       effects: {
         0: [
-          // Stamina cost (always applied via resourceUse)
+          // Stamina cost (always applied)
+          { kind: 'status', status: 'stamina', amount: -1000 },
           // FAILURE 1: <10 builders -> 5% max health damage
           {
             kind: 'conditional',

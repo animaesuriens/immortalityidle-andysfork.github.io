@@ -414,9 +414,22 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
       .map(e => {
         const cssClass = e.positive ? 'effect-positive' : 'effect-negative';
         const suffix = e.long.suffix ? ` ${e.long.suffix}` : '';
-        let text = `<span class="${cssClass}">${e.long.verb} ${e.long.name}${suffix} by ${this.bigNumberPipe.transform(e.long.amount)}.</span>`;
 
-        // Add formula breakdown
+        let text: string;
+        if (e.kind === 'item') {
+          // Item effects: "Consumes 1x Scaffolding."
+          text = `<span class="${cssClass}">${e.long.verb} ${this.bigNumberPipe.transform(e.long.amount)}x ${e.long.name}.</span>`;
+        } else {
+          // All other effects: "Reduces Stamina by 1,000."
+          text = `<span class="${cssClass}">${e.long.verb} ${e.long.name}${suffix} by ${this.bigNumberPipe.transform(e.long.amount)}.</span>`;
+        }
+
+        // Prepend condition as descriptive text
+        if (e.condition) {
+          text = `<span class="effect-condition">${e.condition}:</span> ${text}`;
+        }
+
+        // Add formula breakdown (no condition here - already shown above)
         if (e.formula) {
           let formulaText: string;
           if (e.formula.type === 'fixed') {
@@ -433,15 +446,10 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
               formulaText = `${symbolic} = ${result}`;
             }
           }
-          if (e.condition) {
-            formulaText += `; ${e.condition}`;
-          }
           text += ` <span class="effect-formula">(${formulaText})</span>`;
-        } else if (e.condition) {
-          text += ` <span class="effect-formula">(${e.condition})</span>`;
         }
 
-        return `• ${text}`;
+        return `&bull; ${text}`;
       })
       .join('<br>');
   }

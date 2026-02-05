@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.37.3', description: 'Internal: Fix effect rendering - all conditional branches visible, "Reduces" verb for negative status, human-readable condition text ("at least 10 Builders"), item effects use "Consumes 1x Item" format, BuildTower deducts stamina (Phase 4 plan 5).' },
   { version: '1.37.2', description: 'Fix: MakeBrick and MakeMortar log messages now show correct item count.' },
   { version: '1.37.1', description: 'Attributes panel: always show HV value regardless of CV.' },
   { version: '1.37.0', description: 'Internal: Progress and item-consume effect handlers, HasInventory condition with hasItem check, BuildTower converted to declarative effects with 5 mutually exclusive conditional paths for failure/success branching (Phase 4 plan 2).' },

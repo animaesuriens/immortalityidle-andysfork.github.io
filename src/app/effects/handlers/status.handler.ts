@@ -61,7 +61,7 @@ export const statusHandler: EffectHandler<StatusEffect> = {
         label: `${abbrev}${maxSuffix}`,
       },
       long: {
-        verb: positive ? 'Restores' : 'Uses',
+        verb: positive ? 'Restores' : 'Reduces',
         amount: Math.abs(Math.floor(amount)),
         name,
         suffix: effect.modifyMax ? 'max' : undefined,
