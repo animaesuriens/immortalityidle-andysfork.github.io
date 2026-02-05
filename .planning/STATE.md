@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-31)
 
 **Core value:** Single source of truth for activity effects - change definition once, execution and display update automatically
-**Current focus:** Ready for Phase 4 - Validation Slice
+**Current focus:** Phase 4 complete - Ready for Phase 5 Mass Migration
 
 ## Current Position
 
-Phase: 4 of 7 (Validation Slice) - IN PROGRESS
-Plan: 1 of 4 in current phase - COMPLETE
-Status: In progress
-Last activity: 2026-02-04 - Completed 04-01-PLAN.md (Begging Infrastructure)
+Phase: 4 of 7 (Validation Slice) - COMPLETE
+Plan: 5 of 5 in current phase - COMPLETE
+Status: Phase 4 complete
+Last activity: 2026-02-05 - Completed 04-05-PLAN.md (UAT Gap Closure)
 
-Progress: [████████░░] 73%
+Progress: [████████░░] 80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: 12min
-- Total execution time: 1.7 hours
+- Total plans completed: 9
+- Average duration: 11min
+- Total execution time: 1.8 hours
 
 **By Phase:**
 
@@ -30,11 +30,11 @@ Progress: [████████░░] 73%
 | 01-duration-foundation | 1 | 12min | 12min |
 | 02-interface-design | 2 | 17min | 8.5min |
 | 03-first-vertical-slice | 4 | 53min | 13min |
-| 04-validation-slice | 1 | 18min | 18min |
+| 04-validation-slice | 2 | 26min | 13min |
 
 **Recent Trend:**
-- Last 5 plans: 7min, 8min, 30min (checkpoint), 18min
-- Trend: Checkpoint plans take longer due to user verification
+- Last 5 plans: 8min, 30min (checkpoint), 18min, 8min
+- Trend: Gap closure plans are fast when issues are well-defined
 
 *Updated after each plan completion*
 
@@ -67,6 +67,9 @@ Decisions are logged in DECISIONS.md. Key decisions affecting current work:
 - **Event emission pattern**: RxJS Subject in executor, callback in GameContext for decoupling
 - **Property path resolution**: CompareProperty uses dot notation for extensible game state queries
 - **Math.floor rounding**: Money amounts from formulas floored to ensure integer coin values
+- **All branches visible**: visible flag not filtered by conditionMet - all conditional outcomes shown
+- **Condition as prefix**: Condition text appears before effect line, not in formula section
+- **Item quantity-first**: Item effects use "Consumes 1x Scaffolding" format
 
 ### Pending Todos
 
@@ -81,8 +84,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-04T15:30:00Z
-Stopped at: Completed 04-01-PLAN.md (Begging Infrastructure)
+Last session: 2026-02-05T03:38:00Z
+Stopped at: Completed 04-05-PLAN.md (UAT Gap Closure)
 Resume file: None
 
 ## Completed Phases
@@ -114,14 +117,17 @@ Resume file: None
 - **Summary:** `.planning/phases/03-first-vertical-slice/03-04-SUMMARY.md`
 - **Commits:** 12e16c3, 34f7abf, 47d2d54, e654853, 119d113
 
-### Phase 4: Validation Slice (In Progress)
+### Phase 4: Validation Slice (Complete)
 - **Plan 04-01:** EffectEvent types, NoEnemies and CompareProperty conditions, GameContext wired to all Phase 4 services (FINAL constructor), event emission system, followerPower/followerCount formula builders, Money handler fully implemented, Begging activity converted to declarative effects
 - **Summary:** `.planning/phases/04-validation-slice/04-01-SUMMARY.md`
 - **Commits:** 2ca249c, 00e40e0, 62e1acc, 037f37f, 9f29212, 32f312e
+- **Plan 04-05:** UAT gap closure - fixed conditional visibility, status verb, condition readability, item wording, BuildTower stamina deduction
+- **Summary:** `.planning/phases/04-validation-slice/04-05-SUMMARY.md`
+- **Commits:** 384c053
 
 ## Effects Module Structure
 
-After Phase 4 Plan 01, the effects module has complete Phase 4 infrastructure:
+After Phase 4 Plan 05, the effects module is ready for mass migration:
 
 ```
 src/app/effects/
@@ -149,10 +155,10 @@ src/app/effects/
 ├── handlers/
 │   ├── handler.interface.ts   # EffectHandler, HandlerRegistry
 │   ├── handler-registry.ts    # Complete registry (14 handlers)
-│   ├── status.handler.ts      # Implemented
+│   ├── status.handler.ts      # Implemented - uses "Reduces" for negative
 │   ├── attribute.handler.ts   # Implemented
 │   ├── yinyang.handler.ts     # Implemented
-│   ├── conditional.handler.ts # Implemented
+│   ├── conditional.handler.ts # Implemented - all branches visible, readable conditions
 │   ├── money.handler.ts       # Implemented (Phase 4)
 │   ├── item-add.handler.ts    # Stub
 │   ├── item-consume.handler.ts    # Stub
@@ -171,13 +177,13 @@ src/app/effects/
 
 src/app/game-state/
 ├── activity.ts              # DeclarativeActivity | LegacyActivity union, isDeclarativeActivity guard
-└── activity.service.ts      # Resting and Begging declarative, executeActivity helper
+└── activity.service.ts      # Resting, Begging, BuildTower declarative, executeActivity helper
 
 src/app/activity-panel/
-├── activity-panel.component.ts   # getActivityEffects, formatEffectsLong
+├── activity-panel.component.ts   # getActivityEffects, formatEffectsLong (kind-aware, condition prefix)
 └── activity-panel.component.html # @for loop for effect rendering
 ```
 
-**Phase 4 infrastructure complete:** Event emission system, follower formulas, property path queries, money handler, and Begging activity fully declarative.
+**Phase 4 complete:** All rendering patterns validated. Ready for Phase 5 mass migration.
 
-**Declarative activities:** Resting (Phase 3), Begging (Phase 4) - 67 activities remaining
+**Declarative activities:** Resting (Phase 3), Begging (Phase 4), BuildTower (Phase 4) - 66 activities remaining
