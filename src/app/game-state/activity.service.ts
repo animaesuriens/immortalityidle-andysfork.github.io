@@ -1255,6 +1255,7 @@ export class ActivityService {
           // FAILURE 1: <10 builders -> 5% max health damage
           {
             kind: 'conditional',
+            pathType: 'failure',
             condition: { kind: 'CompareProperty', path: 'followerCount.builder', operator: '<', value: 10 },
             then: [
               { kind: 'status', status: 'health', amount: mult(statusMax('health'), fixed(-0.05)) },
@@ -1263,6 +1264,7 @@ export class ActivityService {
           // FAILURE 2: >=10 builders but no scaffolding -> 20% damage
           {
             kind: 'conditional',
+            pathType: 'failure',
             condition: {
               kind: 'And',
               conditions: [
@@ -1277,6 +1279,7 @@ export class ActivityService {
           // FAILURE 3: has scaffolding but <100 mortar -> consume scaffolding, 20% damage
           {
             kind: 'conditional',
+            pathType: 'failure',
             condition: {
               kind: 'And',
               conditions: [
@@ -1293,6 +1296,7 @@ export class ActivityService {
           // FAILURE 4: has mortar but <1000 bricks -> consume scaffolding+mortar, 20% damage
           {
             kind: 'conditional',
+            pathType: 'failure',
             condition: {
               kind: 'And',
               conditions: [
@@ -1311,6 +1315,7 @@ export class ActivityService {
           // SUCCESS: all requirements met -> consume all, increment progress
           {
             kind: 'conditional',
+            pathType: 'success',
             condition: {
               kind: 'And',
               conditions: [
@@ -1833,6 +1838,7 @@ export class ActivityService {
           { kind: 'status', status: 'health', amount: 2 },
           {
             kind: 'conditional',
+            hideWhenUnmet: true,
             condition: { kind: 'HasFlag', flag: 'yinYangUnlocked' },
             then: [{ kind: 'yinyang', modify: 'yin', amount: 1 }],
           },
@@ -1843,11 +1849,13 @@ export class ActivityService {
           { kind: 'attribute', attribute: 'spirituality', amount: 0.001 },
           {
             kind: 'conditional',
+            hideWhenUnmet: true,
             condition: { kind: 'HasFlag', flag: 'qiUnlocked' },
             then: [{ kind: 'status', status: 'qi', amount: 1 }],
           },
           {
             kind: 'conditional',
+            hideWhenUnmet: true,
             condition: { kind: 'HasFlag', flag: 'yinYangUnlocked' },
             then: [{ kind: 'yinyang', modify: 'yin', amount: 1 }],
           },
@@ -1859,6 +1867,7 @@ export class ActivityService {
           { kind: 'attribute', attribute: 'spirituality', amount: 0.5 },
           {
             kind: 'conditional',
+            hideWhenUnmet: true,
             condition: { kind: 'HasFlag', flag: 'yinYangUnlocked' },
             then: [{ kind: 'yinyang', modify: 'yin', amount: 1 }],
           },
@@ -1870,6 +1879,7 @@ export class ActivityService {
           { kind: 'attribute', attribute: 'spirituality', amount: 1 },
           {
             kind: 'conditional',
+            hideWhenUnmet: true,
             condition: { kind: 'HasFlag', flag: 'yinYangUnlocked' },
             then: [
               {

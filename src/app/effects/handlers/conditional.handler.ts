@@ -94,8 +94,14 @@ function renderCondition(condition: ConditionalEffect['condition']): string {
       const qty = condition.quantity ?? 1;
       return qty > 1 ? `have ${qty}+ ${displayName}` : `have ${displayName}`;
     }
-    case 'And':
-      return condition.conditions.map(c => renderCondition(c)).join(', ');
+    case 'And': {
+      const parts = condition.conditions.map(c => renderCondition(c));
+      if (parts.length <= 2) {
+        return parts.join(' and ');
+      }
+      // Oxford comma: "a, b, and c"
+      return parts.slice(0, -1).join(', ') + ', and ' + parts[parts.length - 1];
+    }
     case 'Or':
       return condition.conditions.map(c => renderCondition(c)).join(' or ');
     case 'Not':
@@ -105,7 +111,7 @@ function renderCondition(condition: ConditionalEffect['condition']): string {
     case 'CompareProperty': {
       const name = PROPERTY_DISPLAY_NAMES[condition.path] ?? condition.path;
       const op = OPERATOR_TEXT[condition.operator] ?? condition.operator;
-      return `${op} ${condition.value} ${name}`;
+      return `have ${op} ${condition.value} ${name}`;
     }
   }
 }
@@ -139,7 +145,7 @@ export const conditionalHandler: EffectHandler<ConditionalEffect> = {
 
   render(effect: ConditionalEffect, context: EffectContext): RenderedEffect[] {
     const conditionMet = evaluateCondition(effect.condition, context);
-    const conditionStr = `if ${renderCondition(effect.condition)}`;
+    const conditionStr = `If you ${renderCondition(effect.condition)}`;
 
     const results: RenderedEffect[] = [];
 
@@ -153,13 +159,17 @@ export const conditionalHandler: EffectHandler<ConditionalEffect> = {
           visible: r.visible,
           // Add condition hint
           condition: conditionStr,
+          // Pass through path type and hide flags for display grouping
+          pathType: effect.pathType,
+          hideWhenUnmet: effect.hideWhenUnmet,
+          conditionMet,
         });
       }
     }
 
     // Render 'else' branch effects if present
     if (effect.else && effect.else.length > 0) {
-      const elseConditionStr = `if don't ${renderCondition(effect.condition)}`;
+      const elseConditionStr = `If you don't ${renderCondition(effect.condition)}`;
       for (const nested of effect.else) {
         const rendered = flattenEffects(renderEffect(nested, context));
         for (const r of rendered) {
@@ -168,6 +178,10 @@ export const conditionalHandler: EffectHandler<ConditionalEffect> = {
             // Show ALL branches always - user sees all possible outcomes
             visible: r.visible,
             condition: elseConditionStr,
+            // Else branch has opposite path type (if then is success, else is failure)
+            pathType: effect.pathType === 'success' ? 'failure' : effect.pathType === 'failure' ? 'success' : undefined,
+            hideWhenUnmet: effect.hideWhenUnmet,
+            conditionMet: !conditionMet,
           });
         }
       }

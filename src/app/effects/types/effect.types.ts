@@ -87,6 +87,10 @@ export interface ConditionalEffect extends BaseEffect {
   readonly condition: Condition;
   readonly then: Effect[];
   readonly else?: Effect[];
+  /** Display hint for grouping: 'success' vs 'failure' paths */
+  readonly pathType?: 'success' | 'failure';
+  /** If true, hide this conditional from display when condition is not met (e.g., feature unlocks) */
+  readonly hideWhenUnmet?: boolean;
 }
 
 /**

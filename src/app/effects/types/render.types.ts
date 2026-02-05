@@ -104,6 +104,15 @@ export interface RenderedEffect {
 
   /** Optional condition hint (e.g., "if Yin/Yang unlocked") */
   condition?: string;
+
+  /** Path type for grouping success/failure paths in display */
+  pathType?: 'success' | 'failure';
+
+  /** If true and condition is unmet, this effect should be hidden entirely (for feature unlocks) */
+  hideWhenUnmet?: boolean;
+
+  /** Whether the condition for this effect is currently met (used with hideWhenUnmet) */
+  conditionMet?: boolean;
 }
 
 /**

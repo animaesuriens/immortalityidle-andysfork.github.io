@@ -22,16 +22,32 @@ import { ABBREVIATIONS } from '../utils/abbreviations';
 // ============================================================
 
 /**
- * Format a number for display with reasonable precision.
- * Removes excessive decimal places while keeping meaningful precision.
+ * Format a number for display with compact notation for large values.
+ * Uses suffixes (k, M, B, T) to keep numbers readable.
  */
 function formatValue(value: number): string {
-  // For integers or near-integers, show as integer
-  if (Math.abs(value - Math.round(value)) < 0.005) {
-    return String(Math.round(value));
+  const suffixes = ['', 'k', 'M', 'B', 'T', 'q', 'Q', 's'];
+  const absValue = Math.abs(value);
+  const sign = value < 0 ? '-' : '';
+
+  // Small numbers: show with precision
+  if (absValue < 100 && !Number.isInteger(absValue)) {
+    return sign + absValue.toFixed(2).replace(/\.?0+$/, '');
   }
-  // Otherwise show 2 decimal places, trimming trailing zeros
-  return value.toFixed(2).replace(/\.?0+$/, '');
+
+  // Under 10k: show as integer with commas
+  if (absValue < 10000) {
+    return sign + Math.round(absValue).toLocaleString();
+  }
+
+  // Large numbers: use suffix notation
+  if (absValue >= Math.pow(10, suffixes.length * 3)) {
+    return sign + absValue.toPrecision(3);
+  }
+
+  const numberPower = Math.floor(Math.log10(absValue));
+  const numStr = Math.floor(absValue / Math.pow(10, numberPower - (numberPower % 3) - 2)) / 100;
+  return sign + numStr + suffixes[Math.floor(numberPower / 3)];
 }
 
 /**

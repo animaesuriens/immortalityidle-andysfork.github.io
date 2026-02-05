@@ -407,15 +407,75 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
 
   /**
    * Format RenderedEffect[] to HTML string for long format display.
-   * Groups effects by condition to avoid repeating long condition prefixes.
+   * - Filters out effects with hideWhenUnmet=true when condition is not met
+   * - Groups by success/failure paths if both are present
+   * - Groups effects by condition to avoid repeating long condition prefixes
    */
   formatEffectsLong(effects: RenderedEffect[]): string {
-    const visible = effects.filter(e => e.visible);
+    // Filter: visible AND (not hideWhenUnmet OR conditionMet)
+    const visible = effects.filter(e =>
+      e.visible && (!e.hideWhenUnmet || e.conditionMet !== false)
+    );
     if (visible.length === 0) return '';
 
-    // Group effects by condition (null = unconditional)
+    // Check if we have both success AND failure paths
+    const hasSuccess = visible.some(e => e.pathType === 'success');
+    const hasFailure = visible.some(e => e.pathType === 'failure');
+    const usePathGrouping = hasSuccess && hasFailure;
+
+    if (usePathGrouping) {
+      return this.formatWithPathGrouping(visible);
+    } else {
+      return this.formatWithConditionGrouping(visible);
+    }
+  }
+
+  /**
+   * Format effects grouped by success/failure path type.
+   */
+  private formatWithPathGrouping(effects: RenderedEffect[]): string {
+    const sections: string[] = [];
+
+    // Unconditional effects first (no pathType)
+    const unconditional = effects.filter(e => !e.pathType && !e.condition);
+    if (unconditional.length > 0) {
+      const lines = unconditional.map(e => `&bull; ${this.formatSingleEffect(e)}`);
+      sections.push(lines.join('<br>'));
+    }
+
+    // Success path
+    const successEffects = effects.filter(e => e.pathType === 'success');
+    if (successEffects.length > 0) {
+      const header = '<span class="effect-path-header effect-positive">On success:</span>';
+      const content = this.formatConditionGroups(successEffects);
+      sections.push(`${header}<br>${content}`);
+    }
+
+    // Failure path
+    const failureEffects = effects.filter(e => e.pathType === 'failure');
+    if (failureEffects.length > 0) {
+      const header = '<span class="effect-path-header effect-negative">On failure:</span>';
+      const content = this.formatConditionGroups(failureEffects);
+      sections.push(`${header}<br>${content}`);
+    }
+
+    return sections.join('<br><br>');
+  }
+
+  /**
+   * Format effects grouped by condition (original behavior).
+   */
+  private formatWithConditionGrouping(effects: RenderedEffect[]): string {
+    return this.formatConditionGroups(effects);
+  }
+
+  /**
+   * Group effects by condition and format them.
+   */
+  private formatConditionGroups(effects: RenderedEffect[]): string {
+    // Group effects by condition (undefined = unconditional)
     const groups: { condition: string | undefined; effects: RenderedEffect[] }[] = [];
-    for (const e of visible) {
+    for (const e of effects) {
       const lastGroup = groups[groups.length - 1];
       if (lastGroup && lastGroup.condition === e.condition) {
         lastGroup.effects.push(e);
@@ -502,19 +562,32 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
-   * Get structured effect data for an activity.
+   * Get structured effect data for an activity card (short format).
    * Returns only visible RenderedEffect[] for declarative activities, null for legacy.
    * Pre-filters to visible effects so template can use @for with proper last tracking.
-   * Excludes negative status effects for resource costs (shown separately by getActivityCost).
+   *
+   * Activity cards only show:
+   * - Success path effects (pathType === 'success' or no pathType and no condition)
+   * - Excludes failure paths, feature-unlock effects, and resource costs
    */
   getActivityEffects(activity: Activity): RenderedEffect[] | null {
     if (isDeclarativeActivity(activity)) {
       const effects = activity.effects[activity.level] ?? [];
       const rendered = this.effectShortPipe.transform(effects);
-      // Filter to visible effects, excluding resource COSTS (negative, already shown by getActivityCost)
-      // But keep resource GAINS (positive)
       const resourceLabels = ['Sta', 'HP', 'Qi', 'Food'];
-      return rendered.filter(e => e.visible && !(resourceLabels.includes(e.short.label) && !e.positive));
+
+      return rendered.filter(e => {
+        // Must be visible
+        if (!e.visible) return false;
+        // Hide feature-unlock effects when not unlocked
+        if (e.hideWhenUnmet && e.conditionMet === false) return false;
+        // Hide failure paths
+        if (e.pathType === 'failure') return false;
+        // Hide resource costs (shown separately by getActivityCost)
+        if (resourceLabels.includes(e.short.label) && !e.positive) return false;
+        // Show success path and unconditional effects
+        return e.pathType === 'success' || !e.condition;
+      });
     }
     return null;
   }

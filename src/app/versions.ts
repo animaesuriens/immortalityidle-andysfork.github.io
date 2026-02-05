@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.37.5', description: 'Activity effects now show "On Success" and "On Failure" sections for complex activities like BuildTower. Feature-unlock effects (Yin/Yang, Qi) are hidden until unlocked.' },
   { version: '1.37.4', description: 'Fix: Activity detail view groups effects by condition - effects sharing the same condition are shown together under one header instead of repeating the condition for each effect.' },
   { version: '1.37.3', description: 'Internal: Fix effect rendering - all conditional branches visible, "Reduces" verb for negative status, human-readable condition text ("at least 10 Builders"), item effects use "Consumes 1x Item" format, BuildTower deducts stamina (Phase 4 plan 5).' },
   { version: '1.37.2', description: 'Fix: MakeBrick and MakeMortar log messages now show correct item count.' },
