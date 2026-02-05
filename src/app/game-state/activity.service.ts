@@ -1124,7 +1124,7 @@ export class ActivityService {
             this.logService.log(
               LogTopic.IMPOSSIBLE_TASK,
               'You and your followers made ' +
-                (1 + builderPower) +
+                builderPower +
                 ' ' +
                 this.itemRepoService.items['everlastingBrick'].name
             );
@@ -1215,7 +1215,7 @@ export class ActivityService {
             this.logService.log(
               LogTopic.IMPOSSIBLE_TASK,
               'You and your followers made ' +
-                (1 + builderPower) +
+                builderPower +
                 ' ' +
                 this.itemRepoService.items['everlastingMortar'].name
             );

@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.37.2', description: 'Fix: MakeBrick and MakeMortar log messages now show correct item count.' },
   { version: '1.37.1', description: 'Attributes panel: always show HV value regardless of CV.' },
   { version: '1.37.0', description: 'Internal: Progress and item-consume effect handlers, HasInventory condition with hasItem check, BuildTower converted to declarative effects with 5 mutually exclusive conditional paths for failure/success branching (Phase 4 plan 2).' },
   { version: '1.36.0', description: 'Log system overhaul: multi-topic tagging, new Improvements/Unlocks/Impossible Task topics, grouped filter UI with dynamic modal width, Impossible Task and Hell filters default to visible. Attributes panel: remove Starting Value column, add conditional Highest Value (HV) column, rename headers (Apt/Mult/CV) with tooltips. Centralize all remaining inline tooltips into tooltips.ts. Extract combat ability costs and nourishment cost to named constants. Fix attribute effect display amount calculation. Consolidate manual purchase log messages.' },
