@@ -407,51 +407,76 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
 
   /**
    * Format RenderedEffect[] to HTML string for long format display.
+   * Groups effects by condition to avoid repeating long condition prefixes.
    */
   formatEffectsLong(effects: RenderedEffect[]): string {
-    return effects
-      .filter(e => e.visible)
-      .map(e => {
-        const cssClass = e.positive ? 'effect-positive' : 'effect-negative';
-        const suffix = e.long.suffix ? ` ${e.long.suffix}` : '';
+    const visible = effects.filter(e => e.visible);
+    if (visible.length === 0) return '';
 
-        let text: string;
-        if (e.kind === 'item') {
-          // Item effects: "Consumes 1x Scaffolding."
-          text = `<span class="${cssClass}">${e.long.verb} ${this.bigNumberPipe.transform(e.long.amount)}x ${e.long.name}.</span>`;
+    // Group effects by condition (null = unconditional)
+    const groups: { condition: string | undefined; effects: RenderedEffect[] }[] = [];
+    for (const e of visible) {
+      const lastGroup = groups[groups.length - 1];
+      if (lastGroup && lastGroup.condition === e.condition) {
+        lastGroup.effects.push(e);
+      } else {
+        groups.push({ condition: e.condition, effects: [e] });
+      }
+    }
+
+    // Render each group
+    return groups.map(group => {
+      const effectLines = group.effects.map(e => this.formatSingleEffect(e));
+
+      if (group.condition) {
+        // Conditional group: show condition once, indent effects
+        const header = `&bull; <span class="effect-condition">${group.condition}:</span>`;
+        const indentedEffects = effectLines.map(line => `&nbsp;&nbsp;&nbsp;&nbsp;${line}`).join('<br>');
+        return `${header}<br>${indentedEffects}`;
+      } else {
+        // Unconditional effects: simple bullet points
+        return effectLines.map(line => `&bull; ${line}`).join('<br>');
+      }
+    }).join('<br>');
+  }
+
+  /**
+   * Format a single effect (without condition prefix).
+   */
+  private formatSingleEffect(e: RenderedEffect): string {
+    const cssClass = e.positive ? 'effect-positive' : 'effect-negative';
+    const suffix = e.long.suffix ? ` ${e.long.suffix}` : '';
+
+    let text: string;
+    if (e.kind === 'item') {
+      // Item effects: "Consumes 1x Scaffolding."
+      text = `<span class="${cssClass}">${e.long.verb} ${this.bigNumberPipe.transform(e.long.amount)}x ${e.long.name}.</span>`;
+    } else {
+      // All other effects: "Reduces Stamina by 1,000."
+      text = `<span class="${cssClass}">${e.long.verb} ${e.long.name}${suffix} by ${this.bigNumberPipe.transform(e.long.amount)}.</span>`;
+    }
+
+    // Add formula breakdown
+    if (e.formula) {
+      let formulaText: string;
+      if (e.formula.type === 'fixed') {
+        const value = `<span class="formula-result">${this.bigNumberPipe.transform(e.formula.base ?? 0)}</span>`;
+        formulaText = `Fixed: ${value}`;
+      } else {
+        // Formula type - show symbolic = substituted = result with color coding
+        const symbolic = `<span class="formula-symbolic">${e.formula.symbolic}</span>`;
+        const substituted = `<span class="formula-substituted">${e.formula.substituted}</span>`;
+        const result = `<span class="formula-result">${this.bigNumberPipe.transform(e.formula.result ?? 0)}</span>`;
+        if (e.formula.substituted && e.formula.substituted !== e.formula.symbolic) {
+          formulaText = `${symbolic} = ${substituted} = ${result}`;
         } else {
-          // All other effects: "Reduces Stamina by 1,000."
-          text = `<span class="${cssClass}">${e.long.verb} ${e.long.name}${suffix} by ${this.bigNumberPipe.transform(e.long.amount)}.</span>`;
+          formulaText = `${symbolic} = ${result}`;
         }
+      }
+      text += ` <span class="effect-formula">(${formulaText})</span>`;
+    }
 
-        // Prepend condition as descriptive text
-        if (e.condition) {
-          text = `<span class="effect-condition">${e.condition}:</span> ${text}`;
-        }
-
-        // Add formula breakdown (no condition here - already shown above)
-        if (e.formula) {
-          let formulaText: string;
-          if (e.formula.type === 'fixed') {
-            const value = `<span class="formula-result">${this.bigNumberPipe.transform(e.formula.base ?? 0)}</span>`;
-            formulaText = `Fixed: ${value}`;
-          } else {
-            // Formula type - show symbolic = substituted = result with color coding
-            const symbolic = `<span class="formula-symbolic">${e.formula.symbolic}</span>`;
-            const substituted = `<span class="formula-substituted">${e.formula.substituted}</span>`;
-            const result = `<span class="formula-result">${this.bigNumberPipe.transform(e.formula.result ?? 0)}</span>`;
-            if (e.formula.substituted && e.formula.substituted !== e.formula.symbolic) {
-              formulaText = `${symbolic} = ${substituted} = ${result}`;
-            } else {
-              formulaText = `${symbolic} = ${result}`;
-            }
-          }
-          text += ` <span class="effect-formula">(${formulaText})</span>`;
-        }
-
-        return `&bull; ${text}`;
-      })
-      .join('<br>');
+    return text;
   }
 
   getActivityCost(activity: Activity): string {
