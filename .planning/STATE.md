@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-31)
 
 **Core value:** Single source of truth for activity effects - change definition once, execution and display update automatically
-**Current focus:** Phase 4 - Plan 04-03 (Hunting) awaiting checkpoint verification
+**Current focus:** Phase 4 - Plan 04-04 (Blacksmithing) awaiting checkpoint verification
 
 ## Current Position
 
 Phase: 4 of 7 (Validation Slice)
-Plan: 03 of 5 in current phase - awaiting checkpoint verification
-Status: In progress (04-03 tasks complete, awaiting human-verify)
-Last activity: 2026-02-12 - Completed 04-03-PLAN.md tasks (Hunting), awaiting checkpoint
+Plan: 04 of 5 in current phase - awaiting checkpoint verification
+Status: In progress (04-04 tasks complete, awaiting human-verify)
+Last activity: 2026-02-12 - Completed 04-04-PLAN.md tasks (Blacksmithing), awaiting checkpoint
 
-Progress: [█████████░] 90%
+Progress: [██████████░] 93%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
+- Total plans completed: 12
 - Average duration: 12min
-- Total execution time: 2.25 hours
+- Total execution time: 2.4 hours
 
 **By Phase:**
 
@@ -30,11 +30,11 @@ Progress: [█████████░] 90%
 | 01-duration-foundation | 1 | 12min | 12min |
 | 02-interface-design | 2 | 17min | 8.5min |
 | 03-first-vertical-slice | 4 | 53min | 13min |
-| 04-validation-slice | 4 | 56min | 14min |
+| 04-validation-slice | 5 | 66min | 13min |
 
 **Recent Trend:**
-- Last 5 plans: 30min (checkpoint), 18min, 8min, 15min
-- Trend: Stable execution pace for handler implementation plans
+- Last 5 plans: 18min, 8min, 15min, 10min, 10min
+- Trend: Stable execution pace, Blacksmithing completed efficiently
 
 *Updated after each plan completion*
 
@@ -75,6 +75,8 @@ Decisions are logged in DECISIONS.md. Key decisions affecting current work:
 - **Formula-level conditionals**: conditional(hasFurniture(...), then, else) for dynamic probability bonuses
 - **SpawnEnemyEffect flexibility**: Optional enemy (inline) + optional enemyId (lookup) fields
 - **ItemAddEffect factory support**: Optional factory + args fields for generated items
+- **VariableRef replaces Formula-returning variable()**: Simple data object for factory args, not full Formula
+- **Centralized apprenticeship**: executeActivity checks skipApprenticeshipLevel for declarative activities
 
 ### Pending Todos
 
@@ -90,7 +92,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: 04-03-PLAN.md checkpoint:human-verify (Hunting)
+Stopped at: 04-04-PLAN.md checkpoint:human-verify (Blacksmithing)
 Resume file: None
 
 ## Completed Phases
@@ -132,25 +134,28 @@ Resume file: None
 - **Plan 04-03:** Chance handler, spawn-enemy handler, item-add handler, hasFurniture/conditional formula builders, Hunting activity converted
 - **Summary:** `.planning/phases/04-validation-slice/04-03-SUMMARY.md`
 - **Commits:** 7de01d1, afd73f6, e3cb225, 8b69679, 5378f3c
+- **Plan 04-04:** VariableRef type, variable() helper, Blacksmithing converted with consume-then-generate workflow, centralized apprenticeship handling
+- **Summary:** `.planning/phases/04-validation-slice/04-04-SUMMARY.md`
+- **Commits:** e09a568, 81d6e17
 - **Plan 04-05:** UAT gap closure - fixed conditional visibility, status verb, condition readability, item wording, BuildTower stamina deduction
 - **Summary:** `.planning/phases/04-validation-slice/04-05-SUMMARY.md`
 - **Commits:** 384c053
 
 ## Effects Module Structure
 
-After Phase 4 Plan 03, the handler implementation status:
+After Phase 4 Plan 04, the handler implementation status:
 
 ```
 src/app/effects/
 ├── types/
-│   ├── effect.types.ts      # 14 effect variants + onError, factory, args fields
+│   ├── effect.types.ts      # 14 effect variants + VariableRef, FactoryArg, onError, factory, args
 │   ├── condition.types.ts   # 11 condition variants (NoEnemies, CompareProperty added)
 │   ├── formula.types.ts     # Formula interface + hasFurniture on FormulaContext
 │   ├── render.types.ts      # RenderedEffect structured data
 │   ├── context.types.ts     # EffectContext with Phase 4 methods + hasFurniture binding
 │   └── event.types.ts       # EffectEvent discriminated union (5 event kinds)
 ├── formulas/
-│   └── formula.builders.ts  # 21 formula builders (hasFurniture, conditional added)
+│   └── formula.builders.ts  # 21 formula builders + variable() returning VariableRef
 ├── conditions/
 │   └── condition-evaluator.ts # evaluateCondition function (11 kinds)
 ├── context/
@@ -171,7 +176,7 @@ src/app/effects/
 │   ├── yinyang.handler.ts     # Implemented
 │   ├── conditional.handler.ts # Implemented - all branches visible
 │   ├── money.handler.ts       # Implemented (Phase 4-01)
-│   ├── item-add.handler.ts    # Implemented (Phase 4-03) - factory support
+│   ├── item-add.handler.ts    # Implemented (Phase 4-03) - factory + VariableRef support
 │   ├── item-consume.handler.ts    # Implemented (Phase 4-02) - storeGradeAs
 │   ├── item-generate.handler.ts   # Stub
 │   ├── chance.handler.ts      # Implemented (Phase 4-03) - late-bound registry
@@ -188,10 +193,10 @@ src/app/effects/
 
 src/app/game-state/
 ├── activity.ts              # DeclarativeActivity | LegacyActivity union
-└── activity.service.ts      # Resting, Begging, BuildTower, Hunting declarative
+└── activity.service.ts      # Resting, Begging, BuildTower, Hunting, Blacksmithing declarative
 ```
 
 **Implemented handlers (10):** status, attribute, yinyang, conditional, money, item.add, item.consume, chance, progress, spawn.enemy
 **Stub handlers (4):** item.generate, spawn.follower, trigger.battle, lifespan
 
-**Declarative activities (4):** Resting, Begging, BuildTower, Hunting - 65 activities remaining
+**Declarative activities (5):** Resting, Begging, BuildTower, Hunting, Blacksmithing - 64 activities remaining
