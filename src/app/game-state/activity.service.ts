@@ -2,7 +2,7 @@
 import { inject, Injectable, Injector } from '@angular/core';
 import { BattleService } from './battle.service';
 import { Activity, ActivityLoopEntry, ActivityType, isDeclarativeActivity } from '../game-state/activity';
-import { EffectExecutorService, add, log2, attr, fixed, mult, statusMax } from '../effects';
+import { EffectExecutorService, add, log2, attr, fixed, mult, statusMax, floor, div, max, followerPower, hasFurniture, conditional } from '../effects';
 import { AttributeType, CharacterAttribute, StatusType, SPIRIT_PROJECTION_QI_COST } from '../game-state/character';
 import { CharacterService } from '../game-state/character.service';
 import { HomeService, HomeType } from '../game-state/home.service';
@@ -997,8 +997,7 @@ export class ActivityService {
           this.characterService.characterState.status.stamina.value -= 100;
           const metalValue = this.inventoryService.consume('metal');
           if (
-            this.homeService.furniture.workbench &&
-            this.homeService.furniture.workbench.id === 'anvil' &&
+            this.homeService.hasWorkbenchFurniture('anvil') &&
             metalValue >= 150 &&
             this.characterService.characterState.attributes.metalLore.value >= 1e9
           ) {
@@ -1207,8 +1206,7 @@ export class ActivityService {
           const oreValue = this.inventoryService.consume('ore');
           const builderPower = Math.floor((this.followerService.jobs['builder'].totalPower + 100) / 100);
           if (
-            this.homeService.furniture.workbench &&
-            this.homeService.furniture.workbench.id === 'cauldron' &&
+            this.homeService.hasWorkbenchFurniture('cauldron') &&
             oreValue >= 10
           ) {
             this.inventoryService.addItem(this.itemRepoService.items['everlastingMortar'], builderPower);
@@ -2058,11 +2056,13 @@ export class ActivityService {
             ) + this.characterService.characterState.attributes.metalLore.value;
           this.characterService.characterState.updateMoney(money);
           this.Blacksmithing.lastIncome = money;
+          // Flat lore gain (not multiplied by success chance)
+          this.characterService.characterState.increaseAttribute('metalLore', 0.1);
+          // Success chance: 1% base + 5% furniture bonus
           let blacksmithSuccessChance = 0.01;
-          if (this.homeService.furniture.workbench && this.homeService.furniture.workbench.id === 'anvil') {
+          if (this.homeService.hasWorkbenchFurniture('anvil')) {
             blacksmithSuccessChance += 0.05;
           }
-          this.characterService.characterState.increaseAttribute('metalLore', 0.1 * blacksmithSuccessChance);
           if (Math.random() < blacksmithSuccessChance) {
             this.inventoryService.addItem(this.itemRepoService.items['junk']);
           }
@@ -2085,18 +2085,20 @@ export class ActivityService {
             this.characterService.characterState.attributes.metalLore.value * 2;
           this.characterService.characterState.updateMoney(money);
           this.Blacksmithing.lastIncome = money;
-          let blacksmithSuccessChance = 0.02;
-          if (this.homeService.furniture.workbench?.id === 'anvil') {
+          const metalLore = this.characterService.characterState.attributes.metalLore.value;
+          // Flat lore gains (not multiplied by success chance)
+          this.characterService.characterState.increaseAttribute('metalLore', 0.2);
+          this.characterService.characterState.increaseAttribute('fireLore', 0.02);
+          // Success chance: 1% + lore scaling + 5% furniture bonus
+          let blacksmithSuccessChance = 0.01 + (1 - Math.exp(-0.025 * Math.log(metalLore)));
+          if (this.homeService.hasWorkbenchFurniture('anvil')) {
             blacksmithSuccessChance += 0.05;
           }
-          this.characterService.characterState.increaseAttribute('metalLore', 0.2 * blacksmithSuccessChance);
-          this.characterService.characterState.increaseAttribute('fireLore', 0.02 * blacksmithSuccessChance);
           if (Math.random() < blacksmithSuccessChance) {
             if (this.inventoryService.openInventorySlots() > 0) {
               const grade = this.inventoryService.consume('metal');
               if (grade >= 1) {
                 // if the metal was found
-                const metalLore = this.characterService.characterState.attributes.metalLore.value;
                 this.inventoryService.addItem(
                   this.inventoryService.generateWeapon(
                     Math.floor(Math.max(Math.pow(Math.log2(metalLore), grade / 160), grade / 10)),
@@ -2127,18 +2129,20 @@ export class ActivityService {
             this.characterService.characterState.attributes.metalLore.value * 5;
           this.characterService.characterState.updateMoney(money);
           this.Blacksmithing.lastIncome = money;
-          let blacksmithSuccessChance = 0.05;
-          if (this.homeService.furniture.workbench?.id === 'anvil') {
+          const metalLore = this.characterService.characterState.attributes.metalLore.value;
+          // Flat lore gains (not multiplied by success chance)
+          this.characterService.characterState.increaseAttribute('metalLore', 0.3);
+          this.characterService.characterState.increaseAttribute('fireLore', 0.05);
+          // Success chance: 9% + lore scaling + 5% furniture bonus
+          let blacksmithSuccessChance = 0.09 + (1 - Math.exp(-0.025 * Math.log(metalLore)));
+          if (this.homeService.hasWorkbenchFurniture('anvil')) {
             blacksmithSuccessChance += 0.05;
           }
-          this.characterService.characterState.increaseAttribute('metalLore', 0.3 * blacksmithSuccessChance);
-          this.characterService.characterState.increaseAttribute('fireLore', 0.05 * blacksmithSuccessChance);
           if (Math.random() < blacksmithSuccessChance) {
             if (this.inventoryService.openInventorySlots() > 0) {
               const grade = this.inventoryService.consume('metal');
               if (grade >= 1) {
                 // if the metal was found
-                const metalLore = this.characterService.characterState.attributes.metalLore.value;
                 this.inventoryService.addItem(
                   this.inventoryService.generateWeapon(
                     Math.floor(Math.max(Math.pow(Math.log2(metalLore), grade / 160), grade / 10)),
@@ -2169,29 +2173,27 @@ export class ActivityService {
             this.characterService.characterState.attributes.metalLore.value * 10;
           this.characterService.characterState.updateMoney(money);
           this.Blacksmithing.lastIncome = money;
-          let blacksmithSuccessChance = 0.2;
-          if (this.homeService.furniture.workbench?.id === 'anvil') {
-            blacksmithSuccessChance += 0.2;
-          }
-          this.characterService.characterState.increaseAttribute('metalLore', 0.5 * blacksmithSuccessChance);
-          this.characterService.characterState.increaseAttribute('fireLore', 0.1 * blacksmithSuccessChance);
-          if (Math.random() < blacksmithSuccessChance) {
-            if (this.inventoryService.openInventorySlots() > 0) {
-              const grade = this.inventoryService.consume('metal');
-              if (grade >= 1) {
-                // if the metal was found
-                const metalLore = this.characterService.characterState.attributes.metalLore.value;
-                this.inventoryService.addItem(
-                  this.inventoryService.generateWeapon(
-                    Math.floor(Math.max(Math.pow(Math.log2(metalLore), grade / 160), grade / 10)),
-                    'metal',
-                    true
-                  )
-                );
-              }
+          const metalLore = this.characterService.characterState.attributes.metalLore.value;
+          // Flat lore gains (not multiplied by success chance)
+          this.characterService.characterState.increaseAttribute('metalLore', 0.5);
+          this.characterService.characterState.increaseAttribute('fireLore', 0.1);
+          // 100% success chance at grade 3 (no furniture bonus needed)
+          if (this.inventoryService.openInventorySlots() > 0) {
+            const grade = this.inventoryService.consume('metal');
+            if (grade >= 1) {
+              // if the metal was found
+              this.inventoryService.addItem(
+                this.inventoryService.generateWeapon(
+                  Math.floor(Math.max(Math.pow(Math.log2(metalLore), grade / 160), grade / 10)),
+                  'metal',
+                  true
+                )
+              );
             }
           }
-          if (Math.random() < 0.001) {
+          // Pill container drop: 0.1% + 0.9% * log10(metalLore) / 12
+          const pillDropChance = 0.001 + (0.009 * Math.log10(metalLore)) / 12;
+          if (Math.random() < pillDropChance) {
             this.inventoryService.addItem(this.itemRepoService.items['pillMold']);
           }
           if (this.characterService.characterState.yinYangUnlocked) {
@@ -2257,7 +2259,7 @@ export class ActivityService {
           this.characterService.characterState.status.stamina.value -= 10;
           // the grade on herbs probably needs diminishing returns
           this.inventoryService.generateHerb();
-          if (this.homeService.furniture.workbench && this.homeService.furniture.workbench.id === 'herbGarden') {
+          if (this.homeService.hasWorkbenchFurniture('herbGarden')) {
             this.inventoryService.generateHerb();
           }
           this.characterService.characterState.increaseAttribute('woodLore', 0.003);
@@ -2306,6 +2308,7 @@ export class ActivityService {
         '+Int, +Wood Lore, +Water Lore, +Money, +Potion',
       ],
       consequence: [
+        // grade 0 - produces nothing
         () => {
           this.checkApprenticeship(ActivityType.Alchemy);
           this.characterService.characterState.increaseAttribute('intelligence', 0.1);
@@ -2315,16 +2318,13 @@ export class ActivityService {
             this.characterService.characterState.attributes.waterLore.value;
           this.characterService.characterState.updateMoney(money);
           this.Alchemy.lastIncome = money;
-          let alchemySuccessChance = 0.01;
-          if (this.homeService.furniture.workbench && this.homeService.furniture.workbench.id === 'cauldron') {
-            alchemySuccessChance += 0.05;
-          }
-          this.characterService.characterState.increaseAttribute('woodLore', 0.05 * alchemySuccessChance);
-          this.characterService.characterState.increaseAttribute('waterLore', 0.1 * alchemySuccessChance);
+          // Flat lore gain (not multiplied by success chance)
+          this.characterService.characterState.increaseAttribute('waterLore', 0.1);
           if (this.characterService.characterState.yinYangUnlocked) {
             this.characterService.characterState.yin++;
           }
         },
+        // grade 1
         () => {
           this.checkApprenticeship(ActivityType.Alchemy);
           this.characterService.characterState.increaseAttribute('intelligence', 0.2);
@@ -2334,20 +2334,21 @@ export class ActivityService {
             this.characterService.characterState.attributes.waterLore.value * 2;
           this.characterService.characterState.updateMoney(money);
           this.Alchemy.lastIncome = money;
-          let alchemySuccessChance = 0.02;
-          if (this.homeService.furniture.workbench && this.homeService.furniture.workbench.id === 'cauldron') {
+          const waterLore = this.characterService.characterState.attributes.waterLore.value;
+          // Flat lore gains (not multiplied by success chance)
+          this.characterService.characterState.increaseAttribute('waterLore', 0.2);
+          this.characterService.characterState.increaseAttribute('woodLore', 0.02);
+          // Success chance: 1% + lore scaling + 5% furniture bonus
+          let alchemySuccessChance = 0.01 + (1 - Math.exp(-0.025 * Math.log(waterLore)));
+          if (this.homeService.hasWorkbenchFurniture('cauldron')) {
             alchemySuccessChance += 0.05;
           }
-          this.characterService.characterState.increaseAttribute('woodLore', 0.1 * alchemySuccessChance);
-          this.characterService.characterState.increaseAttribute('waterLore', 0.2 * alchemySuccessChance);
           if (Math.random() < alchemySuccessChance) {
             if (this.inventoryService.openInventorySlots() > 0) {
               let grade = this.inventoryService.consume('ingredient');
               if (grade >= 1) {
                 // if the ingredient was found
-                grade = Math.floor(
-                  grade * Math.log10(this.characterService.characterState.attributes.waterLore.value + 10)
-                );
+                grade = Math.floor(grade * Math.log10(waterLore + 10));
                 this.inventoryService.generatePotion(grade, false);
               }
             }
@@ -2356,6 +2357,7 @@ export class ActivityService {
             this.characterService.characterState.yin++;
           }
         },
+        // grade 2
         () => {
           this.checkApprenticeship(ActivityType.Alchemy);
           this.characterService.characterState.increaseAttribute('intelligence', 0.5);
@@ -2365,21 +2367,21 @@ export class ActivityService {
             this.characterService.characterState.attributes.waterLore.value * 5;
           this.characterService.characterState.updateMoney(money);
           this.Alchemy.lastIncome = money;
-          let alchemySuccessChance =
-            1 - Math.exp(0 - 0.025 * Math.log(this.characterService.characterState.attributes.waterLore.value));
-          if (this.homeService.furniture.workbench && this.homeService.furniture.workbench.id === 'cauldron') {
+          const waterLore = this.characterService.characterState.attributes.waterLore.value;
+          // Flat lore gains (not multiplied by success chance)
+          this.characterService.characterState.increaseAttribute('waterLore', 0.3);
+          this.characterService.characterState.increaseAttribute('woodLore', 0.05);
+          // Success chance: 9% + lore scaling + 5% furniture bonus
+          let alchemySuccessChance = 0.09 + (1 - Math.exp(-0.025 * Math.log(waterLore)));
+          if (this.homeService.hasWorkbenchFurniture('cauldron')) {
             alchemySuccessChance += 0.05;
           }
-          this.characterService.characterState.increaseAttribute('woodLore', 0.15 * alchemySuccessChance);
-          this.characterService.characterState.increaseAttribute('waterLore', 0.3 * alchemySuccessChance);
           if (Math.random() < alchemySuccessChance) {
             if (this.inventoryService.openInventorySlots() > 0) {
               let grade = this.inventoryService.consume('ingredient');
               if (grade >= 1) {
                 // if the ingredient was found
-                grade = Math.floor(
-                  grade * Math.log10(this.characterService.characterState.attributes.waterLore.value + 10)
-                );
+                grade = Math.floor(grade * Math.log10(waterLore + 10));
                 this.inventoryService.generatePotion(grade + 1, false);
               }
             }
@@ -2388,6 +2390,7 @@ export class ActivityService {
             this.characterService.characterState.yin++;
           }
         },
+        // grade 3 - 100% success, no pill container drop for alchemy
         () => {
           this.checkApprenticeship(ActivityType.Alchemy);
           this.characterService.characterState.increaseAttribute('intelligence', 1);
@@ -2397,15 +2400,16 @@ export class ActivityService {
             this.characterService.characterState.attributes.waterLore.value * 10;
           this.characterService.characterState.updateMoney(money);
           this.Alchemy.lastIncome = money;
-          this.characterService.characterState.increaseAttribute('woodLore', 0.2);
-          this.characterService.characterState.increaseAttribute('waterLore', 0.6);
+          const waterLore = this.characterService.characterState.attributes.waterLore.value;
+          // Flat lore gains (not multiplied by success chance)
+          this.characterService.characterState.increaseAttribute('waterLore', 0.5);
+          this.characterService.characterState.increaseAttribute('woodLore', 0.1);
+          // 100% success chance at grade 3 (no furniture bonus needed)
           if (this.inventoryService.openInventorySlots() > 0) {
             let grade = this.inventoryService.consume('ingredient');
             if (grade >= 1) {
               // if the ingredient was found
-              grade = Math.floor(
-                grade * Math.log10(this.characterService.characterState.attributes.waterLore.value + 10)
-              );
+              grade = Math.floor(grade * Math.log10(waterLore + 10));
               this.inventoryService.generatePotion(grade + 1, true);
             }
           }
@@ -2510,6 +2514,7 @@ export class ActivityService {
         '+Str, +Int, +Wood Lore, +Money, +Weapon',
       ],
       consequence: [
+        // grade 0 - produces nothing
         () => {
           this.checkApprenticeship(ActivityType.Woodworking);
           this.characterService.characterState.increaseAttribute('strength', 0.1);
@@ -2522,11 +2527,13 @@ export class ActivityService {
             ) + this.characterService.characterState.attributes.woodLore.value;
           this.characterService.characterState.updateMoney(money);
           this.Woodworking.lastIncome = money;
-          this.characterService.characterState.increaseAttribute('woodLore', 0.001);
+          // Flat lore gain (not multiplied by success chance)
+          this.characterService.characterState.increaseAttribute('woodLore', 0.1);
           if (this.characterService.characterState.yinYangUnlocked) {
             this.characterService.characterState.yang++;
           }
         },
+        // grade 1
         () => {
           this.checkApprenticeship(ActivityType.Woodworking);
           this.characterService.characterState.increaseAttribute('strength', 0.2);
@@ -2540,13 +2547,19 @@ export class ActivityService {
             this.characterService.characterState.attributes.woodLore.value * 2;
           this.characterService.characterState.updateMoney(money);
           this.Woodworking.lastIncome = money;
-          this.characterService.characterState.increaseAttribute('woodLore', 0.005);
-          if (Math.random() < 0.02) {
+          const woodLore = this.characterService.characterState.attributes.woodLore.value;
+          // Flat lore gain (not multiplied by success chance)
+          this.characterService.characterState.increaseAttribute('woodLore', 0.2);
+          // Success chance: 1% + lore scaling + 5% furniture bonus
+          let woodworkingSuccessChance = 0.01 + (1 - Math.exp(-0.025 * Math.log(woodLore)));
+          if (this.homeService.hasWorkbenchFurniture('carpentersWorkbench')) {
+            woodworkingSuccessChance += 0.05;
+          }
+          if (Math.random() < woodworkingSuccessChance) {
             if (this.inventoryService.openInventorySlots() > 0) {
               const grade = this.inventoryService.consume('wood');
               if (grade >= 1) {
                 // if the wood was found
-                const woodLore = this.characterService.characterState.attributes.woodLore.value;
                 this.inventoryService.addItem(
                   this.inventoryService.generateWeapon(
                     Math.floor(Math.max(Math.pow(Math.log2(woodLore), grade / 16), grade)),
@@ -2561,6 +2574,7 @@ export class ActivityService {
             this.characterService.characterState.yang++;
           }
         },
+        // grade 2
         () => {
           this.checkApprenticeship(ActivityType.Woodworking);
           this.characterService.characterState.increaseAttribute('strength', 0.5);
@@ -2574,13 +2588,19 @@ export class ActivityService {
             this.characterService.characterState.attributes.woodLore.value * 5;
           this.characterService.characterState.updateMoney(money);
           this.Woodworking.lastIncome = money;
-          this.characterService.characterState.increaseAttribute('woodLore', 0.02);
-          if (Math.random() < 0.05) {
+          const woodLore = this.characterService.characterState.attributes.woodLore.value;
+          // Flat lore gain (not multiplied by success chance)
+          this.characterService.characterState.increaseAttribute('woodLore', 0.3);
+          // Success chance: 9% + lore scaling + 5% furniture bonus
+          let woodworkingSuccessChance = 0.09 + (1 - Math.exp(-0.025 * Math.log(woodLore)));
+          if (this.homeService.hasWorkbenchFurniture('carpentersWorkbench')) {
+            woodworkingSuccessChance += 0.05;
+          }
+          if (Math.random() < woodworkingSuccessChance) {
             if (this.inventoryService.openInventorySlots() > 0) {
               const grade = this.inventoryService.consume('wood');
               if (grade >= 1) {
                 // if the wood was found
-                const woodLore = this.characterService.characterState.attributes.woodLore.value;
                 this.inventoryService.addItem(
                   this.inventoryService.generateWeapon(
                     Math.floor(Math.max(Math.pow(Math.log2(woodLore), grade / 16), grade)),
@@ -2595,6 +2615,7 @@ export class ActivityService {
             this.characterService.characterState.yang++;
           }
         },
+        // grade 3 - 100% success
         () => {
           this.checkApprenticeship(ActivityType.Woodworking);
           this.characterService.characterState.increaseAttribute('strength', 1);
@@ -2608,24 +2629,26 @@ export class ActivityService {
             this.characterService.characterState.attributes.woodLore.value * 10;
           this.characterService.characterState.updateMoney(money);
           this.Woodworking.lastIncome = money;
-          this.characterService.characterState.increaseAttribute('woodLore', 0.6);
-          if (Math.random() < 0.2) {
-            if (this.inventoryService.openInventorySlots() > 0) {
-              const grade = this.inventoryService.consume('wood');
-              if (grade >= 1) {
-                // if the wood was found
-                const woodLore = this.characterService.characterState.attributes.woodLore.value;
-                this.inventoryService.addItem(
-                  this.inventoryService.generateWeapon(
-                    Math.floor(Math.max(Math.pow(Math.log2(woodLore), grade / 16), grade)),
-                    'wood',
-                    true
-                  )
-                );
-              }
+          const woodLore = this.characterService.characterState.attributes.woodLore.value;
+          // Flat lore gain (not multiplied by success chance)
+          this.characterService.characterState.increaseAttribute('woodLore', 0.5);
+          // 100% success chance at grade 3 (no furniture bonus needed)
+          if (this.inventoryService.openInventorySlots() > 0) {
+            const grade = this.inventoryService.consume('wood');
+            if (grade >= 1) {
+              // if the wood was found
+              this.inventoryService.addItem(
+                this.inventoryService.generateWeapon(
+                  Math.floor(Math.max(Math.pow(Math.log2(woodLore), grade / 16), grade)),
+                  'wood',
+                  true
+                )
+              );
             }
           }
-          if (Math.random() < 0.001) {
+          // Pill container drop: 0.1% + 0.9% * log10(woodLore) / 12
+          const pillDropChance = 0.001 + (0.009 * Math.log10(woodLore)) / 12;
+          if (Math.random() < pillDropChance) {
             this.inventoryService.addItem(this.itemRepoService.items['pillBox']);
           }
           if (this.characterService.characterState.yinYangUnlocked) {
@@ -2697,6 +2720,7 @@ export class ActivityService {
         '+Spd, +Tough, +Animal Handling, +Money, +Armor',
       ],
       consequence: [
+        // grade 0 - produces nothing
         () => {
           this.checkApprenticeship(ActivityType.Leatherworking);
           this.characterService.characterState.increaseAttribute('speed', 0.1);
@@ -2709,12 +2733,14 @@ export class ActivityService {
             ) + this.characterService.characterState.attributes.animalHandling.value;
           this.characterService.characterState.updateMoney(money);
           this.Leatherworking.lastIncome = money;
-          this.characterService.characterState.increaseAttribute('animalHandling', 0.001);
+          // Flat lore gain (not multiplied by success chance)
+          this.characterService.characterState.increaseAttribute('animalHandling', 0.1);
           if (this.characterService.characterState.yinYangUnlocked) {
             this.characterService.characterState.yin++;
             this.characterService.characterState.yang++;
           }
         },
+        // grade 1
         () => {
           this.checkApprenticeship(ActivityType.Leatherworking);
           this.characterService.characterState.increaseAttribute('speed', 0.2);
@@ -2728,13 +2754,19 @@ export class ActivityService {
             this.characterService.characterState.attributes.animalHandling.value * 2;
           this.characterService.characterState.updateMoney(money);
           this.Leatherworking.lastIncome = money;
-          this.characterService.characterState.increaseAttribute('animalHandling', 0.002);
-          if (Math.random() < 0.01) {
+          const animalHandling = this.characterService.characterState.attributes.animalHandling.value;
+          // Flat lore gain (not multiplied by success chance)
+          this.characterService.characterState.increaseAttribute('animalHandling', 0.2);
+          // Success chance: 1% + lore scaling + 5% furniture bonus
+          let leatherworkingSuccessChance = 0.01 + (1 - Math.exp(-0.025 * Math.log(animalHandling)));
+          if (this.homeService.hasWorkbenchFurniture('tannersTable')) {
+            leatherworkingSuccessChance += 0.05;
+          }
+          if (Math.random() < leatherworkingSuccessChance) {
             if (this.inventoryService.openInventorySlots() > 0) {
               const grade = this.inventoryService.consume('hide');
               if (grade >= 1) {
                 // if the hide was found
-                const animalHandling = this.characterService.characterState.attributes.animalHandling.value;
                 this.inventoryService.addItem(
                   this.inventoryService.generateArmor(
                     Math.floor(Math.max(Math.pow(Math.log2(animalHandling), grade / 16), grade)),
@@ -2751,6 +2783,7 @@ export class ActivityService {
             this.characterService.characterState.yang++;
           }
         },
+        // grade 2
         () => {
           this.checkApprenticeship(ActivityType.Leatherworking);
           this.characterService.characterState.increaseAttribute('speed', 0.5);
@@ -2764,13 +2797,19 @@ export class ActivityService {
             this.characterService.characterState.attributes.animalHandling.value * 5;
           this.characterService.characterState.updateMoney(money);
           this.Leatherworking.lastIncome = money;
-          this.characterService.characterState.increaseAttribute('animalHandling', 0.003);
-          if (Math.random() < 0.01) {
+          const animalHandling = this.characterService.characterState.attributes.animalHandling.value;
+          // Flat lore gain (not multiplied by success chance)
+          this.characterService.characterState.increaseAttribute('animalHandling', 0.3);
+          // Success chance: 9% + lore scaling + 5% furniture bonus
+          let leatherworkingSuccessChance = 0.09 + (1 - Math.exp(-0.025 * Math.log(animalHandling)));
+          if (this.homeService.hasWorkbenchFurniture('tannersTable')) {
+            leatherworkingSuccessChance += 0.05;
+          }
+          if (Math.random() < leatherworkingSuccessChance) {
             if (this.inventoryService.openInventorySlots() > 0) {
               const grade = this.inventoryService.consume('hide');
               if (grade >= 1) {
                 // if the hide was found
-                const animalHandling = this.characterService.characterState.attributes.animalHandling.value;
                 this.inventoryService.addItem(
                   this.inventoryService.generateArmor(
                     Math.floor(Math.max(Math.pow(Math.log2(animalHandling), grade / 16), grade)),
@@ -2787,6 +2826,7 @@ export class ActivityService {
             this.characterService.characterState.yang++;
           }
         },
+        // grade 3 - 100% success
         () => {
           this.checkApprenticeship(ActivityType.Leatherworking);
           this.characterService.characterState.increaseAttribute('speed', 1);
@@ -2800,25 +2840,27 @@ export class ActivityService {
             this.characterService.characterState.attributes.animalHandling.value * 10;
           this.characterService.characterState.updateMoney(money);
           this.Leatherworking.lastIncome = money;
-          this.characterService.characterState.increaseAttribute('animalHandling', 0.1);
-          if (Math.random() < 0.2) {
-            if (this.inventoryService.openInventorySlots() > 0) {
-              const grade = this.inventoryService.consume('hide');
-              if (grade >= 1) {
-                // if the hide was found
-                const animalHandling = this.characterService.characterState.attributes.animalHandling.value;
-                this.inventoryService.addItem(
-                  this.inventoryService.generateArmor(
-                    Math.floor(Math.max(Math.pow(Math.log2(animalHandling), grade / 16), grade)),
-                    'leather',
-                    this.inventoryService.randomArmorSlot(),
-                    true
-                  )
-                );
-              }
+          const animalHandling = this.characterService.characterState.attributes.animalHandling.value;
+          // Flat lore gain (not multiplied by success chance)
+          this.characterService.characterState.increaseAttribute('animalHandling', 0.5);
+          // 100% success chance at grade 3 (no furniture bonus needed)
+          if (this.inventoryService.openInventorySlots() > 0) {
+            const grade = this.inventoryService.consume('hide');
+            if (grade >= 1) {
+              // if the hide was found
+              this.inventoryService.addItem(
+                this.inventoryService.generateArmor(
+                  Math.floor(Math.max(Math.pow(Math.log2(animalHandling), grade / 16), grade)),
+                  'leather',
+                  this.inventoryService.randomArmorSlot(),
+                  true
+                )
+              );
             }
           }
-          if (Math.random() < 0.001) {
+          // Pill container drop: 0.1% + 0.9% * log10(animalHandling) / 12
+          const pillDropChance = 0.001 + (0.009 * Math.log10(animalHandling)) / 12;
+          if (Math.random() < pillDropChance) {
             this.inventoryService.addItem(this.itemRepoService.items['pillPouch']);
           }
           if (this.characterService.characterState.yinYangUnlocked) {
@@ -3001,43 +3043,61 @@ export class ActivityService {
       activityType: ActivityType.Hunting,
       duration: 1,
       description: ['Hunt for animals in the nearby woods.'],
-      consequenceDescription: [
-        'Uses 50 Stamina. Increases speed and a good hunt provides some meat. It might draw unwanted attention to yourself.',
-      ],
-      effectsLegacy: ['+Spd, +Animal Handling, +Meat (10%), +Hide, may attract wolves'],
-      consequence: [
-        () => {
-          this.characterService.characterState.status.stamina.value -= 50;
-          this.characterService.characterState.increaseAttribute('speed', 0.1);
-          let huntingSuccessChance = 0.1;
-          if (this.homeService.furniture.workbench && this.homeService.furniture.workbench.id === 'dogKennel') {
-            huntingSuccessChance += 0.4;
-          }
-          this.characterService.characterState.increaseAttribute('animalHandling', 0.1 * huntingSuccessChance);
-          if (Math.random() < huntingSuccessChance) {
-            this.inventoryService.addItem(this.itemRepoService.items['meat']);
-            this.inventoryService.addItem(
-              this.inventoryService.getHide(),
-              Math.floor(this.followerService.jobs['hunter'].totalPower / 20)
-            );
-          }
-          if (Math.random() < 0.01 && this.battleService.enemies.length === 0) {
-            this.battleService.addEnemy({
-              name: 'a hungry wolf',
-              baseName: 'wolf',
-              health: 20,
-              maxHealth: 20,
-              accuracy: 0.5,
-              attack: 5,
-              defense: 5,
-              loot: [this.inventoryService.getHide()],
-            });
-          }
-          if (this.characterService.characterState.yinYangUnlocked) {
-            this.characterService.characterState.yang++;
-          }
-        },
-      ],
+      effects: {
+        0: [
+          // Stamina cost always applies
+          { kind: 'status', status: 'stamina', amount: -50 },
+
+          // Speed attribute gain
+          { kind: 'attribute', attribute: 'speed', amount: 0.1 },
+
+          // Chance-based loot: 10% base + 40% if dog kennel
+          {
+            kind: 'chance',
+            probability: add(fixed(0.1), conditional(hasFurniture('dogKennel'), fixed(0.4), fixed(0))),
+            effects: [
+              { kind: 'attribute', attribute: 'animalHandling', amount: 0.1 },
+              { kind: 'item.add', itemId: 'meat' },
+              {
+                kind: 'item.add',
+                itemId: 'hide',
+                quantity: max(fixed(1), floor(div(followerPower('hunter'), fixed(20)))),
+              },
+            ],
+          },
+
+          // Wolf spawn: 1% if no enemies exist
+          {
+            kind: 'conditional',
+            condition: { kind: 'NoEnemies' },
+            then: [
+              {
+                kind: 'chance',
+                probability: fixed(0.01),
+                effects: [
+                  {
+                    kind: 'spawn.enemy',
+                    enemy: {
+                      name: 'a hungry wolf',
+                      health: 20,
+                      attack: 5,
+                      defense: 5,
+                      loot: ['hide'],
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+
+          // Yin/yang balance
+          {
+            kind: 'conditional',
+            condition: { kind: 'HasFlag', flag: 'yinYangUnlocked' },
+            then: [{ kind: 'yinyang', modify: 'yang', amount: 1 }],
+          },
+        ],
+      },
       resourceUse: [
         {
           stamina: 50,
