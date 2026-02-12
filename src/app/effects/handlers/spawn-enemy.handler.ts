@@ -56,12 +56,12 @@ export const spawnEnemyHandler: EffectHandler<SpawnEnemyEffect> = {
       short: {
         sign: '',
         amount: 0,
-        label: `attract ${enemyName} trouble`,
+        label: `attract ${enemyName}`,
       },
       long: {
         verb: 'May attract',
         amount: 0,
-        name: `${enemyName} trouble`,
+        name: enemyName,
       },
     };
   },

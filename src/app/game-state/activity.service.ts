@@ -3093,6 +3093,7 @@ export class ActivityService {
           // Yin/yang balance
           {
             kind: 'conditional',
+            hideWhenUnmet: true,
             condition: { kind: 'HasFlag', flag: 'yinYangUnlocked' },
             then: [{ kind: 'yinyang', modify: 'yang', amount: 1 }],
           },

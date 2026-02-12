@@ -46,9 +46,9 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
   private readonly effectLongPipe = inject(EffectLongPipe);
 
   // Activity type categories for grouping
-  private readonly basicTypes = [ActivityType.OddJobs, ActivityType.Resting, ActivityType.Begging, ActivityType.Taunting, ActivityType.CombatTraining];
+  private readonly basicTypes = [ActivityType.OddJobs, ActivityType.Resting, ActivityType.Begging, ActivityType.Taunting, ActivityType.Burning, ActivityType.CombatTraining];
   private readonly craftingTypes = [ActivityType.Blacksmithing, ActivityType.Alchemy, ActivityType.Woodworking, ActivityType.Leatherworking];
-  private readonly gatheringTypes = [ActivityType.GatherHerbs, ActivityType.ChopWood, ActivityType.Mining, ActivityType.Smelting, ActivityType.Hunting, ActivityType.Fishing, ActivityType.Farming, ActivityType.Burning];
+  private readonly gatheringTypes = [ActivityType.GatherHerbs, ActivityType.ChopWood, ActivityType.Mining, ActivityType.Smelting, ActivityType.Hunting, ActivityType.Fishing, ActivityType.Farming];
   private readonly cultivationTypes = [ActivityType.BalanceChi, ActivityType.BodyCultivation, ActivityType.MindCultivation, ActivityType.CoreCultivation, ActivityType.SoulCultivation, ActivityType.InfuseBody, ActivityType.ExtendLife, ActivityType.InfuseEquipment];
   private readonly followerTypes = [ActivityType.Recruiting, ActivityType.TrainingFollowers, ActivityType.PetRecruiting, ActivityType.PetTraining];
 
@@ -511,6 +511,9 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
     if (e.kind === 'item') {
       // Item effects: "Consumes 1x Scaffolding."
       text = `<span class="${cssClass}">${e.long.verb} ${this.bigNumberPipe.transform(e.long.amount)}x ${e.long.name}.</span>`;
+    } else if (e.long.amount === 0) {
+      // Zero-amount effects (e.g. spawn): "May attract a hungry wolf."
+      text = `<span class="${cssClass}">${e.long.verb} ${e.long.name}${suffix}.</span>`;
     } else {
       // All other effects: "Reduces Stamina by 1,000."
       text = `<span class="${cssClass}">${e.long.verb} ${e.long.name}${suffix} by ${this.bigNumberPipe.transform(e.long.amount)}.</span>`;
@@ -585,8 +588,8 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
         if (e.pathType === 'failure') return false;
         // Hide resource costs (shown separately by getActivityCost)
         if (resourceLabels.includes(e.short.label) && !e.positive) return false;
-        // Show success path and unconditional effects
-        return e.pathType === 'success' || !e.condition;
+        // Show success path, unconditional effects, and chance-only conditions (e.g. "10%")
+        return e.pathType === 'success' || !e.condition || /^\d+%$/.test(e.condition);
       });
     }
     return null;
