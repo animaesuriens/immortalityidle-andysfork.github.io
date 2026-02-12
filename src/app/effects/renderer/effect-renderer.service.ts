@@ -16,11 +16,9 @@ import { HomeService } from '../../game-state/home.service';
 import { ImpossibleTaskService } from '../../game-state/impossibleTask.service';
 import { ItemRepoService } from '../../game-state/item-repo.service';
 import { GameContext } from '../context/game-context';
-import { handlerRegistry } from '../handlers/handler-registry';
 import { Effect } from '../types/effect.types';
-import { EffectContext } from '../types/context.types';
 import { RenderedEffect } from '../types/render.types';
-import { EffectHandler } from '../handlers/handler.interface';
+import { parseEffects } from '../parser/effect-parser';
 
 @Injectable({
   providedIn: 'root',
@@ -35,44 +33,14 @@ export class EffectRendererService {
   private readonly itemRepoService = inject(ItemRepoService);
 
   /**
-   * Render all effects to structured data.
+   * Render all effects to structured data using the universal parser.
    *
    * @param effects Array of effects to render
    * @returns Array of RenderedEffect data for template iteration
    */
   renderEffects(effects: Effect[]): RenderedEffect[] {
     const context = this.createContext();
-
-    const results: RenderedEffect[] = [];
-
-    for (const effect of effects) {
-      try {
-        const rendered = this.renderEffect(effect, context);
-        // Flatten array results (from conditional handlers)
-        if (Array.isArray(rendered)) {
-          results.push(...rendered);
-        } else {
-          results.push(rendered);
-        }
-      } catch (error) {
-        console.error(`Effect render error for ${effect.kind}:`, error);
-        // Skip failed effects
-      }
-    }
-
-    return results;
-  }
-
-  /**
-   * Render a single effect using the appropriate handler.
-   *
-   * @param effect The effect to render
-   * @param context The execution context
-   * @returns RenderedEffect or array of RenderedEffect (for conditionals)
-   */
-  renderEffect(effect: Effect, context: EffectContext): RenderedEffect | RenderedEffect[] {
-    const handler = handlerRegistry[effect.kind] as EffectHandler<typeof effect>;
-    return handler.render(effect, context);
+    return parseEffects(effects, context);
   }
 
   /**

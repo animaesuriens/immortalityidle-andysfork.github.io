@@ -76,6 +76,16 @@ export class GameContext implements EffectContext {
     return this.characterService.characterState.money;
   }
 
+  get features(): Readonly<Record<string, boolean>> {
+    const state = this.characterService.characterState;
+    return {
+      qiUnlocked: state.qiUnlocked,
+      yinYangUnlocked: state.yinYangUnlocked,
+      immortal: state.immortal,
+      god: state.god,
+    };
+  }
+
   get qiUnlocked(): boolean {
     return this.characterService.characterState.qiUnlocked;
   }

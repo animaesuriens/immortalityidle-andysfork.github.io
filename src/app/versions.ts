@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.39.0', description: 'Internal: Universal effect parser replaces handler render() methods. All rendering centralized in effect-parser.ts with groupId for chance/conditional blocks. Generic features map on EffectContext. Handlers now execute-only. Fix Begging missing hideWhenUnmet for yin/yang.' },
   { version: '1.38.0', description: 'Internal: Add VariableRef type for factory args, convert Blacksmithing to declarative effects with consume-then-generate workflow (metal grade capture -> weapon generation), all 4 levels with increasing complexity, add apprenticeship handling for declarative activities (Phase 4 plan 4).' },
   { version: '1.37.7', description: 'Fix: nested chance percentages now shown in conditional effect display (e.g. "If you have no enemies, 1%").' },
   { version: '1.37.6', description: 'Fix effect rendering: correct condition grammar ("If you have no enemies"), remove "by 0" for spawn effects, show chance-based effects on activity cards, hide Hunting Yin/Yang when not unlocked, move Burning to Basic category.' },

@@ -77,7 +77,7 @@
                   @if (getActivityEffects(activity); as effects) {
                     @for (effect of effects; track $index; let last = $last) {
                       <span [class.effect-positive]="effect.positive"
-                            [class.effect-negative]="!effect.positive">{{formatEffectShort(effect)}}</span>@if (!last) {<span>, </span>}
+                            [class.effect-negative]="!effect.positive">{{formatEffectShort(effect, $index === 0 || effects[$index - 1].groupId !== effect.groupId || effects[$index - 1].condition !== effect.condition)}}</span>@if (!last) {<span>, </span>}
                     }
                   } @else {
                     {{getLegacyEffects(activity)}}

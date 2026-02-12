@@ -46,26 +46,10 @@ function compare(left: number, operator: ComparisonOperator, right: number): boo
 
 /**
  * Evaluate a HasFlag condition.
- * Checks context boolean flags (qiUnlocked, yinYangUnlocked, immortal, god).
+ * Checks context features map for boolean flags.
  */
 function evaluateHasFlag(condition: HasFlag, context: EffectContext): boolean {
-  let result: boolean;
-  switch (condition.flag) {
-    case 'qiUnlocked':
-      result = context.qiUnlocked;
-      break;
-    case 'yinYangUnlocked':
-      result = context.yinYangUnlocked;
-      break;
-    case 'immortal':
-      result = context.immortal;
-      break;
-    case 'god':
-      result = context.god;
-      break;
-    default:
-      return assertNever(condition.flag);
-  }
+  const result = context.features[condition.flag] ?? false;
   return condition.negate ? !result : result;
 }
 

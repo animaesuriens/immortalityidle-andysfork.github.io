@@ -1,12 +1,12 @@
 /**
  * TriggerBattleEffect handler for the declarative effects system.
  * Stub implementation - Phase 4.
+ * Rendering is handled by the universal effect parser.
  */
 
 import { EffectHandler } from './handler.interface';
 import { TriggerBattleEffect } from '../types/effect.types';
 import { EffectContext } from '../types/context.types';
-import { RenderedEffect } from '../types/render.types';
 
 /**
  * Handler for TriggerBattleEffect.
@@ -14,9 +14,6 @@ import { RenderedEffect } from '../types/render.types';
  */
 export const triggerBattleHandler: EffectHandler<TriggerBattleEffect> = {
   execute(_effect: TriggerBattleEffect, _context: EffectContext): void {
-    throw new Error('TriggerBattleHandler not implemented - Phase 4');
-  },
-  render(_effect: TriggerBattleEffect, _context: EffectContext): RenderedEffect {
     throw new Error('TriggerBattleHandler not implemented - Phase 4');
   },
 };

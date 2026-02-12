@@ -12,7 +12,7 @@ import { FurnitureSlot } from './context.types';
  */
 export interface HasFlag {
   readonly kind: 'HasFlag';
-  readonly flag: 'qiUnlocked' | 'yinYangUnlocked' | 'immortal' | 'god';
+  readonly flag: string;
   readonly negate?: boolean;
 }
 

@@ -54,10 +54,16 @@ export interface EffectContext {
   /** Current money */
   readonly money: number;
 
-  /** Feature unlock flags */
+  /** Feature unlock flags (generic map) */
+  readonly features: Readonly<Record<string, boolean>>;
+
+  /** @deprecated Use features['qiUnlocked'] instead */
   readonly qiUnlocked: boolean;
+  /** @deprecated Use features['yinYangUnlocked'] instead */
   readonly yinYangUnlocked: boolean;
+  /** @deprecated Use features['immortal'] instead */
   readonly immortal: boolean;
+  /** @deprecated Use features['god'] instead */
   readonly god: boolean;
 
   /** Yin/Yang values */

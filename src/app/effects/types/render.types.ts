@@ -113,6 +113,9 @@ export interface RenderedEffect {
 
   /** Whether the condition for this effect is currently met (used with hideWhenUnmet) */
   conditionMet?: boolean;
+
+  /** Group ID for chance/conditional blocks. Effects from the same block share a groupId. */
+  groupId?: number;
 }
 
 /**

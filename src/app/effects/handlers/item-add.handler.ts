@@ -3,12 +3,12 @@
  * Adds items to inventory.
  * Supports simple item lookup by ID, quantity formulas, and factory generation.
  * Silently fails if no inventory space.
+ * Rendering is handled by the universal effect parser.
  */
 
 import { EffectHandler } from './handler.interface';
 import { ItemAddEffect, FactoryArg } from '../types/effect.types';
 import { EffectContext, toFormulaContext } from '../types/context.types';
-import { RenderedEffect } from '../types/render.types';
 import { evaluateAmount } from '../utils/render-helpers';
 import { Formula } from '../types/formula.types';
 
@@ -40,68 +40,6 @@ export const itemAddHandler: EffectHandler<ItemAddEffect> = {
       const args = resolveFactoryArgs(effect.args ?? [], context, formulaContext);
       callFactory(effect.factory, args, context);
     }
-  },
-
-  render(effect: ItemAddEffect, context: EffectContext): RenderedEffect {
-    const formulaContext = toFormulaContext(context);
-
-    if (effect.itemId) {
-      const quantity = effect.quantity
-        ? Math.floor(evaluateAmount(effect.quantity, formulaContext))
-        : 1;
-      const itemName = formatItemName(effect.itemId);
-
-      return {
-        kind: 'item',
-        visible: true,
-        positive: true,
-        short: {
-          sign: '+',
-          amount: quantity,
-          label: itemName,
-        },
-        long: {
-          verb: 'Adds',
-          amount: quantity,
-          name: itemName.toLowerCase(),
-        },
-        formula: typeof effect.quantity === 'object'
-          ? {
-              type: 'formula' as const,
-              result: quantity,
-              symbolic: (effect.quantity as Formula).render(formulaContext, 'formula'),
-              substituted: (effect.quantity as Formula).render(formulaContext, 'substituted'),
-            }
-          : { type: 'fixed' as const, base: quantity },
-      };
-    } else if (effect.factory) {
-      const factoryName = formatFactoryName(effect.factory);
-      return {
-        kind: 'item',
-        visible: true,
-        positive: true,
-        short: {
-          sign: '+',
-          amount: 1,
-          label: factoryName,
-        },
-        long: {
-          verb: 'Creates',
-          amount: 1,
-          name: factoryName.toLowerCase(),
-        },
-        condition: 'if materials',
-      };
-    }
-
-    // Fallback for invalid effect
-    return {
-      kind: 'item',
-      visible: false,
-      positive: true,
-      short: { sign: '', amount: 0, label: '' },
-      long: { verb: '', amount: 0, name: '' },
-    };
   },
 };
 
@@ -147,24 +85,4 @@ function callFactory(factory: string, args: number[], context: EffectContext): v
     default:
       console.warn(`Unknown factory: ${factory}`);
   }
-}
-
-/**
- * Format item ID to display name.
- */
-function formatItemName(itemId: string): string {
-  return itemId.charAt(0).toUpperCase() + itemId.slice(1);
-}
-
-/**
- * Map factory function names to display names.
- */
-function formatFactoryName(factory: string): string {
-  const mappings: Record<string, string> = {
-    'generateWeapon': 'Weapon',
-    'generateArmor': 'Armor',
-    'generatePotion': 'Potion',
-    'generatePill': 'Pill',
-  };
-  return mappings[factory] ?? factory;
 }

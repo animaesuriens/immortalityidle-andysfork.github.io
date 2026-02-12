@@ -1,47 +1,19 @@
 /**
  * Handler interface for the declarative effects system.
- * Each effect type has exactly one handler that implements execute() and render().
+ * Each effect type has exactly one handler that implements execute().
+ * Rendering is handled by the universal effect parser (parser/effect-parser.ts).
  */
 
 import { Effect, EffectKind } from '../types/effect.types';
 import { EffectContext } from '../types/context.types';
-import { RenderedEffect } from '../types/render.types';
 
 /**
  * Interface that all effect handlers must implement.
  *
- * Effect handlers are responsible for:
- * 1. Executing the effect (modifying game state)
- * 2. Rendering the effect (generating structured display data)
- *
- * This separation allows the same effect definition to be used
- * for both execution and display - the "single source of truth"
- * requirement.
+ * Effect handlers are responsible for executing the effect (modifying game state).
+ * Rendering is handled centrally by the universal effect parser.
  *
  * @template T The specific effect type this handler processes
- *
- * @example
- * class AttributeHandler implements EffectHandler<AttributeEffect> {
- *   execute(effect: AttributeEffect, context: EffectContext): void {
- *     const value = evaluateFormula(effect.value, context);
- *     if (effect.aptitude) {
- *       context.modifyAptitude(effect.attribute, value);
- *     } else {
- *       context.increaseAttribute(effect.attribute, value);
- *     }
- *   }
- *
- *   render(effect: AttributeEffect, context: EffectContext): RenderedEffect {
- *     const value = evaluateFormula(effect.value, context);
- *     return {
- *       kind: 'attribute',
- *       visible: true,
- *       positive: value >= 0,
- *       short: { sign: '+', amount: value, label: 'Str' },
- *       long: { verb: 'Increases', amount: value, name: 'Strength' },
- *     };
- *   }
- * }
  */
 export interface EffectHandler<T extends Effect = Effect> {
   /**
@@ -56,23 +28,6 @@ export interface EffectHandler<T extends Effect = Effect> {
    * @param context Access to game state and mutation methods
    */
   execute(effect: T, context: EffectContext): void;
-
-  /**
-   * Render the effect to structured display data.
-   *
-   * Returns a RenderedEffect (or array for conditional effects) that contains:
-   * - Short format: compact data for activity cards (sign, amount, label)
-   * - Long format: full sentence data for tooltips (verb, amount, name)
-   * - Formula breakdown: optional calculation details
-   * - Condition hint: optional condition text for conditional effects
-   *
-   * Templates use this data with pipes like | bigNumber to format numbers.
-   *
-   * @param effect The effect definition to render
-   * @param context Access to game state for value computation
-   * @returns Structured display data for UI (single effect or array for conditionals)
-   */
-  render(effect: T, context: EffectContext): RenderedEffect | RenderedEffect[];
 }
 
 /**

@@ -24,8 +24,8 @@
  * // Execute it
  * handler.execute(effect, context);
  *
- * // Render it for display (returns RenderedEffect with short/long data)
- * const rendered = handler.render(effect, context);  // RenderedEffect
+ * // Render it for display using the universal parser
+ * const rendered = parseEffects([effect], context);  // RenderedEffect[]
  */
 
 // =============================================================================
@@ -83,6 +83,9 @@ export { EffectExecutorService } from './executor/effect-executor.service';
 
 // Effect rendering service
 export { EffectRendererService } from './renderer/effect-renderer.service';
+
+// Universal effect parser
+export { parseEffects } from './parser/effect-parser';
 
 // =============================================================================
 // ANGULAR PIPES

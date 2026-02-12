@@ -2,12 +2,12 @@
  * ItemConsumeEffect handler for the declarative effects system.
  * Consumes items from inventory, optionally storing the consumed item's grade.
  * Supports abort-on-failure (default onError='abort') for conditional chains.
+ * Rendering is handled by the universal effect parser.
  */
 
 import { EffectHandler } from './handler.interface';
 import { ItemConsumeEffect } from '../types/effect.types';
 import { EffectContext } from '../types/context.types';
-import { RenderedEffect } from '../types/render.types';
 
 /**
  * Handler for ItemConsumeEffect.
@@ -36,37 +36,4 @@ export const itemConsumeHandler: EffectHandler<ItemConsumeEffect> = {
     // Emit event
     context.emitEvent({ kind: 'itemConsumed', itemType: effect.itemType, grade });
   },
-
-  render(effect: ItemConsumeEffect, _context: EffectContext): RenderedEffect {
-    const quantity = effect.quantity ?? 1;
-    const displayName = formatItemName(effect.itemType);
-
-    return {
-      kind: 'item',
-      visible: true,
-      positive: false,
-      short: {
-        sign: '-',
-        amount: quantity,
-        label: displayName,
-      },
-      long: {
-        verb: 'Consumes',
-        amount: quantity,
-        name: displayName,
-      },
-      formula: { type: 'fixed', base: quantity },
-    };
-  },
 };
-
-/**
- * Format an item type string for display.
- * Capitalizes first letter of each word.
- */
-function formatItemName(itemType: string): string {
-  return itemType
-    .split(/(?=[A-Z])|[-_\s]/)
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
-}

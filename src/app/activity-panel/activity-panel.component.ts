@@ -470,14 +470,22 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
-   * Group effects by condition and format them.
+   * Group effects by groupId (from parser) or condition string, and format them.
+   * groupId prevents independent chance/conditional blocks with the same condition
+   * from being merged into one display group.
    */
   private formatConditionGroups(effects: RenderedEffect[]): string {
-    // Group effects by condition (undefined = unconditional)
+    // Group effects by groupId when available, otherwise by condition string
     const groups: { condition: string | undefined; effects: RenderedEffect[] }[] = [];
     for (const e of effects) {
       const lastGroup = groups[groups.length - 1];
-      if (lastGroup && lastGroup.condition === e.condition) {
+      const sameGroup = lastGroup && (
+        // If both have groupId, match by groupId
+        (e.groupId != null && lastGroup.effects[0]?.groupId === e.groupId) ||
+        // If neither has groupId, match by condition string (backward compat)
+        (e.groupId == null && lastGroup.effects[0]?.groupId == null && lastGroup.condition === e.condition)
+      );
+      if (sameGroup) {
         lastGroup.effects.push(e);
       } else {
         groups.push({ condition: e.condition, effects: [e] });
@@ -631,12 +639,18 @@ export class ActivityPanelComponent implements AfterViewInit, OnDestroy {
   /**
    * Format short effect for display.
    */
-  formatEffectShort(effect: RenderedEffect): string {
+  formatEffectShort(effect: RenderedEffect, isGroupStart = false): string {
     // Special case for balance effects
     if (effect.short.label === 'Balance Yin/Yang') {
       return 'Balance Yin/Yang';
     }
-    return `${effect.short.sign}${this.bigNumberPipe.transform(effect.short.amount)} ${effect.short.label}`;
+    const base = `${effect.short.sign}${this.bigNumberPipe.transform(effect.short.amount)} ${effect.short.label}`;
+    // Prepend chance percentage once at start of condition group
+    if (isGroupStart && effect.condition) {
+      const chanceMatch = effect.condition.match(/(\d+%)/);
+      if (chanceMatch) return `${chanceMatch[1]}: ${base}`;
+    }
+    return base;
   }
 
   /**

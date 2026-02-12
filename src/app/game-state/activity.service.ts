@@ -2,7 +2,7 @@
 import { inject, Injectable, Injector } from '@angular/core';
 import { BattleService } from './battle.service';
 import { Activity, ActivityLoopEntry, ActivityType, isDeclarativeActivity } from '../game-state/activity';
-import { EffectExecutorService, add, log2, attr, fixed, mult, statusMax, floor, div, max, followerPower, hasFurniture, conditional, variable } from '../effects';
+import { EffectExecutorService, add, log2, attr, fixed, mult, statusMax, floor, div, max, followerPower, hasFurniture, conditional, variable, sub, exp, ln, log10 } from '../effects';
 import { AttributeType, CharacterAttribute, StatusType, SPIRIT_PROJECTION_QI_COST } from '../game-state/character';
 import { CharacterService } from '../game-state/character.service';
 import { HomeService, HomeType } from '../game-state/home.service';
@@ -1956,6 +1956,7 @@ export class ActivityService {
           {
             kind: 'conditional',
             condition: { kind: 'HasFlag', flag: 'yinYangUnlocked' },
+            hideWhenUnmet: true,
             then: [{ kind: 'yinyang', modify: 'yang', amount: 1 }],
           },
         ],
@@ -1966,6 +1967,7 @@ export class ActivityService {
           {
             kind: 'conditional',
             condition: { kind: 'HasFlag', flag: 'yinYangUnlocked' },
+            hideWhenUnmet: true,
             then: [{ kind: 'yinyang', modify: 'yang', amount: 1 }],
           },
         ],
@@ -1976,6 +1978,7 @@ export class ActivityService {
           {
             kind: 'conditional',
             condition: { kind: 'HasFlag', flag: 'yinYangUnlocked' },
+            hideWhenUnmet: true,
             then: [{ kind: 'yinyang', modify: 'yang', amount: 1 }],
           },
         ],
@@ -1986,6 +1989,7 @@ export class ActivityService {
           {
             kind: 'conditional',
             condition: { kind: 'HasFlag', flag: 'yinYangUnlocked' },
+            hideWhenUnmet: true,
             then: [{ kind: 'yinyang', modify: 'yang', amount: 1 }],
           },
         ],
@@ -2045,12 +2049,13 @@ export class ActivityService {
             kind: 'money',
             amount: add(log2(add(attr('strength'), attr('toughness'))), attr('metalLore')),
           },
-          // 1% chance for junk item
+          // Flat lore gain (always, outside chance)
+          { kind: 'attribute', attribute: 'metalLore', amount: 0.1 },
+          // 1% + 5% anvil bonus for junk item
           {
             kind: 'chance',
-            probability: fixed(0.01),
+            probability: add(fixed(0.01), conditional(hasFurniture('anvil'), fixed(0.05), fixed(0))),
             effects: [
-              { kind: 'attribute', attribute: 'metalLore', amount: 0.1 },
               { kind: 'item.add', itemId: 'junk' },
             ],
           },
@@ -2065,7 +2070,7 @@ export class ActivityService {
           },
         ],
 
-        // Level 1: Journeyman - 2% weapon chance
+        // Level 1: Journeyman - dynamic weapon chance
         1: [
           { kind: 'status', status: 'stamina', amount: -25 },
           { kind: 'attribute', attribute: 'strength', amount: 0.2 },
@@ -2074,26 +2079,28 @@ export class ActivityService {
             kind: 'money',
             amount: add(log2(add(attr('strength'), attr('toughness'))), mult(attr('metalLore'), fixed(2))),
           },
-          // 2% chance for weapon forge
+          // Flat lore gains (always, outside chance)
+          { kind: 'attribute', attribute: 'metalLore', amount: 0.2 },
+          { kind: 'attribute', attribute: 'fireLore', amount: 0.02 },
+          // Success: 1% + (1 - e^(-0.025 * ln(metalLore))) + 5% anvil
           {
             kind: 'chance',
-            probability: fixed(0.02),
+            probability: add(
+              fixed(0.01),
+              sub(fixed(1), exp(mult(fixed(-0.025), ln(attr('metalLore'))))),
+              conditional(hasFurniture('anvil'), fixed(0.05), fixed(0))
+            ),
             effects: [
-              { kind: 'attribute', attribute: 'metalLore', amount: 0.2 },
-              { kind: 'attribute', attribute: 'fireLore', amount: 0.02 },
-              // Only if inventory space available
               {
                 kind: 'conditional',
                 condition: { kind: 'HasInventory', check: 'hasSlots' },
                 then: [
-                  // Consume metal, store its grade
                   {
                     kind: 'item.consume',
                     itemType: 'metal',
                     storeGradeAs: 'metalGrade',
                     onError: 'skip',
                   },
-                  // Generate weapon using stored grade
                   {
                     kind: 'item.add',
                     factory: 'generateWeapon',
@@ -2114,7 +2121,7 @@ export class ActivityService {
           },
         ],
 
-        // Level 2: Blacksmith - 5% weapon chance
+        // Level 2: Blacksmith - higher base chance
         2: [
           { kind: 'status', status: 'stamina', amount: -25 },
           { kind: 'attribute', attribute: 'strength', amount: 0.5 },
@@ -2127,12 +2134,18 @@ export class ActivityService {
               mult(attr('metalLore'), fixed(5))
             ),
           },
+          // Flat lore gains (always, outside chance)
+          { kind: 'attribute', attribute: 'metalLore', amount: 0.3 },
+          { kind: 'attribute', attribute: 'fireLore', amount: 0.05 },
+          // Success: 9% + (1 - e^(-0.025 * ln(metalLore))) + 5% anvil
           {
             kind: 'chance',
-            probability: fixed(0.05),
+            probability: add(
+              fixed(0.09),
+              sub(fixed(1), exp(mult(fixed(-0.025), ln(attr('metalLore'))))),
+              conditional(hasFurniture('anvil'), fixed(0.05), fixed(0))
+            ),
             effects: [
-              { kind: 'attribute', attribute: 'metalLore', amount: 0.3 },
-              { kind: 'attribute', attribute: 'fireLore', amount: 0.05 },
               {
                 kind: 'conditional',
                 condition: { kind: 'HasInventory', check: 'hasSlots' },
@@ -2163,7 +2176,7 @@ export class ActivityService {
           },
         ],
 
-        // Level 3: Master - 10% weapon chance, more stamina
+        // Level 3: Master - 100% weapon (no chance), plus pill mold drop
         3: [
           { kind: 'status', status: 'stamina', amount: -50 },
           { kind: 'attribute', attribute: 'strength', amount: 1 },
@@ -2176,29 +2189,33 @@ export class ActivityService {
               mult(attr('metalLore'), fixed(10))
             ),
           },
+          // Flat lore gains (always, outside chance)
+          { kind: 'attribute', attribute: 'metalLore', amount: 0.5 },
+          { kind: 'attribute', attribute: 'fireLore', amount: 0.1 },
+          // 100% weapon forge - no chance wrapper needed
+          {
+            kind: 'conditional',
+            condition: { kind: 'HasInventory', check: 'hasSlots' },
+            then: [
+              {
+                kind: 'item.consume',
+                itemType: 'metal',
+                storeGradeAs: 'metalGrade',
+                onError: 'skip',
+              },
+              {
+                kind: 'item.add',
+                factory: 'generateWeapon',
+                args: [variable('metalGrade')],
+              },
+            ],
+          },
+          // Pill mold drop: 0.1% + 0.9% * log10(metalLore) / 12
           {
             kind: 'chance',
-            probability: fixed(0.1),
+            probability: add(fixed(0.001), mult(fixed(0.009), div(log10(attr('metalLore')), fixed(12)))),
             effects: [
-              { kind: 'attribute', attribute: 'metalLore', amount: 0.5 },
-              { kind: 'attribute', attribute: 'fireLore', amount: 0.1 },
-              {
-                kind: 'conditional',
-                condition: { kind: 'HasInventory', check: 'hasSlots' },
-                then: [
-                  {
-                    kind: 'item.consume',
-                    itemType: 'metal',
-                    storeGradeAs: 'metalGrade',
-                    onError: 'skip',
-                  },
-                  {
-                    kind: 'item.add',
-                    factory: 'generateWeapon',
-                    args: [variable('metalGrade')],
-                  },
-                ],
-              },
+              { kind: 'item.add', itemId: 'pillMold' },
             ],
           },
           {
