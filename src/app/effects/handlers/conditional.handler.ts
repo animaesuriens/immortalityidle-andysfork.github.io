@@ -157,8 +157,8 @@ export const conditionalHandler: EffectHandler<ConditionalEffect> = {
           ...r,
           // Show ALL branches always - user sees all possible outcomes
           visible: r.visible,
-          // Add condition hint
-          condition: conditionStr,
+          // Merge condition: combine with any existing (e.g. "1%" from chance)
+          condition: r.condition ? `${conditionStr}, ${r.condition}` : conditionStr,
           // Pass through path type and hide flags for display grouping
           pathType: effect.pathType,
           hideWhenUnmet: effect.hideWhenUnmet,
@@ -177,7 +177,7 @@ export const conditionalHandler: EffectHandler<ConditionalEffect> = {
             ...r,
             // Show ALL branches always - user sees all possible outcomes
             visible: r.visible,
-            condition: elseConditionStr,
+            condition: r.condition ? `${elseConditionStr}, ${r.condition}` : elseConditionStr,
             // Else branch has opposite path type (if then is success, else is failure)
             pathType: effect.pathType === 'success' ? 'failure' : effect.pathType === 'failure' ? 'success' : undefined,
             hideWhenUnmet: effect.hideWhenUnmet,

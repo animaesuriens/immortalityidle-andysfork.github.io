@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.37.7', description: 'Fix: nested chance percentages now shown in conditional effect display (e.g. "If you have no enemies, 1%").' },
   { version: '1.37.6', description: 'Fix effect rendering: correct condition grammar ("If you have no enemies"), remove "by 0" for spawn effects, show chance-based effects on activity cards, hide Hunting Yin/Yang when not unlocked, move Burning to Basic category.' },
   { version: '1.37.5', description: 'Activity effects now show "On Success" and "On Failure" sections for complex activities like BuildTower. Feature-unlock effects (Yin/Yang, Qi) are hidden until unlocked.' },
   { version: '1.37.4', description: 'Fix: Activity detail view groups effects by condition - effects sharing the same condition are shown together under one header instead of repeating the condition for each effect.' },
