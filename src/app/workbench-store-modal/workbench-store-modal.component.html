@@ -12,23 +12,30 @@
     <hr/>
   </div>
   <div class="modalContent">
-    <div class="inventoryGrid">
-      @for (item of storeService.getFurnitureForSlot(slot); track item) {
-        <div>
-          <div class="itemSlot" tabindex="0"
-            [ngClass]="{inUseItem: $any(homeService.furniture)[slot] === item, ownedItem: storeService.isWorkbenchOwnedForSlot(item.name, slot) && $any(homeService.furniture)[slot] !== item}"
-            [matTooltip]="item.description + '\n(' + item.effects + ')'">
-            <div><mat-icon>hardware</mat-icon></div>
-            <div>{{item.name | titlecase}}</div>
-            @if (storeService.getWorkbenchPrice(item.name, slot) > 0) {
-              <div>$ {{storeService.getWorkbenchPrice(item.name, slot) | number: '1.0-0'}}</div>
+    @for (category of getCategories(); track category) {
+      @if (hasItemsInCategory(category)) {
+        <div class="categorySection">
+          <h4 class="categoryHeader">{{category}}</h4>
+          <div class="inventoryGrid">
+            @for (item of getFurnitureForCategory(category); track item) {
+              <div>
+                <div class="itemSlot" tabindex="0"
+                  [ngClass]="{inUseItem: $any(homeService.furniture)[slot] === item, ownedItem: storeService.isWorkbenchOwnedForSlot(item.name, slot) && $any(homeService.furniture)[slot] !== item}"
+                  [matTooltip]="item.description + '\n(' + item.effects + ')'">
+                  <div><mat-icon>hardware</mat-icon></div>
+                  <div>{{item.name | titlecase}}</div>
+                  @if (storeService.getWorkbenchPrice(item.name, slot) > 0) {
+                    <div>$ {{storeService.getWorkbenchPrice(item.name, slot) | number: '1.0-0'}}</div>
+                  }
+                </div>
+                <button (click)="storeService.buyFurniture(item, slot)">
+                  {{storeService.getWorkbenchPrice(item.name, slot) > 0 ? "Buy" : "Use"}}
+                </button>
+              </div>
             }
           </div>
-          <button (click)="storeService.buyFurniture(item, slot)">
-            {{storeService.getWorkbenchPrice(item.name, slot) > 0 ? "Buy" : "Use"}}
-          </button>
         </div>
       }
-    </div>
+    }
   </div>
 </div>

@@ -1106,6 +1106,20 @@ export class HomeService {
     return Math.floor((-C - 5 + Math.sqrt(Math.pow(C, 2) + 10 * C + 20 * x + 25)) / 10); // I know this looks nuts but I tested it on its own ^_^;;
   }
 
+  /**
+   * Check if any workbench slot has the specified furniture
+   * @param furnitureId The furniture ID to check for (e.g., 'cauldron', 'anvil')
+   * @returns true if any workbench slot has this furniture
+   */
+  hasWorkbenchFurniture(furnitureId: string): boolean {
+    for (const slot of this.furniturePositionsArray) {
+      if (slot.startsWith('workbench') && this.furniture[slot]?.id === furnitureId) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   buyFurniture(itemId: string, targetSlot?: FurniturePosition) {
     const item = this.itemRepoService.getFurnitureById(itemId);
     if (item) {

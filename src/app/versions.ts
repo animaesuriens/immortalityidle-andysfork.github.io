@@ -5,6 +5,7 @@ export interface VersionEntry {
 }
 
 export const VERSIONS: VersionEntry[] = [
+  { version: '1.39.1', description: 'Dev tools: character toggles, Build Tower testing, attribute boosts. Workbench store categorized into Crafting/Gathering/Attributes. New furniture: carpenter\'s workbench, tanner\'s table. Log topic serialization improved. Add log10 formula builder. Remove pause guards from inventory actions.' },
   { version: '1.39.0', description: 'Internal: Universal effect parser replaces handler render() methods. All rendering centralized in effect-parser.ts with groupId for chance/conditional blocks. Generic features map on EffectContext. Handlers now execute-only. Fix Begging missing hideWhenUnmet for yin/yang.' },
   { version: '1.38.0', description: 'Internal: Add VariableRef type for factory args, convert Blacksmithing to declarative effects with consume-then-generate workflow (metal grade capture -> weapon generation), all 4 levels with increasing complexity, add apprenticeship handling for declarative activities (Phase 4 plan 4).' },
   { version: '1.37.7', description: 'Fix: nested chance percentages now shown in conditional effect display (e.g. "If you have no enemies, 1%").' },

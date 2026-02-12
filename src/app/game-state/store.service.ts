@@ -22,6 +22,13 @@ export class StoreService {
   furniturePrices: { [key: string]: number } = {};
   workbenchSlots: string[] = ['workbench', 'workbench2', 'workbench3', 'workbench4', 'workbench5', 'workbench6', 'workbench7', 'workbench8', 'workbench9'];
 
+  // Workbench furniture categories
+  workbenchCategories: { [key: string]: string[] } = {
+    'Crafting': ['anvil', 'cauldron', 'carpentersWorkbench', 'tannersTable'],
+    'Gathering': ['herbGarden', 'dogKennel'],
+    'Attributes': ['potteryWheel', 'kiln', 'mirror', 'bookshelf', 'prayerShrine'],
+  };
+
   constructor(
     private logService: LogService,
     private characterService: CharacterService,
@@ -75,7 +82,7 @@ export class StoreService {
         if (this.selectedItem.type === 'manual' && this.selectedItem.use) {
           // use manuals immediately
           this.selectedItem.use();
-          this.logService.log(LogTopic.MILESTONE, "The teachings of the " + this.selectedItem.name + " sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations.");
+          this.logService.log([LogTopic.MILESTONE, LogTopic.UNLOCK], "The teachings of the " + this.selectedItem.name + " sink deep into your soul. You'll be able to apply this knowledge in all future reincarnations.");
         } else {
           this.inventoryService.addItem(this.selectedItem);
         }
@@ -100,6 +107,17 @@ export class StoreService {
       return this.furniture.filter(item => item.slot === 'workbench');
     }
     return this.furniture.filter(item => item.slot === slot);
+  }
+
+  getWorkbenchFurnitureByCategory(category: string): Furniture[] {
+    const furnitureIds = this.workbenchCategories[category] || [];
+    return this.furniture.filter(
+      item => item.slot === 'workbench' && furnitureIds.includes(item.id)
+    );
+  }
+
+  getWorkbenchCategories(): string[] {
+    return Object.keys(this.workbenchCategories);
   }
 
   isWorkbenchSlot(slot: string): boolean {

@@ -278,7 +278,7 @@ export class ItemRepoService {
       slot: 'workbench',
       value: 1000000,
       description: 'An anvil to work on blacksmithing.',
-      effects: '+0.01 metal lore',
+      effects: '+0.01 metal lore, +5% blacksmithing success',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.increaseAttribute('metalLore', 0.01);
@@ -304,7 +304,7 @@ export class ItemRepoService {
       slot: 'workbench',
       value: 1000000,
       description: 'A cauldron for practicing alchemy.',
-      effects: '+0.01 water lore',
+      effects: '+0.01 water lore, +5% alchemy success',
       useConsumes: false,
       use: () => {
         this.characterService.characterState.increaseAttribute('waterLore', 0.01);
@@ -376,6 +376,32 @@ export class ItemRepoService {
         if (this.characterService.characterState.attributes.spirituality.value > 0) {
           this.characterService.characterState.increaseAttribute('spirituality', 0.01);
         }
+      },
+    },
+    carpentersWorkbench: {
+      id: 'carpentersWorkbench',
+      name: "carpenter's workbench",
+      type: 'furniture',
+      slot: 'workbench',
+      value: 1000000,
+      description: 'A well-equipped workbench for woodworking.',
+      effects: '+0.01 wood lore, +5% woodworking success',
+      useConsumes: false,
+      use: () => {
+        this.characterService.characterState.increaseAttribute('woodLore', 0.01);
+      },
+    },
+    tannersTable: {
+      id: 'tannersTable',
+      name: "tanner's table",
+      type: 'furniture',
+      slot: 'workbench',
+      value: 1000000,
+      description: 'A sturdy table with tools for working leather.',
+      effects: '+0.01 animal handling, +5% leatherworking success',
+      useConsumes: false,
+      use: () => {
+        this.characterService.characterState.increaseAttribute('animalHandling', 0.01);
       },
     },
   };

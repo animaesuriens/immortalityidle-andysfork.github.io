@@ -516,6 +516,34 @@ export function exp(operand: Formula | number): Formula {
   };
 }
 
+/**
+ * Logarithm base 10.
+ *
+ * Evaluates to: Math.log10(operand)
+ * Renders to: "log10(operand)"
+ *
+ * @param operand The value to take the log of
+ * @returns A formula that evaluates to log base 10
+ *
+ * @example
+ * log10(attr('metalLore'))  // log10(Metal)
+ */
+export function log10(operand: Formula | number): Formula {
+  const formula = toFormula(operand);
+  return {
+    evaluate(context: FormulaContext): number {
+      return Math.log10(formula.evaluate(context));
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      if (format === 'value') {
+        return formatValue(this.evaluate(context));
+      }
+      const inner = formula.render(context, format);
+      return `log10(${inner})`;
+    },
+  };
+}
+
 // ============================================================
 // COMPARISON / CONDITIONAL
 // ============================================================

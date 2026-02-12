@@ -20,6 +20,7 @@
       <input type="number" [(ngModel)]="attributeValue" class="attributeInput">
       <button class="devButton" (click)="updateAttribute()">Update</button>
     </div>
+    <button class="devButton" (click)="boostAllAttributes()">+1s All Attributes</button>
   </div>
 
   <div class="devSection">
@@ -32,6 +33,27 @@
       </select>
       <button class="devButton" (click)="updateHome()">Update</button>
     </div>
+  </div>
+
+  <div class="devSection">
+    <div class="sectionHeader">Character</div>
+    <button class="devButton" (click)="toggleImmortal()">
+      Toggle Immortal ({{characterService.characterState.immortal ? 'ON' : 'OFF'}})
+    </button>
+    <button class="devButton" (click)="unlockFollowers()">
+      Unlock Followers ({{followersService.followersUnlocked ? 'ON' : 'OFF'}})
+    </button>
+    <button class="devButton" (click)="learnAllManuals()">Learn All Manuals</button>
+    <button class="devButton" (click)="boostMaxStats()">+10k Max Stats</button>
+    <button class="devButton" (click)="addMoney()">+1s Taels</button>
+    <button class="devButton" (click)="maxStats()">Max Health/Stamina/Qi</button>
+  </div>
+
+  <div class="devSection">
+    <div class="sectionHeader">Build Tower</div>
+    <button class="devButton" (click)="activateBuildTower()">Activate Task</button>
+    <button class="devButton" (click)="addBuilders(10)">Add 10 Builders</button>
+    <button class="devButton" (click)="addBuildTowerMaterials()">Add Materials</button>
   </div>
 </div>
 <div class="panelResizeHandle"></div>

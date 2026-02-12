@@ -2,6 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { StoreService } from '../game-state/store.service';
 import { HomeService, FurniturePosition } from '../game-state/home.service';
+import { Furniture } from '../game-state/inventory.service';
 
 @Component({
   selector: 'app-workbench-store-modal',
@@ -46,5 +47,17 @@ export class WorkbenchStoreModalComponent {
 
   hasMultipleShops(): boolean {
     return this.getWorkbenchSlots().length > 1;
+  }
+
+  getCategories(): string[] {
+    return this.storeService.getWorkbenchCategories();
+  }
+
+  getFurnitureForCategory(category: string): Furniture[] {
+    return this.storeService.getWorkbenchFurnitureByCategory(category);
+  }
+
+  hasItemsInCategory(category: string): boolean {
+    return this.getFurnitureForCategory(category).length > 0;
   }
 }

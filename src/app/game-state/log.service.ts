@@ -18,7 +18,8 @@ export interface Log {
 }
 
 export interface LogProperties {
-  logTopics: Uppercase<LogTopic>[];
+  logTopics?: Uppercase<LogTopic>[];
+  logTopicSettings?: Record<string, boolean>;
   storyLog: Log[];
 }
 
@@ -137,10 +138,9 @@ export class LogService {
 
   getProperties(): LogProperties {
     return {
-      logTopics: Object.entries(this.topicProperties)
-        .filter(entry => entry[1].enabled)
-        .map(entry => entry[0] as LogTopic)
-        .map(topic => topic.toUpperCase() as Uppercase<LogTopic>),
+      logTopicSettings: Object.fromEntries(
+        Object.entries(this.topicProperties).map(([topic, props]) => [topic, props.enabled])
+      ),
       storyLog: this.logs[LogTopic.MILESTONE],
     };
   }
@@ -153,30 +153,26 @@ export class LogService {
     }));
     this.logs[LogTopic.MILESTONE] = storyLog;
 
-    if (properties.logTopics) {
-      // Reset all to disabled, then enable only saved topics
+    if (properties.logTopicSettings) {
+      // New format: direct topic → boolean map. Use saved value if present, keep default otherwise.
+      for (const topic of Object.values(LogTopic)) {
+        if (topic in properties.logTopicSettings) {
+          this.topicProperties[topic].enabled = properties.logTopicSettings[topic];
+        }
+      }
+    } else if (properties.logTopics) {
+      // Legacy format: migrate from uppercase enabled-only array
       for (const topic of Object.values(LogTopic)) {
         this.topicProperties[topic].enabled = false;
       }
       properties.logTopics.forEach(topic => {
-        // Check if this is a legacy topic that needs migration
         const legacyTopic = LEGACY_TOPIC_MIGRATION[topic];
         if (legacyTopic) {
           this.topicProperties[legacyTopic].enabled = true;
         } else if (LogTopic[topic as keyof typeof LogTopic]) {
-          // It's a current topic
           this.topicProperties[LogTopic[topic as keyof typeof LogTopic]].enabled = true;
         }
       });
-    } else {
-      // Default enabled topics for new games
-      this.topicProperties[LogTopic.MILESTONE].enabled = true;
-      this.topicProperties[LogTopic.IMPROVEMENT].enabled = true;
-      this.topicProperties[LogTopic.UNLOCK].enabled = true;
-      this.topicProperties[LogTopic.BLOCKED].enabled = true;
-      this.topicProperties[LogTopic.DEATH].enabled = true;
-      this.topicProperties[LogTopic.IMPOSSIBLE_TASK].enabled = true;
-      this.topicProperties[LogTopic.HELL].enabled = true;
     }
 
     this.updateLogTopics();
