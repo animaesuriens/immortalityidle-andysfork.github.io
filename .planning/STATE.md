@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-31)
 
 **Core value:** Single source of truth for activity effects - change definition once, execution and display update automatically
-**Current focus:** Phase 4 complete - Ready for Phase 5 Mass Migration
+**Current focus:** Phase 4 - Executing 04-02 (BuildTower) checkpoint verification
 
 ## Current Position
 
-Phase: 4 of 7 (Validation Slice) - COMPLETE
-Plan: 5 of 5 in current phase - COMPLETE
-Status: Phase 4 complete
-Last activity: 2026-02-05 - Completed 04-05-PLAN.md (UAT Gap Closure)
+Phase: 4 of 7 (Validation Slice)
+Plan: 02 of 5 in current phase - awaiting checkpoint verification
+Status: In progress (04-02 tasks complete, awaiting human-verify)
+Last activity: 2026-02-12 - Completed 04-02-PLAN.md tasks (BuildTower), awaiting checkpoint
 
 Progress: [████████░░] 80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
-- Average duration: 11min
-- Total execution time: 1.8 hours
+- Total plans completed: 10
+- Average duration: 12min
+- Total execution time: 2.0 hours
 
 **By Phase:**
 
@@ -30,7 +30,7 @@ Progress: [████████░░] 80%
 | 01-duration-foundation | 1 | 12min | 12min |
 | 02-interface-design | 2 | 17min | 8.5min |
 | 03-first-vertical-slice | 4 | 53min | 13min |
-| 04-validation-slice | 2 | 26min | 13min |
+| 04-validation-slice | 3 | 41min | 14min |
 
 **Recent Trend:**
 - Last 5 plans: 8min, 30min (checkpoint), 18min, 8min
@@ -70,6 +70,8 @@ Decisions are logged in DECISIONS.md. Key decisions affecting current work:
 - **All branches visible**: visible flag not filtered by conditionMet - all conditional outcomes shown
 - **Condition as prefix**: Condition text appears before effect line, not in formula section
 - **Item quantity-first**: Item effects use "Consumes 1x Scaffolding" format
+- **pathType annotation**: ConditionalEffect has pathType ('success'|'failure') for display grouping
+- **Flat sequential conditionals**: Mutually exclusive conditions checked in order for complex prerequisite chains
 
 ### Pending Todos
 
@@ -84,8 +86,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-05T03:38:00Z
-Stopped at: Completed 04-05-PLAN.md (UAT Gap Closure)
+Last session: 2026-02-12
+Stopped at: 04-02-PLAN.md checkpoint:human-verify (BuildTower)
 Resume file: None
 
 ## Completed Phases
@@ -117,10 +119,13 @@ Resume file: None
 - **Summary:** `.planning/phases/03-first-vertical-slice/03-04-SUMMARY.md`
 - **Commits:** 12e16c3, 34f7abf, 47d2d54, e654853, 119d113
 
-### Phase 4: Validation Slice (Complete)
+### Phase 4: Validation Slice (In Progress)
 - **Plan 04-01:** EffectEvent types, NoEnemies and CompareProperty conditions, GameContext wired to all Phase 4 services (FINAL constructor), event emission system, followerPower/followerCount formula builders, Money handler fully implemented, Begging activity converted to declarative effects
 - **Summary:** `.planning/phases/04-validation-slice/04-01-SUMMARY.md`
 - **Commits:** 2ca249c, 00e40e0, 62e1acc, 037f37f, 9f29212, 32f312e
+- **Plan 04-02:** Progress handler, item-consume handler, HasInventory condition, BuildTower fully converted with flat sequential failure/success paths
+- **Summary:** `.planning/phases/04-validation-slice/04-02-SUMMARY.md`
+- **Commits:** 48f0f24, b15f372, 6b82941, 3eaab6b, 41165f7, 9600a29
 - **Plan 04-05:** UAT gap closure - fixed conditional visibility, status verb, condition readability, item wording, BuildTower stamina deduction
 - **Summary:** `.planning/phases/04-validation-slice/04-05-SUMMARY.md`
 - **Commits:** 384c053
@@ -161,10 +166,10 @@ src/app/effects/
 │   ├── conditional.handler.ts # Implemented - all branches visible, readable conditions
 │   ├── money.handler.ts       # Implemented (Phase 4)
 │   ├── item-add.handler.ts    # Stub
-│   ├── item-consume.handler.ts    # Stub
+│   ├── item-consume.handler.ts    # Implemented (Phase 4-02) - storeGradeAs, abort-on-failure
 │   ├── item-generate.handler.ts   # Stub
 │   ├── chance.handler.ts      # Stub
-│   ├── progress.handler.ts    # Stub
+│   ├── progress.handler.ts    # Implemented (Phase 4-02) - ImpossibleTask integration
 │   ├── spawn-enemy.handler.ts # Stub
 │   ├── spawn-follower.handler.ts  # Stub
 │   ├── trigger-battle.handler.ts  # Stub
