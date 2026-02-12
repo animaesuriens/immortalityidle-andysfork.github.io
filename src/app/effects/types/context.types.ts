@@ -286,8 +286,9 @@ export function toFormulaContext(ctx: EffectContext): FormulaContext {
     status: status as Record<StatusType, { value: number; max: number }>,
     money: ctx.money,
     variables: ctx.variables,
-    // Phase 4 extensions - bind methods for follower data access
+    // Phase 4 extensions - bind methods for follower and furniture data access
     getFollowerCount: (job: string) => ctx.getFollowerCount(job),
     getFollowerPower: (job: string) => ctx.getFollowerPower(job),
+    hasFurniture: (slot: string, furnitureId?: string) => ctx.hasFurniture(slot as FurnitureSlot, furnitureId),
   };
 }

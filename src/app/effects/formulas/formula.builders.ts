@@ -657,3 +657,81 @@ export function followerCount(job: string): Formula {
     },
   };
 }
+
+// ============================================================
+// PHASE 4 - FURNITURE AND CONDITIONAL FORMULAS
+// ============================================================
+
+/**
+ * Check if specific furniture exists in a workbench slot.
+ * Returns 1 if present, 0 if not.
+ *
+ * Evaluates to: context.hasFurniture('workbench', furnitureId) ? 1 : 0
+ * Renders to: "has dogKennel (yes/no)"
+ *
+ * @param furnitureId The furniture ID to check for
+ * @returns A formula that evaluates to 1 or 0
+ *
+ * @example
+ * hasFurniture('dogKennel')  // 1 if dog kennel is installed, 0 otherwise
+ */
+export function hasFurniture(furnitureId: string): Formula {
+  return {
+    evaluate(context: FormulaContext): number {
+      return context.hasFurniture?.('workbench', furnitureId) ? 1 : 0;
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      const has = context.hasFurniture?.('workbench', furnitureId) ?? false;
+      switch (format) {
+        case 'value':
+        case 'substituted':
+          return has ? '1' : '0';
+        case 'formula':
+          return `has ${furnitureId}`;
+      }
+    },
+  };
+}
+
+/**
+ * Conditional formula: if condition formula > 0, return thenValue, else elseValue.
+ * Useful for furniture bonuses: conditional(hasFurniture('dogKennel'), 0.4, 0)
+ *
+ * @param condition Formula that acts as the condition (> 0 = true)
+ * @param thenValue Value when condition is true (Formula or number)
+ * @param elseValue Value when condition is false (Formula or number)
+ * @returns A formula that evaluates conditionally
+ *
+ * @example
+ * conditional(hasFurniture('dogKennel'), fixed(0.4), fixed(0))
+ * // Returns 0.4 if dog kennel exists, 0 otherwise
+ */
+export function conditional(
+  condition: Formula,
+  thenValue: Formula | number,
+  elseValue: Formula | number
+): Formula {
+  return {
+    evaluate(context: FormulaContext): number {
+      const condResult = condition.evaluate(context);
+      if (condResult > 0) {
+        return typeof thenValue === 'number' ? thenValue : thenValue.evaluate(context);
+      }
+      return typeof elseValue === 'number' ? elseValue : elseValue.evaluate(context);
+    },
+    render(context: FormulaContext, format: FormulaRenderFormat): string {
+      const condResult = condition.evaluate(context);
+      const result = condResult > 0
+        ? (typeof thenValue === 'number' ? thenValue : thenValue.evaluate(context))
+        : (typeof elseValue === 'number' ? elseValue : elseValue.evaluate(context));
+
+      switch (format) {
+        case 'value':
+        case 'substituted':
+          return formatValue(result);
+        case 'formula':
+          return `conditional`;
+      }
+    },
+  };
+}

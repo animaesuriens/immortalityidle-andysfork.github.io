@@ -19,6 +19,8 @@ export interface FormulaContext {
   readonly getFollowerCount?: (job: string) => number;
   /** Optional: Get follower power for a job (Phase 4 extension) */
   readonly getFollowerPower?: (job: string) => number;
+  /** Optional: Check if furniture exists in a slot (Phase 4 extension) */
+  readonly hasFurniture?: (slot: string, furnitureId?: string) => boolean;
 }
 
 /**
