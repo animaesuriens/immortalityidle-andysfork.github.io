@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-31)
 
 **Core value:** Single source of truth for activity effects - change definition once, execution and display update automatically
-**Current focus:** Phase 4 - Executing 04-02 (BuildTower) checkpoint verification
+**Current focus:** Phase 4 - Plan 04-03 (Hunting) awaiting checkpoint verification
 
 ## Current Position
 
 Phase: 4 of 7 (Validation Slice)
-Plan: 02 of 5 in current phase - awaiting checkpoint verification
-Status: In progress (04-02 tasks complete, awaiting human-verify)
-Last activity: 2026-02-12 - Completed 04-02-PLAN.md tasks (BuildTower), awaiting checkpoint
+Plan: 03 of 5 in current phase - awaiting checkpoint verification
+Status: In progress (04-03 tasks complete, awaiting human-verify)
+Last activity: 2026-02-12 - Completed 04-03-PLAN.md tasks (Hunting), awaiting checkpoint
 
-Progress: [████████░░] 80%
+Progress: [█████████░] 90%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
+- Total plans completed: 11
 - Average duration: 12min
-- Total execution time: 2.0 hours
+- Total execution time: 2.25 hours
 
 **By Phase:**
 
@@ -30,11 +30,11 @@ Progress: [████████░░] 80%
 | 01-duration-foundation | 1 | 12min | 12min |
 | 02-interface-design | 2 | 17min | 8.5min |
 | 03-first-vertical-slice | 4 | 53min | 13min |
-| 04-validation-slice | 3 | 41min | 14min |
+| 04-validation-slice | 4 | 56min | 14min |
 
 **Recent Trend:**
-- Last 5 plans: 8min, 30min (checkpoint), 18min, 8min
-- Trend: Gap closure plans are fast when issues are well-defined
+- Last 5 plans: 30min (checkpoint), 18min, 8min, 15min
+- Trend: Stable execution pace for handler implementation plans
 
 *Updated after each plan completion*
 
@@ -59,11 +59,11 @@ Decisions are logged in DECISIONS.md. Key decisions affecting current work:
 - **Condition naming**: Has/Is/Compare prefix (HasFlag, CompareAttribute, CompareValues)
 - **Formula builders**: Object literals with evaluate() and render() methods
 - **Singleton handler pattern**: const exports, not classes (simpler, better tree-shaking)
-- **Late-bound registry reference**: setRegistryRef() breaks conditional handler circular dependency
+- **Late-bound registry reference**: setRegistryRef() and setChanceRegistryRef() break circular dependencies
 - **Activity union type**: DeclarativeActivity | LegacyActivity allows gradual migration
 - **Level-keyed effects**: effects: { [level: number]: Effect[] } mirrors consequence array pattern
 - **Pre-filter visible effects**: Filter before template iteration to fix comma-joining edge cases
-- **FINAL GameContext constructor**: Modified ONCE with ALL Phase 4 services (no future constructor changes)
+- **GameContext constructor**: Updated with ItemRepoService for item lookup (was declared FINAL in 04-01, extended in 04-03)
 - **Event emission pattern**: RxJS Subject in executor, callback in GameContext for decoupling
 - **Property path resolution**: CompareProperty uses dot notation for extensible game state queries
 - **Math.floor rounding**: Money amounts from formulas floored to ensure integer coin values
@@ -72,6 +72,9 @@ Decisions are logged in DECISIONS.md. Key decisions affecting current work:
 - **Item quantity-first**: Item effects use "Consumes 1x Scaffolding" format
 - **pathType annotation**: ConditionalEffect has pathType ('success'|'failure') for display grouping
 - **Flat sequential conditionals**: Mutually exclusive conditions checked in order for complex prerequisite chains
+- **Formula-level conditionals**: conditional(hasFurniture(...), then, else) for dynamic probability bonuses
+- **SpawnEnemyEffect flexibility**: Optional enemy (inline) + optional enemyId (lookup) fields
+- **ItemAddEffect factory support**: Optional factory + args fields for generated items
 
 ### Pending Todos
 
@@ -87,7 +90,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: 04-02-PLAN.md checkpoint:human-verify (BuildTower)
+Stopped at: 04-03-PLAN.md checkpoint:human-verify (Hunting)
 Resume file: None
 
 ## Completed Phases
@@ -120,35 +123,38 @@ Resume file: None
 - **Commits:** 12e16c3, 34f7abf, 47d2d54, e654853, 119d113
 
 ### Phase 4: Validation Slice (In Progress)
-- **Plan 04-01:** EffectEvent types, NoEnemies and CompareProperty conditions, GameContext wired to all Phase 4 services (FINAL constructor), event emission system, followerPower/followerCount formula builders, Money handler fully implemented, Begging activity converted to declarative effects
+- **Plan 04-01:** EffectEvent types, NoEnemies and CompareProperty conditions, GameContext wired to all Phase 4 services, event emission system, followerPower/followerCount formula builders, Money handler fully implemented, Begging activity converted to declarative effects
 - **Summary:** `.planning/phases/04-validation-slice/04-01-SUMMARY.md`
 - **Commits:** 2ca249c, 00e40e0, 62e1acc, 037f37f, 9f29212, 32f312e
 - **Plan 04-02:** Progress handler, item-consume handler, HasInventory condition, BuildTower fully converted with flat sequential failure/success paths
 - **Summary:** `.planning/phases/04-validation-slice/04-02-SUMMARY.md`
 - **Commits:** 48f0f24, b15f372, 6b82941, 3eaab6b, 41165f7, 9600a29
+- **Plan 04-03:** Chance handler, spawn-enemy handler, item-add handler, hasFurniture/conditional formula builders, Hunting activity converted
+- **Summary:** `.planning/phases/04-validation-slice/04-03-SUMMARY.md`
+- **Commits:** 7de01d1, afd73f6, e3cb225, 8b69679, 5378f3c
 - **Plan 04-05:** UAT gap closure - fixed conditional visibility, status verb, condition readability, item wording, BuildTower stamina deduction
 - **Summary:** `.planning/phases/04-validation-slice/04-05-SUMMARY.md`
 - **Commits:** 384c053
 
 ## Effects Module Structure
 
-After Phase 4 Plan 05, the effects module is ready for mass migration:
+After Phase 4 Plan 03, the handler implementation status:
 
 ```
 src/app/effects/
 ├── types/
-│   ├── effect.types.ts      # 14 effect variants + onError field
+│   ├── effect.types.ts      # 14 effect variants + onError, factory, args fields
 │   ├── condition.types.ts   # 11 condition variants (NoEnemies, CompareProperty added)
-│   ├── formula.types.ts     # Formula interface
+│   ├── formula.types.ts     # Formula interface + hasFurniture on FormulaContext
 │   ├── render.types.ts      # RenderedEffect structured data
-│   ├── context.types.ts     # EffectContext with Phase 4 methods
+│   ├── context.types.ts     # EffectContext with Phase 4 methods + hasFurniture binding
 │   └── event.types.ts       # EffectEvent discriminated union (5 event kinds)
 ├── formulas/
-│   └── formula.builders.ts  # 19 formula builders (followerPower, followerCount added)
+│   └── formula.builders.ts  # 21 formula builders (hasFurniture, conditional added)
 ├── conditions/
 │   └── condition-evaluator.ts # evaluateCondition function (11 kinds)
 ├── context/
-│   └── game-context.ts      # GameContext with FINAL constructor + all services
+│   └── game-context.ts      # GameContext with ItemRepoService + all services
 ├── executor/
 │   └── effect-executor.service.ts # EffectExecutorService + effectEvents$ Subject
 ├── renderer/
@@ -159,18 +165,18 @@ src/app/effects/
 │   └── effect-formula.pipe.ts # EffectFormulaPipe
 ├── handlers/
 │   ├── handler.interface.ts   # EffectHandler, HandlerRegistry
-│   ├── handler-registry.ts    # Complete registry (14 handlers)
-│   ├── status.handler.ts      # Implemented - uses "Reduces" for negative
+│   ├── handler-registry.ts    # Complete registry (14 handlers) + late-bound refs
+│   ├── status.handler.ts      # Implemented
 │   ├── attribute.handler.ts   # Implemented
 │   ├── yinyang.handler.ts     # Implemented
-│   ├── conditional.handler.ts # Implemented - all branches visible, readable conditions
-│   ├── money.handler.ts       # Implemented (Phase 4)
-│   ├── item-add.handler.ts    # Stub
-│   ├── item-consume.handler.ts    # Implemented (Phase 4-02) - storeGradeAs, abort-on-failure
+│   ├── conditional.handler.ts # Implemented - all branches visible
+│   ├── money.handler.ts       # Implemented (Phase 4-01)
+│   ├── item-add.handler.ts    # Implemented (Phase 4-03) - factory support
+│   ├── item-consume.handler.ts    # Implemented (Phase 4-02) - storeGradeAs
 │   ├── item-generate.handler.ts   # Stub
-│   ├── chance.handler.ts      # Stub
-│   ├── progress.handler.ts    # Implemented (Phase 4-02) - ImpossibleTask integration
-│   ├── spawn-enemy.handler.ts # Stub
+│   ├── chance.handler.ts      # Implemented (Phase 4-03) - late-bound registry
+│   ├── progress.handler.ts    # Implemented (Phase 4-02) - ImpossibleTask
+│   ├── spawn-enemy.handler.ts # Implemented (Phase 4-03) - inline + named
 │   ├── spawn-follower.handler.ts  # Stub
 │   ├── trigger-battle.handler.ts  # Stub
 │   └── lifespan.handler.ts    # Stub
@@ -178,17 +184,14 @@ src/app/effects/
 │   ├── exhaustive.ts        # assertNever helper
 │   ├── abbreviations.ts     # ABBREVIATIONS constant
 │   └── render-helpers.ts    # FLAG_DISPLAY_NAMES, rendering utilities
-└── index.ts                 # Barrel export (includes event.types.ts)
+└── index.ts                 # Barrel export
 
 src/app/game-state/
-├── activity.ts              # DeclarativeActivity | LegacyActivity union, isDeclarativeActivity guard
-└── activity.service.ts      # Resting, Begging, BuildTower declarative, executeActivity helper
-
-src/app/activity-panel/
-├── activity-panel.component.ts   # getActivityEffects, formatEffectsLong (kind-aware, condition prefix)
-└── activity-panel.component.html # @for loop for effect rendering
+├── activity.ts              # DeclarativeActivity | LegacyActivity union
+└── activity.service.ts      # Resting, Begging, BuildTower, Hunting declarative
 ```
 
-**Phase 4 complete:** All rendering patterns validated. Ready for Phase 5 mass migration.
+**Implemented handlers (10):** status, attribute, yinyang, conditional, money, item.add, item.consume, chance, progress, spawn.enemy
+**Stub handlers (4):** item.generate, spawn.follower, trigger.battle, lifespan
 
-**Declarative activities:** Resting (Phase 3), Begging (Phase 4), BuildTower (Phase 4) - 66 activities remaining
+**Declarative activities (4):** Resting, Begging, BuildTower, Hunting - 65 activities remaining
