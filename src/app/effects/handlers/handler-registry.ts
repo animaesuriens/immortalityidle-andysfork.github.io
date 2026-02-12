@@ -16,7 +16,7 @@ import { moneyHandler } from './money.handler';
 import { itemAddHandler } from './item-add.handler';
 import { itemConsumeHandler } from './item-consume.handler';
 import { itemGenerateHandler } from './item-generate.handler';
-import { chanceHandler } from './chance.handler';
+import { chanceHandler, setChanceRegistryRef } from './chance.handler';
 import { progressHandler } from './progress.handler';
 import { spawnEnemyHandler } from './spawn-enemy.handler';
 import { spawnFollowerHandler } from './spawn-follower.handler';
@@ -52,5 +52,6 @@ export const handlerRegistry: HandlerRegistry = {
   lifespan: lifespanHandler,
 };
 
-// Initialize the registry reference for conditional handler's nested execution
+// Initialize registry references for handlers that need nested effect execution
 setRegistryRef(handlerRegistry);
+setChanceRegistryRef(handlerRegistry);
