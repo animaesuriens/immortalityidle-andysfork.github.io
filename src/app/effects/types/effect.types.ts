@@ -127,10 +127,14 @@ export interface EnemyConfig {
 
 /**
  * Spawn enemy effect.
+ * Supports inline config or named enemy ID for lookup.
  */
 export interface SpawnEnemyEffect extends BaseEffect {
   readonly kind: 'spawn.enemy';
-  readonly enemyConfig: EnemyConfig;
+  /** Inline enemy configuration */
+  readonly enemy?: EnemyConfig;
+  /** Named enemy ID for lookup (alternative to inline) */
+  readonly enemyId?: string;
 }
 
 /**
