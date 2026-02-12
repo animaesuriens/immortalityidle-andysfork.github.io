@@ -15,6 +15,7 @@ import {
 } from '../types/context.types';
 import { CharacterService } from '../../game-state/character.service';
 import { InventoryService, Equipment, Pill } from '../../game-state/inventory.service';
+import { ItemRepoService } from '../../game-state/item-repo.service';
 import { BattleService } from '../../game-state/battle.service';
 import { FollowersService } from '../../game-state/followers.service';
 import { HomeService } from '../../game-state/home.service';
@@ -40,6 +41,7 @@ export class GameContext implements EffectContext {
     private readonly followersService: FollowersService,
     private readonly homeService: HomeService,
     private readonly impossibleTaskService: ImpossibleTaskService,
+    private readonly itemRepoService: ItemRepoService,
     private readonly eventEmitter: (event: EffectEvent) => void,
   ) {}
 
@@ -151,8 +153,19 @@ export class GameContext implements EffectContext {
   // ============================================================
 
   addItem(itemId: string, quantity = 1): void {
-    // TODO: Implement in Phase 4 when item handlers are built
-    console.warn(`GameContext.addItem not yet implemented: ${itemId} x${quantity}`);
+    // Special case: 'hide' uses tiered hide system based on animalHandling
+    if (itemId === 'hide') {
+      const hide = this.inventoryService.getHide();
+      this.inventoryService.addItem(hide, quantity);
+      return;
+    }
+
+    const item = this.itemRepoService.getItemById(itemId);
+    if (!item) {
+      console.warn(`GameContext.addItem: unknown item ID '${itemId}'`);
+      return;
+    }
+    this.inventoryService.addItem(item, quantity);
   }
 
   consumeItem(itemType: string, quantity = 1, minGrade = 0): number {

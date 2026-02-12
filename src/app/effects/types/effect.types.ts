@@ -49,10 +49,17 @@ export interface MoneyEffect extends BaseEffect {
 
 /**
  * Add item to inventory effect.
+ * Supports simple item lookup by ID or factory-generated items.
  */
 export interface ItemAddEffect extends BaseEffect {
   readonly kind: 'item.add';
-  readonly itemId: string;
+  /** Simple item lookup by ID */
+  readonly itemId?: string;
+  /** Factory function name for generated items (e.g., 'generateWeapon') */
+  readonly factory?: string;
+  /** Arguments for factory function (numbers, formulas, or variable refs) */
+  readonly args?: (number | Formula | { ref: 'variable'; name: string })[];
+  /** Quantity to add (default 1) */
   readonly quantity?: number | Formula;
 }
 

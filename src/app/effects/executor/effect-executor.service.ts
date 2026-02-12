@@ -16,6 +16,7 @@ import { BattleService } from '../../game-state/battle.service';
 import { FollowersService } from '../../game-state/followers.service';
 import { HomeService } from '../../game-state/home.service';
 import { ImpossibleTaskService } from '../../game-state/impossibleTask.service';
+import { ItemRepoService } from '../../game-state/item-repo.service';
 import { GameContext } from '../context/game-context';
 import { handlerRegistry } from '../handlers/handler-registry';
 import { Effect } from '../types/effect.types';
@@ -32,6 +33,7 @@ export class EffectExecutorService {
   private readonly followersService = inject(FollowersService);
   private readonly homeService = inject(HomeService);
   private readonly impossibleTaskService = inject(ImpossibleTaskService);
+  private readonly itemRepoService = inject(ItemRepoService);
 
   /** Observable stream of effect events for tracking/statistics */
   readonly effectEvents$ = new Subject<EffectEvent>();
@@ -82,6 +84,7 @@ export class EffectExecutorService {
       this.followersService,
       this.homeService,
       this.impossibleTaskService,
+      this.itemRepoService,
       (event: EffectEvent) => this.effectEvents$.next(event)
     );
   }
