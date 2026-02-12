@@ -2,7 +2,7 @@
 import { inject, Injectable, Injector } from '@angular/core';
 import { BattleService } from './battle.service';
 import { Activity, ActivityLoopEntry, ActivityType, isDeclarativeActivity } from '../game-state/activity';
-import { EffectExecutorService, add, log2, attr, fixed, mult, statusMax, floor, div, max, followerPower, hasFurniture, conditional } from '../effects';
+import { EffectExecutorService, add, log2, attr, fixed, mult, statusMax, floor, div, max, followerPower, hasFurniture, conditional, variable } from '../effects';
 import { AttributeType, CharacterAttribute, StatusType, SPIRIT_PROJECTION_QI_COST } from '../game-state/character';
 import { CharacterService } from '../game-state/character.service';
 import { HomeService, HomeType } from '../game-state/home.service';
@@ -372,6 +372,10 @@ export class ActivityService {
     const moneyBefore = this.characterService.characterState.money;
 
     if (isDeclarativeActivity(activity)) {
+      // Handle apprenticeship for declarative activities (was inline in legacy consequence functions)
+      if (activity.skipApprenticeshipLevel > 0) {
+        this.checkApprenticeship(activity.activityType);
+      }
       const effects = activity.effects[activity.level] ?? [];
       this.effectExecutor.executeEffects(effects);
     } else {
@@ -2030,178 +2034,184 @@ export class ActivityService {
         'Create useful and beautiful metal objects. You might produce a decent weapon occasionally.',
         'Work the forges like a true master.',
       ],
-      consequenceDescription: [
-        'Uses 25 Stamina. Increases strength and toughness and provides a little money.',
-        'Uses 25 Stamina. Increases strength, toughness, and money.',
-        'Uses 25 Stamina. Build your physical power, master your craft, and create weapons.',
-        'Uses 50 Stamina. Bring down your mighty hammer and create works of metal wonder.',
-      ],
-      effectsLegacy: [
-        '+Str, +Tough, +Metal Lore, +Money',
-        '+Str, +Tough, +Metal Lore, +Fire Lore, +Money, +Weapon',
-        '+Str, +Tough, +Metal Lore, +Fire Lore, +Money, +Weapon',
-        '+Str, +Tough, +Metal Lore, +Fire Lore, +Money, +Weapon',
-      ],
-      consequence: [
-        // grade 0
-        () => {
-          this.checkApprenticeship(ActivityType.Blacksmithing);
-          this.characterService.characterState.increaseAttribute('strength', 0.1);
-          this.characterService.characterState.increaseAttribute('toughness', 0.1);
-          this.characterService.characterState.status.stamina.value -= 25;
-          const money =
-            Math.log2(
-              this.characterService.characterState.attributes.strength.value +
-                this.characterService.characterState.attributes.toughness.value
-            ) + this.characterService.characterState.attributes.metalLore.value;
-          this.characterService.characterState.updateMoney(money);
-          this.Blacksmithing.lastIncome = money;
-          // Flat lore gain (not multiplied by success chance)
-          this.characterService.characterState.increaseAttribute('metalLore', 0.1);
-          // Success chance: 1% base + 5% furniture bonus
-          let blacksmithSuccessChance = 0.01;
-          if (this.homeService.hasWorkbenchFurniture('anvil')) {
-            blacksmithSuccessChance += 0.05;
-          }
-          if (Math.random() < blacksmithSuccessChance) {
-            this.inventoryService.addItem(this.itemRepoService.items['junk']);
-          }
-          if (this.characterService.characterState.yinYangUnlocked) {
-            this.characterService.characterState.yin++;
-            this.characterService.characterState.yang++;
-          }
-        },
-        // grade 1
-        () => {
-          this.checkApprenticeship(ActivityType.Blacksmithing);
-          this.characterService.characterState.increaseAttribute('strength', 0.2);
-          this.characterService.characterState.increaseAttribute('toughness', 0.2);
-          this.characterService.characterState.status.stamina.value -= 25;
-          const money =
-            Math.log2(
-              this.characterService.characterState.attributes.strength.value +
-                this.characterService.characterState.attributes.toughness.value
-            ) +
-            this.characterService.characterState.attributes.metalLore.value * 2;
-          this.characterService.characterState.updateMoney(money);
-          this.Blacksmithing.lastIncome = money;
-          const metalLore = this.characterService.characterState.attributes.metalLore.value;
-          // Flat lore gains (not multiplied by success chance)
-          this.characterService.characterState.increaseAttribute('metalLore', 0.2);
-          this.characterService.characterState.increaseAttribute('fireLore', 0.02);
-          // Success chance: 1% + lore scaling + 5% furniture bonus
-          let blacksmithSuccessChance = 0.01 + (1 - Math.exp(-0.025 * Math.log(metalLore)));
-          if (this.homeService.hasWorkbenchFurniture('anvil')) {
-            blacksmithSuccessChance += 0.05;
-          }
-          if (Math.random() < blacksmithSuccessChance) {
-            if (this.inventoryService.openInventorySlots() > 0) {
-              const grade = this.inventoryService.consume('metal');
-              if (grade >= 1) {
-                // if the metal was found
-                this.inventoryService.addItem(
-                  this.inventoryService.generateWeapon(
-                    Math.floor(Math.max(Math.pow(Math.log2(metalLore), grade / 160), grade / 10)),
-                    'metal',
-                    true
-                  )
-                );
-              }
-            }
-          }
-          if (this.characterService.characterState.yinYangUnlocked) {
-            this.characterService.characterState.yin++;
-            this.characterService.characterState.yang++;
-          }
-        },
-        // grade 2
-        () => {
-          this.checkApprenticeship(ActivityType.Blacksmithing);
-          this.characterService.characterState.increaseAttribute('strength', 0.5);
-          this.characterService.characterState.increaseAttribute('toughness', 0.5);
-          this.characterService.characterState.status.stamina.value -= 25;
-          const money =
-            Math.log2(
-              this.characterService.characterState.attributes.strength.value +
-                this.characterService.characterState.attributes.toughness.value
-            ) +
-            this.characterService.characterState.attributes.fireLore.value +
-            this.characterService.characterState.attributes.metalLore.value * 5;
-          this.characterService.characterState.updateMoney(money);
-          this.Blacksmithing.lastIncome = money;
-          const metalLore = this.characterService.characterState.attributes.metalLore.value;
-          // Flat lore gains (not multiplied by success chance)
-          this.characterService.characterState.increaseAttribute('metalLore', 0.3);
-          this.characterService.characterState.increaseAttribute('fireLore', 0.05);
-          // Success chance: 9% + lore scaling + 5% furniture bonus
-          let blacksmithSuccessChance = 0.09 + (1 - Math.exp(-0.025 * Math.log(metalLore)));
-          if (this.homeService.hasWorkbenchFurniture('anvil')) {
-            blacksmithSuccessChance += 0.05;
-          }
-          if (Math.random() < blacksmithSuccessChance) {
-            if (this.inventoryService.openInventorySlots() > 0) {
-              const grade = this.inventoryService.consume('metal');
-              if (grade >= 1) {
-                // if the metal was found
-                this.inventoryService.addItem(
-                  this.inventoryService.generateWeapon(
-                    Math.floor(Math.max(Math.pow(Math.log2(metalLore), grade / 160), grade / 10)),
-                    'metal',
-                    true
-                  )
-                );
-              }
-            }
-          }
-          if (this.characterService.characterState.yinYangUnlocked) {
-            this.characterService.characterState.yin++;
-            this.characterService.characterState.yang++;
-          }
-        },
-        // grade 3
-        () => {
-          this.checkApprenticeship(ActivityType.Blacksmithing);
-          this.characterService.characterState.increaseAttribute('strength', 1);
-          this.characterService.characterState.increaseAttribute('toughness', 1);
-          this.characterService.characterState.status.stamina.value -= 50;
-          const money =
-            Math.log2(
-              this.characterService.characterState.attributes.strength.value +
-                this.characterService.characterState.attributes.toughness.value
-            ) +
-            this.characterService.characterState.attributes.fireLore.value +
-            this.characterService.characterState.attributes.metalLore.value * 10;
-          this.characterService.characterState.updateMoney(money);
-          this.Blacksmithing.lastIncome = money;
-          const metalLore = this.characterService.characterState.attributes.metalLore.value;
-          // Flat lore gains (not multiplied by success chance)
-          this.characterService.characterState.increaseAttribute('metalLore', 0.5);
-          this.characterService.characterState.increaseAttribute('fireLore', 0.1);
-          // 100% success chance at grade 3 (no furniture bonus needed)
-          if (this.inventoryService.openInventorySlots() > 0) {
-            const grade = this.inventoryService.consume('metal');
-            if (grade >= 1) {
-              // if the metal was found
-              this.inventoryService.addItem(
-                this.inventoryService.generateWeapon(
-                  Math.floor(Math.max(Math.pow(Math.log2(metalLore), grade / 160), grade / 10)),
-                  'metal',
-                  true
-                )
-              );
-            }
-          }
-          // Pill container drop: 0.1% + 0.9% * log10(metalLore) / 12
-          const pillDropChance = 0.001 + (0.009 * Math.log10(metalLore)) / 12;
-          if (Math.random() < pillDropChance) {
-            this.inventoryService.addItem(this.itemRepoService.items['pillMold']);
-          }
-          if (this.characterService.characterState.yinYangUnlocked) {
-            this.characterService.characterState.yin++;
-            this.characterService.characterState.yang++;
-          }
-        },
-      ],
+      // consequenceDescription and effectsLegacy removed: DeclarativeActivity uses effects
+      effects: {
+        // Level 0: Apprentice training
+        0: [
+          { kind: 'status', status: 'stamina', amount: -25 },
+          { kind: 'attribute', attribute: 'strength', amount: 0.1 },
+          { kind: 'attribute', attribute: 'toughness', amount: 0.1 },
+          {
+            kind: 'money',
+            amount: add(log2(add(attr('strength'), attr('toughness'))), attr('metalLore')),
+          },
+          // 1% chance for junk item
+          {
+            kind: 'chance',
+            probability: fixed(0.01),
+            effects: [
+              { kind: 'attribute', attribute: 'metalLore', amount: 0.1 },
+              { kind: 'item.add', itemId: 'junk' },
+            ],
+          },
+          {
+            kind: 'conditional',
+            hideWhenUnmet: true,
+            condition: { kind: 'HasFlag', flag: 'yinYangUnlocked' },
+            then: [
+              { kind: 'yinyang', modify: 'yin', amount: 1 },
+              { kind: 'yinyang', modify: 'yang', amount: 1 },
+            ],
+          },
+        ],
+
+        // Level 1: Journeyman - 2% weapon chance
+        1: [
+          { kind: 'status', status: 'stamina', amount: -25 },
+          { kind: 'attribute', attribute: 'strength', amount: 0.2 },
+          { kind: 'attribute', attribute: 'toughness', amount: 0.2 },
+          {
+            kind: 'money',
+            amount: add(log2(add(attr('strength'), attr('toughness'))), mult(attr('metalLore'), fixed(2))),
+          },
+          // 2% chance for weapon forge
+          {
+            kind: 'chance',
+            probability: fixed(0.02),
+            effects: [
+              { kind: 'attribute', attribute: 'metalLore', amount: 0.2 },
+              { kind: 'attribute', attribute: 'fireLore', amount: 0.02 },
+              // Only if inventory space available
+              {
+                kind: 'conditional',
+                condition: { kind: 'HasInventory', check: 'hasSlots' },
+                then: [
+                  // Consume metal, store its grade
+                  {
+                    kind: 'item.consume',
+                    itemType: 'metal',
+                    storeGradeAs: 'metalGrade',
+                    onError: 'skip',
+                  },
+                  // Generate weapon using stored grade
+                  {
+                    kind: 'item.add',
+                    factory: 'generateWeapon',
+                    args: [variable('metalGrade')],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            kind: 'conditional',
+            hideWhenUnmet: true,
+            condition: { kind: 'HasFlag', flag: 'yinYangUnlocked' },
+            then: [
+              { kind: 'yinyang', modify: 'yin', amount: 1 },
+              { kind: 'yinyang', modify: 'yang', amount: 1 },
+            ],
+          },
+        ],
+
+        // Level 2: Blacksmith - 5% weapon chance
+        2: [
+          { kind: 'status', status: 'stamina', amount: -25 },
+          { kind: 'attribute', attribute: 'strength', amount: 0.5 },
+          { kind: 'attribute', attribute: 'toughness', amount: 0.5 },
+          {
+            kind: 'money',
+            amount: add(
+              log2(add(attr('strength'), attr('toughness'))),
+              attr('fireLore'),
+              mult(attr('metalLore'), fixed(5))
+            ),
+          },
+          {
+            kind: 'chance',
+            probability: fixed(0.05),
+            effects: [
+              { kind: 'attribute', attribute: 'metalLore', amount: 0.3 },
+              { kind: 'attribute', attribute: 'fireLore', amount: 0.05 },
+              {
+                kind: 'conditional',
+                condition: { kind: 'HasInventory', check: 'hasSlots' },
+                then: [
+                  {
+                    kind: 'item.consume',
+                    itemType: 'metal',
+                    storeGradeAs: 'metalGrade',
+                    onError: 'skip',
+                  },
+                  {
+                    kind: 'item.add',
+                    factory: 'generateWeapon',
+                    args: [variable('metalGrade')],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            kind: 'conditional',
+            hideWhenUnmet: true,
+            condition: { kind: 'HasFlag', flag: 'yinYangUnlocked' },
+            then: [
+              { kind: 'yinyang', modify: 'yin', amount: 1 },
+              { kind: 'yinyang', modify: 'yang', amount: 1 },
+            ],
+          },
+        ],
+
+        // Level 3: Master - 10% weapon chance, more stamina
+        3: [
+          { kind: 'status', status: 'stamina', amount: -50 },
+          { kind: 'attribute', attribute: 'strength', amount: 1 },
+          { kind: 'attribute', attribute: 'toughness', amount: 1 },
+          {
+            kind: 'money',
+            amount: add(
+              log2(add(attr('strength'), attr('toughness'))),
+              attr('fireLore'),
+              mult(attr('metalLore'), fixed(10))
+            ),
+          },
+          {
+            kind: 'chance',
+            probability: fixed(0.1),
+            effects: [
+              { kind: 'attribute', attribute: 'metalLore', amount: 0.5 },
+              { kind: 'attribute', attribute: 'fireLore', amount: 0.1 },
+              {
+                kind: 'conditional',
+                condition: { kind: 'HasInventory', check: 'hasSlots' },
+                then: [
+                  {
+                    kind: 'item.consume',
+                    itemType: 'metal',
+                    storeGradeAs: 'metalGrade',
+                    onError: 'skip',
+                  },
+                  {
+                    kind: 'item.add',
+                    factory: 'generateWeapon',
+                    args: [variable('metalGrade')],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            kind: 'conditional',
+            hideWhenUnmet: true,
+            condition: { kind: 'HasFlag', flag: 'yinYangUnlocked' },
+            then: [
+              { kind: 'yinyang', modify: 'yin', amount: 1 },
+              { kind: 'yinyang', modify: 'yang', amount: 1 },
+            ],
+          },
+        ],
+      },
       resourceUse: [
         {
           stamina: 25,
