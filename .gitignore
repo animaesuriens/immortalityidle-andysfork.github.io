@@ -44,3 +44,9 @@ Thumbs.db
 # Screenshots in root
 /Screenshot*.png
 /screenshot*.png
+
+# Planning artifacts
+.planning/
+
+# Windows artifacts
+nul
