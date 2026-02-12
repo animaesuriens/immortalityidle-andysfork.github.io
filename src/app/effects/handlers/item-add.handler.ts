@@ -6,7 +6,7 @@
  */
 
 import { EffectHandler } from './handler.interface';
-import { ItemAddEffect } from '../types/effect.types';
+import { ItemAddEffect, FactoryArg } from '../types/effect.types';
 import { EffectContext, toFormulaContext } from '../types/context.types';
 import { RenderedEffect } from '../types/render.types';
 import { evaluateAmount } from '../utils/render-helpers';
@@ -109,7 +109,7 @@ export const itemAddHandler: EffectHandler<ItemAddEffect> = {
  * Resolve factory arguments from mixed types to numbers.
  */
 function resolveFactoryArgs(
-  args: (number | Formula | { ref: 'variable'; name: string })[],
+  args: FactoryArg[],
   context: EffectContext,
   formulaContext: ReturnType<typeof toFormulaContext>
 ): number[] {

@@ -8,6 +8,21 @@ import { Condition } from './condition.types';
 import { AttributeType, StatusType } from '../../game-state/character';
 
 /**
+ * Variable reference for factory arguments.
+ * Evaluates to the value of a context variable at execution time.
+ * Used in consume-then-generate workflows (e.g., metal grade -> weapon generation).
+ */
+export interface VariableRef {
+  readonly ref: 'variable';
+  readonly name: string;
+}
+
+/**
+ * Factory argument - can be a number, formula, or variable reference.
+ */
+export type FactoryArg = number | Formula | VariableRef;
+
+/**
  * Base effect properties (optional, for metadata).
  */
 interface BaseEffect {
@@ -57,8 +72,8 @@ export interface ItemAddEffect extends BaseEffect {
   readonly itemId?: string;
   /** Factory function name for generated items (e.g., 'generateWeapon') */
   readonly factory?: string;
-  /** Arguments for factory function (numbers, formulas, or variable refs) */
-  readonly args?: (number | Formula | { ref: 'variable'; name: string })[];
+  /** Arguments for factory function - can include variable refs for captured values */
+  readonly args?: FactoryArg[];
   /** Quantity to add (default 1) */
   readonly quantity?: number | Formula;
 }

@@ -15,6 +15,7 @@
 
 import { AttributeType, StatusType } from '../../game-state/character';
 import { Formula, FormulaContext, FormulaRenderFormat } from '../types/formula.types';
+import { VariableRef } from '../types/effect.types';
 import { ABBREVIATIONS } from '../utils/abbreviations';
 
 // ============================================================
@@ -192,39 +193,22 @@ export function fixed(value: number): Formula {
 }
 
 /**
- * Reference a runtime variable (set during effect execution).
+ * Create a variable reference for use in factory args.
+ * Resolves to the value of a context variable at execution time.
  *
- * Evaluates to: context.variables[name]
- * Renders to: variable name or descriptive text like "Grade"
- *
- * Variables are set during execution, e.g., when consuming an item
- * the consumed item's grade can be stored and referenced.
+ * Used in consume-then-generate workflows where one effect stores
+ * a value (e.g., consumed item grade) and a later effect uses it.
  *
  * @param name The variable name to reference
- * @returns A formula that evaluates to the variable's value
+ * @returns A VariableRef object: { ref: 'variable', name }
  *
  * @example
- * // In an effect that consumes an item and stores its grade:
- * variable('consumedGrade')  // Evaluates to stored grade, renders as "Grade"
+ * // Consume metal, store grade, then generate weapon using that grade:
+ * { kind: 'item.consume', itemType: 'metal', storeGradeAs: 'metalGrade' }
+ * { kind: 'item.add', factory: 'generateWeapon', args: [variable('metalGrade')] }
  */
-export function variable(name: string): Formula {
-  return {
-    evaluate(context: FormulaContext): number {
-      return context.variables[name] ?? 0;
-    },
-    render(context: FormulaContext, format: FormulaRenderFormat): string {
-      const value = context.variables[name] ?? 0;
-      // Display name: capitalize and remove "consumed" prefix if present
-      const displayName = name.replace(/^consumed/, '').replace(/^./, c => c.toUpperCase());
-      switch (format) {
-        case 'value':
-        case 'substituted':
-          return formatValue(value);
-        case 'formula':
-          return displayName;
-      }
-    },
-  };
+export function variable(name: string): VariableRef {
+  return { ref: 'variable', name };
 }
 
 // ============================================================
